@@ -78,7 +78,6 @@
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, query, getDocs, onSnapshot, runTransaction, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // CONFIGURAZIONE FIREBASE FORNITA
         const firebaseConfig = {
             apiKey: "AIzaSyBDXldnedqfjaihDFXvFixO5KZZNP5SkdE",
             authDomain: "mio-sistema-voto.firebaseapp.com",
@@ -93,15 +92,12 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // COSTANTI AMMINISTRATIVE
         const ADMIN_PWD = "docenti_admin_2024";
         
-        // STATO APPLICATIVO
         let currentUserData = null; 
         let cartVotes = { consiglio: null, consulta: null, classe: null };
         let activeAdminTab = 'config';
 
-        // IMPOSTAZIONI DINAMICHE CARICATE DA FIRESTORE (con fallback locali)
         let configElezioni = {
             consultaAttiva: true,
             rappresentantiAttivi: true,
@@ -130,7 +126,6 @@
             }
         };
 
-        // MODALE CUSTOMIZZATO DI NOTIFICA
         window.showNotification = function(title, message, type = 'info') {
             const modal = document.getElementById('custom-alert-modal');
             const iconContainer = document.getElementById('custom-alert-icon');
@@ -160,7 +155,6 @@
             document.getElementById('custom-alert-modal').classList.add('hidden');
         };
 
-        // Caricamento impostazioni iniziali da DB
         async function syncConfigFromDB() {
             try {
                 const configRef = doc(db, 'config', 'settings_v2');
@@ -168,7 +162,6 @@
                 if (snap.exists()) {
                     configElezioni = snap.data();
                 } else {
-                    // Crea prima inizializzazione se assente
                     await setDoc(configRef, configElezioni);
                 }
             } catch (err) {
@@ -187,7 +180,6 @@
             }
         }
 
-        // --- SISTEMA DI NAVIGAZIONE ---
         window.showPage = function(pageId) {
             const container = document.getElementById('app-container');
             container.innerHTML = '';
@@ -207,8 +199,6 @@
             lucide.createIcons();
         };
 
-        // --- SCHERMATE DI RENDER ---
-
         function renderLoading(container) {
             container.innerHTML = `
                 <div class="flex flex-col items-center justify-center h-80">
@@ -221,7 +211,6 @@
         function renderStudentLogin(container) {
             container.innerHTML = `
                 <div class="grid lg:grid-cols-12 gap-8 items-start">
-                    <!-- Colonna Sinistra: Normativa & Sicurezza -->
                     <div class="lg:col-span-7 bg-white p-6 rounded-2xl shadow-md border border-slate-200">
                         <div class="flex items-center space-x-3 mb-4 text-blue-900">
                             <i data-lucide="scale" class="w-6 h-6"></i>
@@ -245,7 +234,6 @@
                         </div>
                     </div>
 
-                    <!-- Colonna Destra: Inserimento Token Cabina -->
                     <div class="lg:col-span-5 bg-white p-8 rounded-2xl shadow-xl border border-slate-200 text-center">
                         <div class="mb-6">
                             <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-900">
@@ -384,7 +372,7 @@
                 <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 mb-6">
                     <div class="border-b pb-4 mb-6">
                         <h2 class="text-2xl font-black text-slate-800">Elezione Consiglio d'Istituto</h2>
-                        <p class="text-slate-500 text-sm mt-1">Seleziona la lista elettorale per esprimere il voto di lista. All'interno della stessa lista, puoi esprimere fino a unax di 2 preferenze per i candidati.</p>
+                        <p class="text-slate-500 text-sm mt-1">Seleziona la lista elettorale per esprimere il voto di lista. All'interno della stessa lista, puoi esprimere fino a un massimo di 2 preferenze per i candidati.</p>
                     </div>
                     
                     <div class="space-y-6" id="liste-consiglio-container">
@@ -529,7 +517,6 @@
                     <div class="space-y-6">
             `;
 
-            // 1. Riepilogo Consiglio d'Istituto
             if (cartVotes.consiglio) {
                 const listId = cartVotes.consiglio.listaId;
                 const listName = configElezioni.listeConsiglio[listId] ? configElezioni.listeConsiglio[listId].nome : "Lista Sconosciuta";
@@ -556,7 +543,6 @@
                 `;
             }
 
-            // 2. Riepilogo Consulta Provinciale
             if (configElezioni.consultaAttiva) {
                 if (cartVotes.consulta) {
                     const listId = cartVotes.consulta.listaId;
@@ -585,7 +571,6 @@
                 }
             }
 
-            // 3. Riepilogo Rappresentante di Classe
             if (configElezioni.rappresentantiAttivi) {
                 if (cartVotes.classe) {
                     html += `
@@ -659,8 +644,6 @@
             };
         }
 
-        // --- GESTIONE DEI DATI DI VOTO TEMPORANEI (CART) ---
-
         window.updatePrefConsiglio = function(selectedListaId) {
             for (const id of Object.keys(configElezioni.listeConsiglio)) {
                 document.getElementById(`pref-${id}`).classList.add('hidden');
@@ -720,8 +703,6 @@
             cartVotes.classe = val;
             showPage('dashboard');
         };
-
-        // --- LOGICA ELETTORICA DEL VOTO ---
 
         async function handleStudentLogin() {
             const token = document.getElementById('tokenInput').value.trim().toUpperCase();
@@ -787,7 +768,6 @@
                 showPage('loading');
                 
                 await runTransaction(db, async (transaction) => {
-                    // --- FASE 1: TUTTE LE LETTURE (READS) ---
                     const tokenDoc = await transaction.get(tokenRef);
                     if (!tokenDoc.exists() || tokenDoc.data().hasVoted) {
                         throw new Error("Il Token segreto è già stato consumato.");
@@ -808,7 +788,6 @@
                         classeDoc = await transaction.get(classeRef);
                     }
 
-                    // --- FASE 2: TUTTE LE SCRITTURE (WRITES) ---
                     transaction.update(tokenRef, { hasVoted: true, usedAt: new Date().toISOString() });
 
                     if (consiglioRef) {
@@ -862,11 +841,6 @@
                 showPage('dashboard');
             }
         };
-
-
-        // ==========================================
-        //  ADMIN PANEL: COMMISSIONE ELETTORALE
-        // ==========================================
 
         function renderAdminLogin(container) {
             container.innerHTML = `
@@ -1052,7 +1026,7 @@
                                     `).join('')}
                                 </div>
                                 <div class="p-3 bg-slate-50 rounded-xl border flex gap-2">
-                                    <input type="text" id="nuovaListaConsiglioNome" placeholder="Nome Nuova Lista Consiglio" class="flex-grow p-2.5 border rounded-xl text-xs outline-none">
+                                    <input type="text" id="nuovaListaConsiglioNome" placeholder="Nome Nuova Lista" class="flex-grow p-2.5 border rounded-xl text-xs outline-none">
                                     <button onclick="aggiungiLista('consiglio')" class="bg-blue-900 text-white px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Aggiungi Lista</button>
                                 </div>
                             </div>
@@ -1085,7 +1059,7 @@
                                     `).join('')}
                                 </div>
                                 <div class="p-3 bg-slate-50 rounded-xl border flex gap-2">
-                                    <input type="text" id="nuovaListaConsultaNome" placeholder="Nome Nuova Lista Consulta" class="flex-grow p-2.5 border rounded-xl text-xs outline-none">
+                                    <input type="text" id="nuovaListaConsultaNome" placeholder="Nome Nuova Lista" class="flex-grow p-2.5 border rounded-xl text-xs outline-none">
                                     <button onclick="aggiungiLista('consulta')" class="bg-indigo-900 text-white px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Aggiungi Lista</button>
                                 </div>
                             </div>
@@ -1232,7 +1206,6 @@
                 
                 showNotification("Generazione Completata", `Elettore generato con successo!\nNome: ${nome} ${cognome}\nToken: ${token}`, "success");
                 
-                // Pulisci i campi
                 document.getElementById('manNome').value = '';
                 document.getElementById('manCognome').value = '';
                 document.getElementById('manClasse').value = '';
@@ -1257,7 +1230,7 @@
                             <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> <span>Scarica Tabelle Excel</span>
                         </button>
                         <button onclick="esportaVerbalePDF()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-colors flex items-center space-x-1.5 shadow">
-                            <i data-lucide="file-text" class="w-4 h-4"></i> <span>Esporta Verbale Ufficiale</span>
+                            <i data-lucide="file-text" class="w-4 h-4"></i> <span>Esporta Verbale Ufficiale (O.M. 215/1991)</span>
                         </button>
                         <button onclick="loadRisultati()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-colors flex items-center space-x-1.5 shadow">
                             <i data-lucide="refresh-cw" class="w-4 h-4"></i> <span>Aggiorna Dati</span>
@@ -1270,10 +1243,6 @@
                 </div>
             `;
         }
-
-        // ==========================================
-        //  ELABORAZIONE E LOGICHE INTEGRATE (ADMIN)
-        // ==========================================
 
         window.processExcel = function() {
             const fileInput = document.getElementById('excelFile');
@@ -1354,7 +1323,6 @@
             reader.readAsArrayBuffer(fileInput.files[0]);
         };
 
-        // GENERATE REGISTRY PDF (BY CLASS)
         window.generatePDF = async function() {
             try {
                 const tokensRef = collection(db, "tokens");
@@ -1386,7 +1354,6 @@
                     if (!isFirst) docPDF.addPage();
                     isFirst = false;
 
-                    // Header di pagina
                     docPDF.setFontSize(11);
                     docPDF.setFont("Helvetica", "bold");
                     docPDF.text("ISTITUTO D'ISTRUZIONE SUPERIORE - VIA BRIANTINA 68 SEREGNO", 14, 15);
@@ -1411,9 +1378,9 @@
                         idx + 1,
                         s.cognome + " " + s.nome,
                         s.token,
-                        "", // Firma alunno
-                        "", // Ora consegna
-                        ""  // Firma referente
+                        "", 
+                        "", 
+                        ""  
                     ]);
 
                     docPDF.autoTable({
@@ -1451,19 +1418,17 @@
             }
         };
 
-        // SCRUTINIO REALTIME & CALCOLI
-        let globalScrutinioData = null; // Memorizza dati caricati
+        let globalScrutinioData = null; 
 
         window.loadRisultati = async function() {
             const container = document.getElementById('scrutinio-realtime-results');
             container.innerHTML = `<div class="text-center py-10"><div class="spinner inline-block"></div><p class="text-slate-500 font-bold mt-2">Raccolta dati in corso...</p></div>`;
 
             try {
-                // 1. Lettura Affluenza Totale
                 const tokSnap = await getDocs(collection(db, "tokens"));
                 let totalTokensCount = 0;
                 let usedTokensCount = 0;
-                let statTurnout = {}; // per class
+                let statTurnout = {}; 
 
                 tokSnap.forEach(d => {
                     const data = d.data();
@@ -1476,7 +1441,6 @@
                     if(data.hasVoted) statTurnout[key].voted++;
                 });
 
-                // 2. Lettura Consiglio
                 const consSnap = await getDocs(collection(db, "voti_consiglio"));
                 let votiConsiglio = {};
                 let votiValidiConsiglio = 0;
@@ -1485,21 +1449,18 @@
                     votiValidiConsiglio += d.data().count || 0;
                 });
 
-                // 3. Lettura Consulta
                 const consuSnap = await getDocs(collection(db, "voti_consulta"));
                 let votiConsulta = {};
                 consuSnap.forEach(d => {
                     votiConsulta[d.id] = d.data();
                 });
 
-                // 4. Lettura Rappresentanti di Classe
                 const classSnap = await getDocs(collection(db, "voti_classe"));
                 let votiClasse = {};
                 classSnap.forEach(d => {
                     votiClasse[d.id] = d.data();
                 });
 
-                // Calcolo Seggi Consiglio d'Istituto (OM 215/1991 - Quoziente e Resti Più Alti)
                 const SEGGI_DISPONIBILI_CONSIGLIO = 4;
                 let seggiAssegnatiConsiglio = {};
                 let restiConsiglio = [];
@@ -1520,7 +1481,6 @@
                         });
                     }
 
-                    // Ripartizione per resti più alti
                     restiConsiglio.sort((a, b) => b.resto - a.resto);
                     for (let i = 0; i < seggiRimasti; i++) {
                         if (restiConsiglio[i]) {
@@ -1529,7 +1489,6 @@
                     }
                 }
 
-                // Memorizza nello stato globale per export
                 globalScrutinioData = {
                     totalTokens: totalTokensCount,
                     usedTokens: usedTokensCount,
@@ -1540,10 +1499,8 @@
                     seggiAssegnatiConsiglio: seggiAssegnatiConsiglio
                 };
 
-                // COMPILAZIONE GRAFICA RISULTATI
                 let html = `
                     <div class="grid md:grid-cols-3 gap-6">
-                        <!-- Statistiche generali affluenza -->
                         <div class="bg-white p-5 rounded-2xl border shadow-sm md:col-span-1 flex flex-col justify-between">
                             <div>
                                 <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Statistiche Affluenza</h4>
@@ -1564,7 +1521,6 @@
                             </div>
                         </div>
 
-                        <!-- Scrutinio Consiglio d'Istituto -->
                         <div class="bg-white p-5 rounded-2xl border shadow-sm md:col-span-2">
                             <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2 flex justify-between">
                                 <span>Consiglio d'Istituto</span>
@@ -1609,7 +1565,6 @@
                         </div>
                     </div>
 
-                    <!-- Scrutinio Consulta Provinciale (Se Abilitata) -->
                     ${configElezioni.consultaAttiva ? `
                     <div class="bg-white p-5 rounded-2xl border shadow-sm">
                         <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2">Consulta Provinciale</h4>
@@ -1623,7 +1578,7 @@
                                         <ul class="text-xs space-y-1 mt-2 border-t pt-2">
                                             ${data.candidati.map(c => `
                                                 <li class="flex justify-between">
-                                                    <span>${c.nome}</span>
+                                                    <span>${c}</span>
                                                     <span class="font-bold text-slate-950">${dbData.preferenze[c] || 0} preferenze</span>
                                                 </li>
                                             `).join('')}
@@ -1635,7 +1590,6 @@
                     </div>
                     ` : ''}
 
-                    <!-- Risultati per ciascuna classe (Rappresentanti di Classe) -->
                     ${configElezioni.rappresentantiAttivi ? `
                     <div class="bg-white p-5 rounded-2xl border shadow-sm">
                         <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2">Voti Rappresentanti di Classe (Scrutinio Interno)</h4>
@@ -1670,7 +1624,6 @@
             }
         };
 
-        // EXPORT EXCEL DOCUMENT (SHEETJS)
         window.esportaExcelCompleto = function() {
             if(!globalScrutinioData) {
                 showNotification("Azione Necessaria", "Nessun dato scrutinato disponibile. Premi prima 'Aggiorna Dati'.", "error");
@@ -1680,7 +1633,6 @@
             try {
                 const wb = XLSX.utils.book_new();
 
-                // FOGLIO 1: Affluenza
                 const rowsAffluenza = [
                     ["STATISTICHE GENERALI ELETTORALI"],
                     ["Elettori Iscritti", globalScrutinioData.totalTokens],
@@ -1699,7 +1651,6 @@
                 const wsAffluenza = XLSX.utils.aoa_to_sheet(rowsAffluenza);
                 XLSX.utils.book_append_sheet(wb, wsAffluenza, "Affluenza");
 
-                // FOGLIO 2: Consiglio d'Istituto
                 const rowsConsiglio = [
                     ["RISULTATI CONSIGLIO D'ISTITUTO (O.M. 215/1991)"],
                     ["Lista", "Voti di Lista", "Seggi Assegnati", "Candidato", "Preferenze"]
@@ -1722,7 +1673,6 @@
                 const wsConsiglio = XLSX.utils.aoa_to_sheet(rowsConsiglio);
                 XLSX.utils.book_append_sheet(wb, wsConsiglio, "Consiglio d'Istituto");
 
-                // FOGLIO 3: Consulta Provinciale
                 const rowsConsulta = [
                     ["RISULTATI CONSULTA PROVINCIALE"],
                     ["Lista", "Voti di Lista", "Candidato", "Preferenze"]
@@ -1743,7 +1693,6 @@
                 const wsConsulta = XLSX.utils.aoa_to_sheet(rowsConsulta);
                 XLSX.utils.book_append_sheet(wb, wsConsulta, "Consulta Provinciale");
 
-                // FOGLIO 4: Rappresentanti di Classe
                 const rowsRappr = [
                     ["SCRUTINIO RAPPRESENTANTI DI CLASSE"],
                     ["Classe/Sezione", "Studente Votato", "Voti Ricevuti"]
@@ -1771,7 +1720,6 @@
             }
         };
 
-        // EXPORT PDF VERBALE (OFFICIAL)
         window.esportaVerbalePDF = function() {
             if(!globalScrutinioData) {
                 showNotification("Azione Necessaria", "Nessun dato scrutinato disponibile. Premi prima 'Aggiorna Dati'.", "error");
@@ -1781,37 +1729,68 @@
             try {
                 const { jsPDF } = window.jspdf;
                 const docPDF = new jsPDF();
-
-                // Intestazione
+                
+                // PAGINA 1: VERBALE GENERALE DI SEZIONE E RIUNIONE DI SCRUTINIO
                 docPDF.setFontSize(14);
                 docPDF.setFont("Helvetica", "bold");
                 docPDF.text("ISTITUTO D'ISTRUZIONE SUPERIORE - VIA BRIANTINA 68 SEREGNO", 14, 20);
                 
-                docPDF.setFontSize(11);
+                docPDF.setFontSize(10);
                 docPDF.setFont("Helvetica", "normal");
                 docPDF.text("Elezioni Organi Collegiali - Rappresentanza Studentesca", 14, 26);
-                docPDF.text("Anno Scolastico corrente - O.M. 215 del 18 Dicembre 1991", 14, 31);
+                docPDF.text("Ai sensi dell'Ordinanza Ministeriale n. 215 del 18 Dicembre 1991 e s.m.i.", 14, 31);
 
                 docPDF.setFontSize(12);
                 docPDF.setFont("Helvetica", "bold");
-                docPDF.text("VERBALE DELLE OPERAZIONI DI SCRUTINIO E ASSEGNAZIONE SEGGI", 14, 42);
+                docPDF.text("1. VERBALE DI RIUNIONE DI SEZIONE E INSEDIAMENTO COMMISSIONE", 14, 42);
 
-                // Dati generali
-                docPDF.setFontSize(10);
+                docPDF.setFontSize(9.5);
                 docPDF.setFont("Helvetica", "normal");
-                let y = 48;
-                docPDF.text(`La Commissione Elettorale d'Istituto, riunitasi per effettuare le operazioni di scrutinio e validazione del seggio digitale, attesta i seguenti risultati d'affluenza complessiva:`, 14, y, { maxWidth: 180 });
-                
-                y += 12;
-                docPDF.text(`- Elettori Iscritti in elenco: ${globalScrutinioData.totalTokens}`, 14, y);
-                docPDF.text(`- Elettori che hanno espresso il voto: ${globalScrutinioData.usedTokens}`, 14, y + 5);
-                docPDF.text(`- Percentuale affluenza alle urne: ${((globalScrutinioData.usedTokens / globalScrutinioData.totalTokens) * 100).toFixed(2)}%`, 14, y + 10);
+                let textIntro = "Oggi, Seregno (MB), presso i locali della sede scolastica, si è costituita la Commissione Elettorale d'Istituto incaricata di sovrintendere, convalidare ed elaborare lo scrutinio elettronico finale. La Commissione prende atto del corretto funzionamento dell'urna elettronica e delle logiche di blindatura crittografica monouso volte a garantire l'assoluto anonimato del voto.";
+                docPDF.text(textIntro, 14, 48, { maxWidth: 182, align: 'justify' });
 
-                // Tabella Consiglio d'Istituto
-                y += 20;
+                // Tabella Commissione Elettorale
+                const commRows = configElezioni.commissione.map((c, i) => [i + 1, c, "Componente Commissione Elettorale"]);
+                docPDF.autoTable({
+                    startY: 72,
+                    head: [['N.', 'Nome e Cognome', 'Ruolo']],
+                    body: commRows,
+                    theme: 'striped',
+                    headStyles: { fillColor: [15, 23, 42] },
+                    styles: { fontSize: 8.5 }
+                });
+
+                let y = docPDF.lastAutoTable.finalY + 12;
                 docPDF.setFont("Helvetica", "bold");
-                docPDF.text("1. RISULTATI ELEZIONE CONSIGLIO D'ISTITUTO & ATTRIBUZIONE SEGGI", 14, y);
+                docPDF.text("Dati d'Affluenza e Partecipazione Complessivi:", 14, y);
                 docPDF.setFont("Helvetica", "normal");
+                
+                docPDF.text(`- Totale Elettori aventi diritto iscritti: ${globalScrutinioData.totalTokens}`, 14, y + 6);
+                docPDF.text(`- Totale Votanti effettivi (Token Consumati): ${globalScrutinioData.usedTokens}`, 14, y + 11);
+                docPDF.text(`- Turnout percentuale finale: ${((globalScrutinioData.usedTokens / globalScrutinioData.totalTokens) * 100).toFixed(2)} %`, 14, y + 16);
+
+                // Firma Commissione di fine Pagina 1
+                docPDF.setFontSize(9);
+                docPDF.setFont("Helvetica", "bold");
+                docPDF.text("Firme per Convalida ed Insediamento Seggio Generale:", 14, y + 30);
+                let fY = y + 36;
+                configElezioni.commissione.forEach(c => {
+                    docPDF.text(`- ${c} : __________________________________`, 14, fY);
+                    fY += 7.5;
+                });
+
+                // PAGINA 2: VERBALE CONSIGLIO D'ISTITUTO (CALCOLO SEGGI)
+                docPDF.addPage();
+                docPDF.setFontSize(14);
+                docPDF.setFont("Helvetica", "bold");
+                docPDF.text("ISTITUTO D'ISTRUZIONE SUPERIORE - VIA BRIANTINA 68 SEREGNO", 14, 20);
+                
+                docPDF.setFontSize(12);
+                docPDF.text("2. VERBALE DI SCRUTINIO ED ATTRIBUZIONE SEGGI - CONSIGLIO D'ISTITUTO", 14, 30);
+
+                docPDF.setFontSize(9.5);
+                docPDF.setFont("Helvetica", "normal");
+                docPDF.text("Si procede all'attribuzione dei 4 seggi spettanti alla componente studentesca all'interno del Consiglio d'Istituto, applicando l'algoritmo elettorale dei quozienti interi e dei resti più alti:", 14, 36, { maxWidth: 182 });
 
                 const dataConsiglioRows = [];
                 for (const [idLista, data] of Object.entries(configElezioni.listeConsiglio)) {
@@ -1824,7 +1803,7 @@
                     })).sort((a, b) => b.voti - a.voti);
 
                     candOrdinati.forEach((c, idx) => {
-                        const statusEletto = idx < seggi && c.voti > 0 ? "ELETTO" : "Non eletto";
+                        const statusEletto = idx < seggi && c.voti > 0 ? "ELETTO" : "Non eletto / Riserva";
                         if (idx === 0) {
                             dataConsiglioRows.push([data.nome, dbData.count, seggi, c.nome, c.voti, statusEletto]);
                         } else {
@@ -1834,32 +1813,141 @@
                 }
 
                 docPDF.autoTable({
-                    startY: y + 4,
-                    head: [['Lista', 'Voti di Lista', 'Seggi', 'Candidato', 'Preferenze', 'Stato']],
+                    startY: 48,
+                    head: [['Lista', 'Voti Lista', 'Seggi', 'Candidato', 'Preferenze', 'Stato Proclamazione']],
                     body: dataConsiglioRows,
                     theme: 'grid',
                     headStyles: { fillColor: [30, 41, 59] },
+                    styles: { fontSize: 8 }
+                });
+
+                let lastY = docPDF.lastAutoTable.finalY + 12;
+                docPDF.text("La commissione dichiara regolarmente eletti i candidati contrassegnati dallo stato 'ELETTO'.", 14, lastY);
+                docPDF.text("Firme dei componenti per approvazione calcolo seggi:", 14, lastY + 10);
+                fY = lastY + 16;
+                configElezioni.commissione.forEach(c => {
+                    docPDF.text(`- ${c} : __________________________________`, 14, fY);
+                    fY += 7.5;
+                });
+
+                // PAGINA 3: VERBALE CONSULTA PROVINCIALE
+                docPDF.addPage();
+                docPDF.setFontSize(14);
+                docPDF.setFont("Helvetica", "bold");
+                docPDF.text("ISTITUTO D'ISTRUZIONE SUPERIORE - VIA BRIANTINA 68 SEREGNO", 14, 20);
+                
+                docPDF.setFontSize(12);
+                docPDF.text("3. VERBALE DI SCRUTINIO E PREFERENZE - CONSULTA PROVINCIALE", 14, 30);
+
+                docPDF.setFontSize(9.5);
+                docPDF.setFont("Helvetica", "normal");
+                docPDF.text("Risultati dello scrutinio relativo all'elezione dei rappresentanti degli studenti alla Consulta Provinciale. Viene registrato il voto di lista unificato ed i voti di preferenza nominale espressi:", 14, 36, { maxWidth: 182 });
+
+                const dataConsultaRows = [];
+                for (const [idLista, data] of Object.entries(configElezioni.listeConsulta)) {
+                    const dbData = globalScrutinioData.votiConsulta[idLista] || { count: 0, preferenze: {} };
+                    
+                    data.candidati.forEach((c, idx) => {
+                        const v = dbData.preferenze[c] || 0;
+                        if (idx === 0) {
+                            dataConsultaRows.push([data.nome, dbData.count, c, v]);
+                        } else {
+                            dataConsultaRows.push(["", "", c, v]);
+                        }
+                    });
+                }
+
+                docPDF.autoTable({
+                    startY: 48,
+                    head: [['Lista Consulta', 'Voti di Lista', 'Candidato', 'Preferenze nominali']],
+                    body: dataConsultaRows,
+                    theme: 'grid',
+                    headStyles: { fillColor: [79, 70, 229] }, 
                     styles: { fontSize: 8.5 }
                 });
 
-                // Sezione firme dei membri commissione
-                let finalY = docPDF.lastAutoTable.finalY + 15;
-                if(finalY > 230) {
-                    docPDF.addPage();
-                    finalY = 25;
-                }
-
-                docPDF.setFont("Helvetica", "bold");
-                docPDF.text("COMPONENTE LA COMMISSIONE ELETTORALE (Firma per convalida)", 14, finalY);
-                docPDF.setFont("Helvetica", "normal");
-
-                let fY = finalY + 10;
+                lastY = docPDF.lastAutoTable.finalY + 12;
+                docPDF.text("Firme dei componenti per convalida scrutinio Consulta Provinciale:", 14, lastY);
+                fY = lastY + 18;
                 configElezioni.commissione.forEach(c => {
                     docPDF.text(`- ${c} : __________________________________`, 14, fY);
-                    fY += 8;
+                    fY += 7.5;
                 });
 
-                docPDF.save("Verbale_Ufficiale_Elezioni.pdf");
+                // PAGINA 4+: VERBALI DELLE SINGOLE CLASSI (RAPPRESENTANTI DI CLASSE)
+                if (configElezioni.rappresentantiAttivi) {
+                    Object.entries(globalScrutinioData.statTurnout).forEach(([classKey, item]) => {
+                        const classFormat = classKey.replace('_', ' ');
+                        
+                        docPDF.addPage();
+                        docPDF.setFontSize(14);
+                        docPDF.setFont("Helvetica", "bold");
+                        docPDF.text("ISTITUTO D'ISTRUZIONE SUPERIORE - VIA BRIANTINA 68 SEREGNO", 14, 20);
+                        
+                        docPDF.setFontSize(12);
+                        docPDF.text(`VERBALE DI CLASSE - RAPPRESENTANTI DI CLASSE: ${classFormat}`, 14, 30);
+
+                        docPDF.setFontSize(9.5);
+                        docPDF.setFont("Helvetica", "normal");
+                        docPDF.text(`Quadro d'affluenza per la sezione corrente:`, 14, 38);
+                        docPDF.text(`- Alunni Iscritti: ${item.total}`, 14, 44);
+                        docPDF.text(`- Alunni Votanti effettivi: ${item.voted}`, 14, 49);
+                        docPDF.text(`- Percentuale affluenza di classe: ${item.total > 0 ? ((item.voted / item.total) * 100).toFixed(2) : '0.00'} %`, 14, 54);
+
+                        docPDF.setFont("Helvetica", "bold");
+                        docPDF.text("Scrutinio interno preferenze Rappresentanti di Classe:", 14, 64);
+                        docPDF.setFont("Helvetica", "normal");
+
+                        const classVotesObj = globalScrutinioData.votiClasse[classKey] || {};
+                        const sortedCands = Object.entries(classVotesObj).sort((a, b) => b[1] - a[1]);
+
+                        const classTableRows = sortedCands.map(([name, votes], i) => [
+                            i + 1,
+                            name.toUpperCase(),
+                            votes,
+                            i === 0 && votes > 0 ? "PRIMO ELETTO" : (i === 1 && votes > 0 ? "SECONDO ELETTO" : "Non eletto / Riserva")
+                        ]);
+
+                        if (classTableRows.length === 0) {
+                            classTableRows.push(["-", "NESSUNA PREFERENZA ESPRESSA (SCHEDA BIANCA)", "0", "-"]);
+                        }
+
+                        docPDF.autoTable({
+                            startY: 68,
+                            head: [['Pos.', 'Candidato Scritto dagli Studenti', 'Voti Ricevuti', 'Esito']],
+                            body: classTableRows,
+                            theme: 'grid',
+                            headStyles: { fillColor: [147, 51, 234] }, 
+                            styles: { fontSize: 8.5 }
+                        });
+
+                        let blockY = docPDF.lastAutoTable.finalY + 12;
+                        if(blockY > 210) {
+                            docPDF.addPage();
+                            blockY = 30;
+                        }
+
+                        docPDF.setFillColor(248, 250, 252);
+                        docPDF.rect(14, blockY, 182, 42, "F");
+                        docPDF.setDrawColor(226, 232, 240);
+                        docPDF.rect(14, blockY, 182, 42, "D");
+
+                        docPDF.setFontSize(8.5);
+                        docPDF.setFont("Helvetica", "bold");
+                        docPDF.text("REGISTRO DI GESTIONE PLICO E SEGGIO DI CLASSE (A cura del Coordinatore/Somministratore)", 18, blockY + 6);
+                        docPDF.setFont("Helvetica", "normal");
+                        
+                        docPDF.text("- Orario di ricezione plico contenente i tagliandini: ____ : ____", 18, blockY + 13);
+                        docPDF.text("- Orario di effettiva apertura del voto digitale di classe: ____ : ____", 18, blockY + 19);
+                        docPDF.text("- Orario di chiusura operazioni di voto e riconsegna: ____ : ____", 18, blockY + 25);
+                        
+                        docPDF.text("Firma del Docente Somministratore 1: ____________________________", 18, blockY + 33);
+                        docPDF.text("Firma del Docente Somministratore 2: ____________________________", 112, blockY + 33);
+                    });
+                }
+
+                docPDF.save("Verbale_Ufficiale_Elezioni_Completo.pdf");
+                showNotification("Esportazione Completata", "Il pacchetto di verbali istituzionale completo (PDF) è stato generato e scaricato correttamente.", "success");
 
             } catch (err) {
                 console.error(err);
@@ -1867,7 +1955,6 @@
             }
         };
 
-        // --- INIZIALIZZAZIONE AVVIO CABINA ---
         window.onload = async () => {
             showPage('loading');
             await syncConfigFromDB();
