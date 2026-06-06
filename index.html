@@ -59,6 +59,33 @@
         </div>
     </div>
 
+    <!-- Modal di Conferma Distruttiva (Svuotamento Database) -->
+    <div id="custom-confirm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full mx-4 border border-red-100 transform scale-95 transition-all">
+            <div class="flex items-center space-x-3 mb-4 text-red-600">
+                <div class="p-2 bg-red-100 rounded-full">
+                    <i data-lucide="shield-alert" class="w-6 h-6"></i>
+                </div>
+                <h3 class="text-xl font-bold">Azione Altamente Distruttiva</h3>
+            </div>
+            <p class="text-slate-600 text-sm mb-4">
+                Attenzione: questa operazione cancellerà irrevocabilmente tutti i voti espressi, i token degli studenti e i dati di scrutinio del database cloud.
+            </p>
+            <p class="text-xs text-red-700 bg-red-50 p-2.5 rounded-lg border border-red-100 font-semibold mb-6">
+                Digita la password amministrativa per autorizzare lo svuotamento completo delle raccolte.
+            </p>
+            <input type="password" id="confirmWipePassword" placeholder="Password Amministratore" class="w-full p-3 border rounded-xl mb-6 text-center text-sm outline-none focus:ring-2 focus:ring-red-200 focus:border-red-500">
+            <div class="flex justify-end space-x-3">
+                <button onclick="closeConfirmModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-5 rounded-xl text-sm transition-colors">
+                    Annulla
+                </button>
+                <button onclick="executeDatabaseWipe()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-5 rounded-xl text-sm shadow-md transition-colors">
+                    Svuota Database
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer di Conformità Legale -->
     <footer class="bg-slate-900 text-slate-400 p-6 text-center text-xs border-t border-slate-800">
         <div class="container mx-auto space-y-2">
@@ -98,6 +125,7 @@
         let cartVotes = { consiglio: null, consulta: null, classe: null };
         let activeAdminTab = 'config';
 
+        // Configurazione delle liste di default caricate asincronamente
         let configElezioni = {
             consultaAttiva: true,
             rappresentantiAttivi: true,
@@ -126,6 +154,7 @@
             }
         };
 
+        // --- GESTIONE NOTIFICHE CUSTOM (Senza Alert) ---
         window.showNotification = function(title, message, type = 'info') {
             const modal = document.getElementById('custom-alert-modal');
             const iconContainer = document.getElementById('custom-alert-icon');
@@ -155,6 +184,7 @@
             document.getElementById('custom-alert-modal').classList.add('hidden');
         };
 
+        // --- SINCRONIZZAZIONE CONFIGURAZIONE CON FIRESTORE ---
         async function syncConfigFromDB() {
             try {
                 const configRef = doc(db, 'config', 'settings_v2');
@@ -203,7 +233,7 @@
             container.innerHTML = `
                 <div class="flex flex-col items-center justify-center h-80">
                     <div class="spinner mb-4"></div>
-                    <p class="text-slate-600 font-bold text-lg">Inizializzazione del protocollo di sicurezza...</p>
+                    <p class="text-slate-600 font-bold text-lg">Caricamento in corso...</p>
                 </div>
             `;
         }
@@ -644,6 +674,7 @@
             };
         }
 
+        // --- GESTIONE DEI DATI TEMPORANEI (CARRELLO) ---
         window.updatePrefConsiglio = function(selectedListaId) {
             for (const id of Object.keys(configElezioni.listeConsiglio)) {
                 document.getElementById(`pref-${id}`).classList.add('hidden');
@@ -764,6 +795,9 @@
                 classeRef = doc(db, 'voti_classe', targetClassKey);
             }
 
+            // Dettaglio analitico per singolo Token - Anonimato protetto sul nome ma tracciato per token
+            const ricognizioneRef = doc(db, 'schede_votate', currentUserData.id);
+
             try {
                 showPage('loading');
                 
@@ -788,8 +822,16 @@
                         classeDoc = await transaction.get(classeRef);
                     }
 
-                    transaction.update(tokenRef, { hasVoted: true, usedAt: new Date().toISOString() });
+                    // Aggiorniamo il Token
+                    transaction.update(tokenRef, { 
+                        hasVoted: true, 
+                        votedConsiglio: !!cartVotes.consiglio,
+                        votedConsulta: !!cartVotes.consulta && configElezioni.consultaAttiva,
+                        votedClasse: !!cartVotes.classe && configElezioni.rappresentantiAttivi,
+                        usedAt: new Date().toISOString() 
+                    });
 
+                    // Incremento voti Consiglio
                     if (consiglioRef) {
                         let payload = { count: 1, preferenze: {} };
                         if (consiglioDoc && consiglioDoc.exists()) {
@@ -804,6 +846,7 @@
                         transaction.set(consiglioRef, payload, { merge: true });
                     }
 
+                    // Incremento voti Consulta
                     if (consultaRef) {
                         let payload = { count: 1, preferenze: {} };
                         if (consultaDoc && consultaDoc.exists()) {
@@ -818,6 +861,7 @@
                         transaction.set(consultaRef, payload, { merge: true });
                     }
 
+                    // Incremento voti Classe (Rappresentanti di Classe)
                     if (classeRef) {
                         let payload = {};
                         if (classeDoc && classeDoc.exists()) {
@@ -829,6 +873,26 @@
 
                         transaction.set(classeRef, payload);
                     }
+
+                    // Salvataggio della ricognizione analitica
+                    transaction.set(ricognizioneRef, {
+                        token: currentUserData.id,
+                        classe: currentUserData.classe,
+                        sezione: currentUserData.sezione,
+                        indirizzo: currentUserData.indirizzo || "GENERALE",
+                        votoConsiglio: cartVotes.consiglio ? {
+                            listaId: cartVotes.consiglio.listaId,
+                            nomeLista: configElezioni.listeConsiglio[cartVotes.consiglio.listaId]?.nome || 'N/A',
+                            preferenze: cartVotes.consiglio.preferenze
+                        } : null,
+                        votoConsulta: (cartVotes.consulta && configElezioni.consultaAttiva) ? {
+                            listaId: cartVotes.consulta.listaId,
+                            nomeLista: configElezioni.listeConsulta[cartVotes.consulta.listaId]?.nome || 'N/A',
+                            preferenze: cartVotes.consulta.preferenze
+                        } : null,
+                        votoClasse: (cartVotes.classe && configElezioni.rappresentantiAttivi) ? cartVotes.classe.toUpperCase() : null,
+                        timestamp: new Date().toISOString()
+                    });
                 });
 
                 currentUserData = null;
@@ -842,6 +906,7 @@
             }
         };
 
+        // --- ACCESSO AREA RISERVATA COMMISSIONE ---
         function renderAdminLogin(container) {
             container.innerHTML = `
                 <div class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-xl border border-slate-200 mt-10">
@@ -883,10 +948,11 @@
 
                 <!-- Tabs di navigazione Admin -->
                 <div class="flex border-b border-slate-200 mb-6 overflow-x-auto">
-                    <button onclick="switchAdminTab('config')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors ${activeAdminTab === 'config' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">1. Configurazione & Commissione</button>
-                    <button onclick="switchAdminTab('liste')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors ${activeAdminTab === 'liste' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">2. Configura Liste & Candidati</button>
-                    <button onclick="switchAdminTab('elettori')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors ${activeAdminTab === 'elettori' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">3. Generazione Credenziali (Studenti)</button>
-                    <button onclick="switchAdminTab('verbali')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors ${activeAdminTab === 'verbali' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">4. Scrutinio & Verbali (O.M. 215/1991)</button>
+                    <button onclick="switchAdminTab('config')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${activeAdminTab === 'config' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">1. Configurazione & Commissione</button>
+                    <button onclick="switchAdminTab('liste')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${activeAdminTab === 'liste' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">2. Configura Liste & Candidati</button>
+                    <button onclick="switchAdminTab('elettori')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${activeAdminTab === 'elettori' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">3. Generazione Credenziali (Studenti)</button>
+                    <button onclick="switchAdminTab('verbali')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${activeAdminTab === 'verbali' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">4. Scrutinio & Verbali (O.M. 215/1991)</button>
+                    <button onclick="switchAdminTab('charts')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${activeAdminTab === 'charts' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">5. Grafici & Statistiche</button>
                 </div>
 
                 <div id="admin-tab-content">
@@ -913,6 +979,8 @@
                 renderElettoriTab(content);
             } else if (activeAdminTab === 'verbali') {
                 renderVerbaliTab(content);
+            } else if (activeAdminTab === 'charts') {
+                renderChartsTab(content);
             }
             lucide.createIcons();
         }
@@ -959,6 +1027,21 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Area di Pericolo: Svuotamento Database -->
+                <div class="mt-8 bg-red-50 border border-red-200 p-6 rounded-2xl shadow-md">
+                    <div class="flex items-center space-x-3 text-red-900 mb-2">
+                        <i data-lucide="alert-triangle" class="w-6 h-6 text-red-600"></i>
+                        <h3 class="text-lg font-extrabold">Zona di Pericolo - Ripristino Elezioni</h3>
+                    </div>
+                    <p class="text-sm text-red-700 mb-4">
+                        Questa operazione cancellerà permanentemente tutti i voti espressi, i token d'accesso degli studenti e tutte le ricognizioni di scrutinio. Utilizzare questa funzione solo per riavviare o azzerare l'anno scolastico.
+                    </p>
+                    <button onclick="openConfirmModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl text-sm shadow transition-all flex items-center space-x-2">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        <span>Svuota il Database ed Azzera Elezioni</span>
+                    </button>
+                </div>
             `;
         }
 
@@ -981,6 +1064,56 @@
         window.rimuoviMembro = function(index) {
             configElezioni.commissione.splice(index, 1);
             renderActiveAdminTab();
+        };
+
+        // --- GESTIONE DEI MODAL DI CONFERMA PER RIPRISTINO ---
+        window.openConfirmModal = function() {
+            document.getElementById('confirmWipePassword').value = '';
+            document.getElementById('custom-confirm-modal').classList.remove('hidden');
+            lucide.createIcons();
+        };
+
+        window.closeConfirmModal = function() {
+            document.getElementById('custom-confirm-modal').classList.add('hidden');
+        };
+
+        window.executeDatabaseWipe = async function() {
+            const pwd = document.getElementById('confirmWipePassword').value;
+            if (pwd !== ADMIN_PWD) {
+                showNotification("Autorizzazione fallita", "La password inserita non è corretta.", "error");
+                return;
+            }
+
+            closeConfirmModal();
+            showPage('loading');
+
+            try {
+                const collectionsToWipe = ['tokens', 'voti_consiglio', 'voti_consulta', 'voti_classe', 'schede_votate'];
+                
+                for (const colName of collectionsToWipe) {
+                    const snap = await getDocs(collection(db, colName));
+                    let batch = writeBatch(db);
+                    let count = 0;
+                    
+                    snap.forEach(docObj => {
+                        batch.delete(doc(db, colName, docObj.id));
+                        count++;
+                    });
+                    
+                    if (count > 0) {
+                        await batch.commit();
+                    }
+                }
+
+                await saveConfigToDB();
+                showNotification("Database Azzerato", "Tutti i dati sono stati rimossi con successo dal database cloud.", "success");
+                showPage('adminPanel');
+
+            } catch (err) {
+                console.error("Errore svuotamento:", err);
+                showNotification("Errore Ripristino", "Impossibile completare lo svuotamento del database.", "error");
+                showPage('adminPanel');
+            }
         };
 
         function renderListeTab(container) {
@@ -1223,11 +1356,11 @@
                 <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
                         <h3 class="text-lg font-extrabold text-slate-800">Scrutinio in Tempo Reale & Algoritmi Elettorali</h3>
-                        <p class="text-xs text-slate-500">Le sezioni mostrano i risultati anonimi dell'urna, applicando la ripartizione dei seggi.</p>
+                        <p class="text-xs text-slate-500">Le sezioni mostrano i risultati anonimi dell'urna, applicando la ripartizione dei seggi e la ricognizione analitica per classe.</p>
                     </div>
-                    <div class="flex gap-2">
+                    <div class="flex gap-2 flex-wrap">
                         <button onclick="esportaExcelCompleto()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-colors flex items-center space-x-1.5 shadow">
-                            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> <span>Scarica Tabelle Excel</span>
+                            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> <span>Scarica Tabelle Excel Avanzate</span>
                         </button>
                         <button onclick="esportaVerbalePDF()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-colors flex items-center space-x-1.5 shadow">
                             <i data-lucide="file-text" class="w-4 h-4"></i> <span>Esporta Verbale Ufficiale (O.M. 215/1991)</span>
@@ -1420,25 +1553,151 @@
 
         let globalScrutinioData = null; 
 
+        // --- FUNZIONE DI RISOLUZIONE EX-AEQUO CON SORTEGGIO DETERMINISTICO COERENTE ---
+        function determinizzaElettiClasse(classKey, votiClasseObj, iscrittiClasse = 0) {
+            let list = Object.entries(votiClasseObj || {})
+                .filter(([name, votes]) => name.trim() !== "" && votes > 0)
+                .map(([name, votes]) => ({ name: name.toUpperCase(), votes: votes }));
+            
+            // Ordina per voti decrescenti
+            list.sort((a, b) => b.votes - a.votes);
+            
+            let eletti = [];
+            let dettagliSorteggio = "";
+
+            if (list.length === 0) {
+                return { eletti, list, dettagliSorteggio };
+            }
+
+            // Funzione interna per generare un numero pseudorandomico basato su un seme (per evitare che cambi a ogni rendering)
+            function getSeededRandom(seed) {
+                let hash = 0;
+                for (let i = 0; i < seed.length; i++) {
+                    hash = seed.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                return Math.abs(Math.sin(hash)) % 1;
+            }
+
+            let seed = classKey + "_draw_v2026";
+            let rand = getSeededRandom(seed);
+
+            let v0 = list[0].votes;
+            let tiedForFirst = list.filter(c => c.votes === v0);
+
+            if (tiedForFirst.length >= 3) {
+                // Esempio: Top 3 tied A:5, B:5, C:5. Ne servono 2 per sorteggio
+                dettagliSorteggio = `Rilevata parità di votazione ex-aequo (voti: ${v0}) tra ${tiedForFirst.length} candidati: ${tiedForFirst.map(c=>c.name).join(', ')}. Si procede a sorteggio per estrarre 2 eletti. `;
+                
+                // Shuffle tied candidates using seeded random
+                let shuffled = [...tiedForFirst];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(getSeededRandom(seed + "_" + i) * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                
+                eletti.push({ name: shuffled[0].name, votes: shuffled[0].votes, sorteggiato: true });
+                eletti.push({ name: shuffled[1].name, votes: shuffled[1].votes, sorteggiato: true });
+                
+                dettagliSorteggio += `Estratti ed eletti gli alunni: ${shuffled[0].name} e ${shuffled[1].name}.`;
+            } else if (tiedForFirst.length === 2) {
+                // Esattamente due candidati con lo stesso punteggio massimo. Entrambi eletti.
+                eletti.push({ name: tiedForFirst[0].name, votes: tiedForFirst[0].votes, sorteggiato: false });
+                eletti.push({ name: tiedForFirst[1].name, votes: tiedForFirst[1].votes, sorteggiato: false });
+            } else if (tiedForFirst.length === 1) {
+                // Primo eletto è indiscusso
+                eletti.push({ name: list[0].name, votes: list[0].votes, sorteggiato: false });
+                
+                // Ora controlliamo il secondo posto
+                if (list.length >= 2) {
+                    let v1 = list[1].votes;
+                    let tiedForSecond = list.filter(c => c.votes === v1);
+                    if (tiedForSecond.length >= 2) {
+                        dettagliSorteggio = `Rilevata parità ex-aequo per il secondo seggio (voti: ${v1}) tra candidati: ${tiedForSecond.map(c=>c.name).join(', ')}. Si procede a sorteggio per estrarre 1 eletto. `;
+                        
+                        let indexEstrat = Math.floor(rand * tiedForSecond.length);
+                        let estratto = tiedForSecond[indexEstrat];
+                        
+                        eletti.push({ name: estratto.name, votes: estratto.votes, sorteggiato: true });
+                        dettagliSorteggio += `Estratto ed eletto l'alunno: ${estratto.name}.`;
+                    } else {
+                        // Secondo eletto indiscusso
+                        eletti.push({ name: list[1].name, votes: list[1].votes, sorteggiato: false });
+                    }
+                }
+            }
+
+            return { eletti, list, dettagliSorteggio };
+        }
+
         window.loadRisultati = async function() {
             const container = document.getElementById('scrutinio-realtime-results');
-            container.innerHTML = `<div class="text-center py-10"><div class="spinner inline-block"></div><p class="text-slate-500 font-bold mt-2">Raccolta dati in corso...</p></div>`;
+            container.innerHTML = `<div class="text-center py-10"><div class="spinner inline-block"></div><p class="text-slate-500 font-bold mt-2">Raccolta dati e ricompilazione statistiche...</p></div>`;
 
             try {
+                // Lettura dei token per determinare l'affluenza reale e scorporata
                 const tokSnap = await getDocs(collection(db, "tokens"));
                 let totalTokensCount = 0;
                 let usedTokensCount = 0;
                 let statTurnout = {}; 
+
+                // Affluenza differenziata
+                let turnoutConsiglio = 0;
+                let turnoutConsulta = 0;
+                let turnoutClasse = 0;
 
                 tokSnap.forEach(d => {
                     const data = d.data();
                     totalTokensCount++;
                     if(data.hasVoted) usedTokensCount++;
 
+                    // Incremento dell'affluenza scorporata (canali differenziati)
+                    if (data.votedConsiglio) turnoutConsiglio++;
+                    if (data.votedConsulta) turnoutConsulta++;
+                    if (data.votedClasse) turnoutClasse++;
+
                     const key = `${data.classe}_${data.sezione}`.toUpperCase();
-                    if(!statTurnout[key]) statTurnout[key] = { total: 0, voted: 0 };
+                    if(!statTurnout[key]) {
+                        statTurnout[key] = { 
+                            total: 0, 
+                            voted: 0,
+                            votedConsiglio: 0,
+                            votedConsulta: 0,
+                            votedClasse: 0
+                        };
+                    }
                     statTurnout[key].total++;
                     if(data.hasVoted) statTurnout[key].voted++;
+                    if(data.votedConsiglio) statTurnout[key].votedConsiglio++;
+                    if(data.votedConsulta) statTurnout[key].votedConsulta++;
+                    if(data.votedClasse) statTurnout[key].votedClasse++;
+                });
+
+                // Lettura schede dettagliate
+                const schedeSnap = await getDocs(collection(db, "schede_votate"));
+                let schedeVotateList = [];
+                let votiPerClasseELista = {}; // Struttura Pivot: { Classe_Sezione: { Lista1: X, Lista2: Y } }
+
+                schedeSnap.forEach(d => {
+                    const sData = d.data();
+                    schedeVotateList.push(sData);
+
+                    const classKey = `${sData.classe}_${sData.sezione}`.toUpperCase();
+                    if (!votiPerClasseELista[classKey]) {
+                        votiPerClasseELista[classKey] = { total: 0 };
+                        Object.keys(configElezioni.listeConsiglio).forEach(lId => {
+                            votiPerClasseELista[classKey][lId] = 0;
+                        });
+                    }
+
+                    if (sData.votoConsiglio && sData.votoConsiglio.listaId) {
+                        const lId = sData.votoConsiglio.listaId;
+                        if (votiPerClasseELista[classKey][lId] !== undefined) {
+                            votiPerClasseELista[classKey][lId]++;
+                        } else {
+                            votiPerClasseELista[classKey][lId] = 1;
+                        }
+                        votiPerClasseELista[classKey].total++;
+                    }
                 });
 
                 const consSnap = await getDocs(collection(db, "voti_consiglio"));
@@ -1492,41 +1751,61 @@
                 globalScrutinioData = {
                     totalTokens: totalTokensCount,
                     usedTokens: usedTokensCount,
+                    turnoutConsiglio: turnoutConsiglio,
+                    turnoutConsulta: turnoutConsulta,
+                    turnoutClasse: turnoutClasse,
                     statTurnout: statTurnout,
                     votiConsiglio: votiConsiglio,
                     votiConsulta: votiConsulta,
                     votiClasse: votiClasse,
-                    seggiAssegnatiConsiglio: seggiAssegnatiConsiglio
+                    seggiAssegnatiConsiglio: seggiAssegnatiConsiglio,
+                    schedeVotate: schedeVotateList,
+                    votiPerClasseELista: votiPerClasseELista
                 };
 
                 let html = `
                     <div class="grid md:grid-cols-3 gap-6">
+                        <!-- Card statistiche -->
                         <div class="bg-white p-5 rounded-2xl border shadow-sm md:col-span-1 flex flex-col justify-between">
                             <div>
-                                <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Statistiche Affluenza</h4>
-                                <div class="space-y-4">
-                                    <div class="flex justify-between items-center border-b pb-2">
-                                        <span class="text-sm font-semibold text-slate-700">Totale Iscritti:</span>
+                                <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Statistiche Affluenza Scorporata</h4>
+                                <div class="space-y-3 mb-4">
+                                    <div class="flex justify-between items-center border-b pb-1">
+                                        <span class="text-xs font-semibold text-slate-700">Totale Iscritti:</span>
                                         <span class="font-extrabold text-slate-950">${totalTokensCount}</span>
                                     </div>
-                                    <div class="flex justify-between items-center border-b pb-2">
-                                        <span class="text-sm font-semibold text-slate-700">Votanti Totali:</span>
+                                    <div class="flex justify-between items-center border-b pb-1">
+                                        <span class="text-xs font-semibold text-slate-700">Votanti Totali:</span>
                                         <span class="font-extrabold text-blue-900">${usedTokensCount}</span>
                                     </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-sm font-semibold text-slate-700">Percentuale Affluenza:</span>
-                                        <span class="font-black text-emerald-700">${totalTokensCount > 0 ? ((usedTokensCount / totalTokensCount) * 100).toFixed(2) : '0.00'} %</span>
+                                    <div class="flex justify-between items-center border-b pb-1">
+                                        <span class="text-xs font-semibold text-slate-700">Affluenza Consiglio:</span>
+                                        <span class="font-extrabold text-slate-900">${turnoutConsiglio} (${totalTokensCount > 0 ? ((turnoutConsiglio / totalTokensCount) * 100).toFixed(1) : '0.0'}%)</span>
                                     </div>
+                                    <div class="flex justify-between items-center border-b pb-1">
+                                        <span class="text-xs font-semibold text-slate-700">Affluenza Consulta:</span>
+                                        <span class="font-extrabold text-indigo-900">${turnoutConsulta} (${totalTokensCount > 0 ? ((turnoutConsulta / totalTokensCount) * 100).toFixed(1) : '0.0'}%)</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-xs font-semibold text-slate-700">Affluenza Classe:</span>
+                                        <span class="font-extrabold text-purple-900">${turnoutClasse} (${totalTokensCount > 0 ? ((turnoutClasse / totalTokensCount) * 100).toFixed(1) : '0.0'}%)</span>
+                                    </div>
+                                </div>
+                                <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
+                                    <p class="text-[11px] text-blue-900 leading-relaxed font-semibold">
+                                        Nota: I verbali ufficiali e la sezione 5 contengono ulteriori grafici dinamici e statistiche avanzate su schede valide, bianche e nulle.
+                                    </p>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Scrutinio e attribuzione seggi -->
                         <div class="bg-white p-5 rounded-2xl border shadow-sm md:col-span-2">
                             <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2 flex justify-between">
                                 <span>Consiglio d'Istituto</span>
                                 <span class="text-blue-900 font-extrabold text-xs">Assegnazione Seggi (O.M. 215/1991)</span>
                             </h4>
-                            <div class="space-y-6">
+                            <div class="space-y-4">
                 `;
 
                 for (const [idLista, data] of Object.entries(configElezioni.listeConsiglio)) {
@@ -1539,18 +1818,18 @@
                     })).sort((a, b) => b.voti - a.voti);
 
                     html += `
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
-                            <div class="flex justify-between items-center mb-3">
+                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                            <div class="flex justify-between items-center mb-2">
                                 <div>
-                                    <h5 class="font-extrabold text-slate-900">${data.nome}</h5>
+                                    <h5 class="font-extrabold text-slate-900 text-sm">${data.nome}</h5>
                                     <span class="text-xs text-slate-500 font-bold">Voti di lista: ${dbData.count}</span>
                                 </div>
-                                <span class="bg-red-100 text-red-900 font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider">Seggi: ${seggi}</span>
+                                <span class="bg-red-100 text-red-900 font-black text-xs px-2.5 py-1 rounded-full uppercase tracking-wider">Seggi: ${seggi}</span>
                             </div>
-                            <ul class="text-xs space-y-1.5 pt-2 border-t border-slate-200">
+                            <ul class="text-[11px] space-y-1 pt-2 border-t border-slate-200">
                                 ${candOrdinati.map((c, idx) => {
-                                    const eletto = idx < seggi && c.voti > 0 ? '<span class="text-emerald-700 font-bold ml-1.5">[Eletto]</span>' : '';
-                                    return `<li class="flex justify-between items-center text-slate-700 border-b border-dashed border-slate-200 pb-1">
+                                    const eletto = idx < seggi && c.voti > 0 ? '<span class="text-emerald-700 font-bold ml-1">[Eletto]</span>' : '';
+                                    return `<li class="flex justify-between items-center text-slate-700 border-b border-dashed border-slate-200 pb-0.5">
                                         <span>${c.nome} ${eletto}</span>
                                         <span class="font-bold text-slate-900">${c.voti} pref.</span>
                                     </li>`;
@@ -1565,55 +1844,79 @@
                         </div>
                     </div>
 
-                    ${configElezioni.consultaAttiva ? `
-                    <div class="bg-white p-5 rounded-2xl border shadow-sm">
-                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2">Consulta Provinciale</h4>
-                        <div class="grid md:grid-cols-2 gap-4">
-                            ${Object.entries(configElezioni.listeConsulta).map(([idLista, data]) => {
-                                const dbData = votiConsulta[idLista] || { count: 0, preferenze: {} };
-                                return `
-                                    <div class="bg-slate-50 p-4 rounded-xl border border-indigo-100">
-                                        <h5 class="font-extrabold text-slate-950">${data.nome}</h5>
-                                        <p class="text-xs text-slate-500 mb-2">Voti di Lista Totali: ${dbData.count}</p>
-                                        <ul class="text-xs space-y-1 mt-2 border-t pt-2">
-                                            ${data.candidati.map(c => `
-                                                <li class="flex justify-between">
-                                                    <span>${c}</span>
-                                                    <span class="font-bold text-slate-950">${dbData.preferenze[c] || 0} preferenze</span>
-                                                </li>
-                                            `).join('')}
-                                        </ul>
-                                    </div>
-                                `;
-                            }).join('')}
+                    <!-- MATRICE DI CALCOLO PIVOT / CLASSE -->
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm mt-6">
+                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 border-b pb-2 flex justify-between items-center">
+                            <span>Distribuzione Voti Consiglio per Classe (Matrice Pivot)</span>
+                            <span class="text-[10px] bg-slate-100 px-2.5 py-1 rounded-lg text-slate-600 font-semibold">Generata dinamicamente dalle schede</span>
+                        </h4>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="bg-slate-100 text-slate-700 font-bold">
+                                        <th class="p-2 border">Classe/Sezione</th>
+                                        ${Object.values(configElezioni.listeConsiglio).map(l => `<th class="p-2 border">${l.nome}</th>`).join('')}
+                                        <th class="p-2 border">Totale Voti Consiglio</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${Object.keys(statTurnout).map(classKey => {
+                                        const cleanClass = classKey.replace('_', ' ');
+                                        const dataClass = votiPerClasseELista[classKey] || { total: 0 };
+                                        return `
+                                            <tr class="hover:bg-slate-50">
+                                                <td class="p-2 border font-bold text-slate-800">${cleanClass}</td>
+                                                ${Object.keys(configElezioni.listeConsiglio).map(lId => `
+                                                    <td class="p-2 border font-semibold text-slate-600">${dataClass[lId] || 0}</td>
+                                                `).join('')}
+                                                <td class="p-2 border font-bold text-blue-900">${dataClass.total || 0}</td>
+                                            </tr>
+                                        `;
+                                    }).join('')}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    ` : ''}
 
-                    ${configElezioni.rappresentantiAttivi ? `
-                    <div class="bg-white p-5 rounded-2xl border shadow-sm">
-                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2">Voti Rappresentanti di Classe (Scrutinio Interno)</h4>
-                        <div class="grid md:grid-cols-3 gap-4">
-                            ${Object.keys(votiClasse).length > 0 ? Object.entries(votiClasse).map(([classKey, list]) => {
-                                const classFormat = classKey.replace('_', ' ');
-                                const sortedCands = Object.entries(list).sort((a, b) => b[1] - a[1]);
-                                return `
-                                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                                        <h5 class="font-extrabold text-slate-900 text-sm border-b pb-1 mb-2">Classe: ${classFormat}</h5>
-                                        <ul class="text-xs space-y-1">
-                                            ${sortedCands.map(([name, v]) => `
-                                                <li class="flex justify-between items-center">
-                                                    <span class="font-medium truncate max-w-[140px]">${name}</span>
-                                                    <span class="bg-purple-100 text-purple-900 px-1.5 py-0.5 rounded font-bold">${v} voti</span>
-                                                </li>
-                                            `).join('')}
-                                        </ul>
-                                    </div>
-                                `;
-                            }).join('') : '<p class="text-xs text-slate-500 italic p-2 col-span-3 text-center">Nessun voto depositato per i Rappresentanti di Classe.</p>'}
+                    <!-- REGISTRO DETTAGLIATO SCHEDE PER TOKEN (AFFLUENZA SCORPORATA) -->
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm mt-6">
+                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 border-b pb-2">Registro Dettagliato Schede Votate (Ricognizione Anonima per Token)</h4>
+                        <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="bg-slate-100 text-slate-700 font-bold sticky top-0">
+                                        <th class="p-2 border">Token</th>
+                                        <th class="p-2 border">Classe</th>
+                                        <th class="p-2 border">Voto Consiglio</th>
+                                        <th class="p-2 border">Preferenze Consiglio</th>
+                                        <th class="p-2 border">Voto Consulta</th>
+                                        <th class="p-2 border">Preferenza Consulta</th>
+                                        <th class="p-2 border">Voto Classe Rappresentante</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${schedeVotateList.length > 0 ? schedeVotateList.map(s => {
+                                        const consiglioTxt = s.votoConsiglio ? s.votoConsiglio.nomeLista : '<span class="text-slate-400 italic">Bianca</span>';
+                                        const consiglioPrefs = s.votoConsiglio && s.votoConsiglio.preferenze.length > 0 ? s.votoConsiglio.preferenze.join(', ') : '-';
+                                        const consultaTxt = s.votoConsulta ? s.votoConsulta.nomeLista : '<span class="text-slate-400 italic">Bianca</span>';
+                                        const consultaPrefs = s.votoConsulta && s.votoConsulta.preferenze.length > 0 ? s.votoConsulta.preferenze.join(', ') : '-';
+                                        const classeTxt = s.votoClasse ? s.votoClasse : '<span class="text-slate-400 italic">Bianca</span>';
+                                        return `
+                                            <tr class="hover:bg-slate-50 border-b">
+                                                <td class="p-2 border font-mono font-bold text-red-700">${s.token}</td>
+                                                <td class="p-2 border">${s.classe} ${s.sezione}</td>
+                                                <td class="p-2 border font-semibold">${consiglioTxt}</td>
+                                                <td class="p-2 border italic text-slate-600">${consiglioPrefs}</td>
+                                                <td class="p-2 border">${consultaTxt}</td>
+                                                <td class="p-2 border italic text-slate-600">${consultaPrefs}</td>
+                                                <td class="p-2 border font-bold uppercase text-purple-900">${classeTxt}</td>
+                                            </tr>
+                                        `;
+                                    }).join('') : '<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">Nessun voto di ricognizione presente in archivio.</td></tr>'}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    ` : ''}
                 `;
 
                 container.innerHTML = html;
@@ -1633,86 +1936,85 @@
             try {
                 const wb = XLSX.utils.book_new();
 
+                // Foglio 1: Statistiche d'Affluenza Scorporata
                 const rowsAffluenza = [
-                    ["STATISTICHE GENERALI ELETTORALI"],
-                    ["Elettori Iscritti", globalScrutinioData.totalTokens],
-                    ["Elettori Votanti", globalScrutinioData.usedTokens],
-                    ["Turnout (%)", ((globalScrutinioData.usedTokens / globalScrutinioData.totalTokens) * 100).toFixed(2)],
+                    ["STATISTICHE GENERALI ELETTORALI / AFFLUENZA DIFFERENZIATA - VIA BRIANTINA 68"],
                     [],
-                    ["Affluenza per Classe", "Votanti", "Iscritti", "%"]
+                    ["Elettori Iscritti", globalScrutinioData.totalTokens],
+                    ["Elettori Votanti Totali", globalScrutinioData.usedTokens],
+                    ["Affluenza Consiglio", globalScrutinioData.turnoutConsiglio, ((globalScrutinioData.turnoutConsiglio / globalScrutinioData.totalTokens) * 100).toFixed(2) + "%"],
+                    ["Affluenza Consulta", globalScrutinioData.turnoutConsulta, ((globalScrutinioData.turnoutConsulta / globalScrutinioData.totalTokens) * 100).toFixed(2) + "%"],
+                    ["Affluenza Classe", globalScrutinioData.turnoutClasse, ((globalScrutinioData.turnoutClasse / globalScrutinioData.totalTokens) * 100).toFixed(2) + "%"],
+                    [],
+                    ["Classe", "Consiglio (Voti)", "Consulta (Voti)", "Classe (Voti)", "Iscritti Totali"]
                 ];
 
                 Object.entries(globalScrutinioData.statTurnout).forEach(([k, item]) => {
                     const rowText = k.replace('_', ' ');
-                    const per = ((item.voted / item.total) * 100).toFixed(2);
-                    rowsAffluenza.push([rowText, item.voted, item.total, per]);
+                    rowsAffluenza.push([rowText, item.votedConsiglio, item.votedConsulta, item.votedClasse, item.total]);
                 });
 
                 const wsAffluenza = XLSX.utils.aoa_to_sheet(rowsAffluenza);
-                XLSX.utils.book_append_sheet(wb, wsAffluenza, "Affluenza");
+                XLSX.utils.book_append_sheet(wb, wsAffluenza, "Affluenza Scorporata");
 
-                const rowsConsiglio = [
-                    ["RISULTATI CONSIGLIO D'ISTITUTO (O.M. 215/1991)"],
-                    ["Lista", "Voti di Lista", "Seggi Assegnati", "Candidato", "Preferenze"]
+                // Foglio 2: Matrice Pivot Voti per Classe
+                const rowsPivot = [
+                    ["DISTRIBUZIONE DEI VOTI PER GRUPPO CLASSE (CONSIGLIO D'ISTITUTO)"],
+                    []
                 ];
+                
+                const headerPivot = ["Classe/Sezione"];
+                Object.values(configElezioni.listeConsiglio).forEach(l => {
+                    headerPivot.push(l.nome);
+                });
+                headerPivot.push("Totale Voti");
+                rowsPivot.push(headerPivot);
 
-                for (const [idLista, data] of Object.entries(configElezioni.listeConsiglio)) {
-                    const dbData = globalScrutinioData.votiConsiglio[idLista] || { count: 0, preferenze: {} };
-                    const seggi = globalScrutinioData.seggiAssegnatiConsiglio[idLista] || 0;
-
-                    data.candidati.forEach((c, idx) => {
-                        const v = dbData.preferenze[c] || 0;
-                        if(idx === 0) {
-                            rowsConsiglio.push([data.nome, dbData.count, seggi, c, v]);
-                        } else {
-                            rowsConsiglio.push(["", "", "", c, v]);
-                        }
+                Object.keys(globalScrutinioData.statTurnout).forEach(classKey => {
+                    const cleanClass = classKey.replace('_', ' ');
+                    const dataClass = globalScrutinioData.votiPerClasseELista[classKey] || { total: 0 };
+                    
+                    const row = [cleanClass];
+                    Object.keys(configElezioni.listeConsiglio).forEach(lId => {
+                        row.push(dataClass[lId] || 0);
                     });
-                }
-
-                const wsConsiglio = XLSX.utils.aoa_to_sheet(rowsConsiglio);
-                XLSX.utils.book_append_sheet(wb, wsConsiglio, "Consiglio d'Istituto");
-
-                const rowsConsulta = [
-                    ["RISULTATI CONSULTA PROVINCIALE"],
-                    ["Lista", "Voti di Lista", "Candidato", "Preferenze"]
-                ];
-
-                for (const [idLista, data] of Object.entries(configElezioni.listeConsulta)) {
-                    const dbData = globalScrutinioData.votiConsulta[idLista] || { count: 0, preferenze: {} };
-                    data.candidati.forEach((c, idx) => {
-                        const v = dbData.preferenze[c] || 0;
-                        if(idx === 0) {
-                            rowsConsulta.push([data.nome, dbData.count, c, v]);
-                        } else {
-                            rowsConsulta.push(["", "", c, v]);
-                        }
-                    });
-                }
-
-                const wsConsulta = XLSX.utils.aoa_to_sheet(rowsConsulta);
-                XLSX.utils.book_append_sheet(wb, wsConsulta, "Consulta Provinciale");
-
-                const rowsRappr = [
-                    ["SCRUTINIO RAPPRESENTANTI DI CLASSE"],
-                    ["Classe/Sezione", "Studente Votato", "Voti Ricevuti"]
-                ];
-
-                Object.entries(globalScrutinioData.votiClasse).forEach(([k, list]) => {
-                    const kText = k.replace('_', ' ');
-                    Object.entries(list).forEach(([candName, count], idx) => {
-                        if(idx === 0) {
-                            rowsRappr.push([kText, candName, count]);
-                        } else {
-                            rowsRappr.push(["", candName, count]);
-                        }
-                    });
+                    row.push(dataClass.total || 0);
+                    rowsPivot.push(row);
                 });
 
-                const wsRappr = XLSX.utils.aoa_to_sheet(rowsRappr);
-                XLSX.utils.book_append_sheet(wb, wsRappr, "Rappresentanti di Classe");
+                const wsPivot = XLSX.utils.aoa_to_sheet(rowsPivot);
+                XLSX.utils.book_append_sheet(wb, wsPivot, "Matrice Pivot Classi");
 
-                XLSX.writeFile(wb, "Scrutinio_Elettronico_Completo.xlsx");
+                // Foglio 3: Dettaglio Voti per Token
+                const rowsDettaglio = [
+                    ["REGISTRO DI TRACCIABILITÀ MONOUSO PER TOKEN (ANONIMATO DETTAGLIATO)"],
+                    [],
+                    ["Token Elettorale", "Classe/Sezione", "Scelta Consiglio", "Preferenze Consiglio", "Scelta Consulta", "Preferenza Consulta", "Rappresentante Classe Scritto"]
+                ];
+
+                globalScrutinioData.schedeVotate.forEach(s => {
+                    const consiglioTxt = s.votoConsiglio ? s.votoConsiglio.nomeLista : "Scheda Bianca";
+                    const consiglioPrefs = s.votoConsiglio && s.votoConsiglio.preferenze.length > 0 ? s.votoConsiglio.preferenze.join(', ') : "-";
+                    const consultaTxt = s.votoConsulta ? s.votoConsulta.nomeLista : "Scheda Bianca";
+                    const consultaPrefs = s.votoConsulta && s.votoConsulta.preferenze.length > 0 ? s.votoConsulta.preferenze.join(', ') : "-";
+                    const classeTxt = s.votoClasse ? s.votoClasse : "Scheda Bianca";
+
+                    rowsDettaglio.push([
+                        s.token,
+                        `${s.classe} ${s.sezione}`,
+                        consiglioTxt,
+                        consiglioPrefs,
+                        consultaTxt,
+                        consultaPrefs,
+                        classeTxt
+                    ]);
+                });
+
+                const wsDettaglio = XLSX.utils.aoa_to_sheet(rowsDettaglio);
+                XLSX.utils.book_append_sheet(wb, wsDettaglio, "Registro Dettagliato Token");
+
+                XLSX.writeFile(wb, "Scrutinio_Elettronico_Completo_Avanzato.xlsx");
+                showNotification("Esportazione Completata", "Tabelle di calcolo avanzate salvate in formato Excel con successo!", "success");
 
             } catch (err) {
                 console.error(err);
@@ -1767,13 +2069,15 @@
                 
                 docPDF.text(`- Totale Elettori aventi diritto iscritti: ${globalScrutinioData.totalTokens}`, 14, y + 6);
                 docPDF.text(`- Totale Votanti effettivi (Token Consumati): ${globalScrutinioData.usedTokens}`, 14, y + 11);
-                docPDF.text(`- Turnout percentuale finale: ${((globalScrutinioData.usedTokens / globalScrutinioData.totalTokens) * 100).toFixed(2)} %`, 14, y + 16);
+                docPDF.text(`- Affluenza differenziata Consiglio d'Istituto: ${globalScrutinioData.turnoutConsiglio} (${((globalScrutinioData.turnoutConsiglio / globalScrutinioData.totalTokens) * 100).toFixed(2)} %)`, 14, y + 16);
+                docPDF.text(`- Affluenza differenziata Consulta Provinciale: ${globalScrutinioData.turnoutConsulta} (${((globalScrutinioData.turnoutConsulta / globalScrutinioData.totalTokens) * 100).toFixed(2)} %)`, 14, y + 21);
+                docPDF.text(`- Affluenza differenziata Rappresentanti di Classe: ${globalScrutinioData.turnoutClasse} (${((globalScrutinioData.turnoutClasse / globalScrutinioData.totalTokens) * 100).toFixed(2)} %)`, 14, y + 26);
 
                 // Firma Commissione di fine Pagina 1
                 docPDF.setFontSize(9);
                 docPDF.setFont("Helvetica", "bold");
-                docPDF.text("Firme per Convalida ed Insediamento Seggio Generale:", 14, y + 30);
-                let fY = y + 36;
+                docPDF.text("Firme per Convalida ed Insediamento Seggio Generale:", 14, y + 36);
+                let fY = y + 42;
                 configElezioni.commissione.forEach(c => {
                     docPDF.text(`- ${c} : __________________________________`, 14, fY);
                     fY += 7.5;
@@ -1874,7 +2178,7 @@
                     fY += 7.5;
                 });
 
-                // PAGINA 4+: VERBALI DELLE SINGOLE CLASSI (RAPPRESENTANTI DI CLASSE)
+                // PAGINA 4+: VERBALI DELLE SINGOLE CLASSI (RAPPRESENTANTI DI CLASSE CON EX-AEQUO E DETTAGLI NORMATIVI)
                 if (configElezioni.rappresentantiAttivi) {
                     Object.entries(globalScrutinioData.statTurnout).forEach(([classKey, item]) => {
                         const classFormat = classKey.replace('_', ' ');
@@ -1891,29 +2195,32 @@
                         docPDF.setFont("Helvetica", "normal");
                         docPDF.text(`Quadro d'affluenza per la sezione corrente:`, 14, 38);
                         docPDF.text(`- Alunni Iscritti: ${item.total}`, 14, 44);
-                        docPDF.text(`- Alunni Votanti effettivi: ${item.voted}`, 14, 49);
-                        docPDF.text(`- Percentuale affluenza di classe: ${item.total > 0 ? ((item.voted / item.total) * 100).toFixed(2) : '0.00'} %`, 14, 54);
+                        docPDF.text(`- Alunni Votanti effettivi (Consulta): ${item.votedConsulta}`, 14, 49);
+                        docPDF.text(`- Alunni Votanti effettivi (Consiglio): ${item.votedConsiglio}`, 14, 54);
+                        docPDF.text(`- Alunni Votanti effettivi (Classe): ${item.votedClasse}`, 14, 59);
 
                         docPDF.setFont("Helvetica", "bold");
-                        docPDF.text("Scrutinio interno preferenze Rappresentanti di Classe:", 14, 64);
+                        docPDF.text("Scrutinio interno preferenze Rappresentanti di Classe:", 14, 69);
                         docPDF.setFont("Helvetica", "normal");
 
                         const classVotesObj = globalScrutinioData.votiClasse[classKey] || {};
-                        const sortedCands = Object.entries(classVotesObj).sort((a, b) => b[1] - a[1]);
+                        const { eletti, list, dettagliSorteggio } = determinizzaElettiClasse(classKey, classVotesObj, item.total);
 
-                        const classTableRows = sortedCands.map(([name, votes], i) => [
-                            i + 1,
-                            name.toUpperCase(),
-                            votes,
-                            i === 0 && votes > 0 ? "PRIMO ELETTO" : (i === 1 && votes > 0 ? "SECONDO ELETTO" : "Non eletto / Riserva")
-                        ]);
+                        const classTableRows = list.map((cand, idx) => {
+                            const isEletto = eletti.find(e => e.name === cand.name);
+                            let esito = "Non eletto / Riserva";
+                            if (isEletto) {
+                                esito = isEletto.sorteggiato ? "ELETTO PER SORTEGGIO" : "ELETTO";
+                            }
+                            return [idx + 1, cand.name, cand.votes, esito];
+                        });
 
                         if (classTableRows.length === 0) {
                             classTableRows.push(["-", "NESSUNA PREFERENZA ESPRESSA (SCHEDA BIANCA)", "0", "-"]);
                         }
 
                         docPDF.autoTable({
-                            startY: 68,
+                            startY: 73,
                             head: [['Pos.', 'Candidato Scritto dagli Studenti', 'Voti Ricevuti', 'Esito']],
                             body: classTableRows,
                             theme: 'grid',
@@ -1921,7 +2228,18 @@
                             styles: { fontSize: 8.5 }
                         });
 
-                        let blockY = docPDF.lastAutoTable.finalY + 12;
+                        let blockY = docPDF.lastAutoTable.finalY + 8;
+                        
+                        // Spazio per spiegare il sorteggio
+                        if (dettagliSorteggio) {
+                            docPDF.setFont("Helvetica", "bold");
+                            docPDF.text("Procedura di Spareggio (Ex-aequo):", 14, blockY);
+                            docPDF.setFont("Helvetica", "normal");
+                            docPDF.setFontSize(8);
+                            docPDF.text(dettagliSorteggio, 14, blockY + 5, { maxWidth: 182 });
+                            blockY += 16;
+                        }
+
                         if(blockY > 210) {
                             docPDF.addPage();
                             blockY = 30;
@@ -1934,7 +2252,7 @@
 
                         docPDF.setFontSize(8.5);
                         docPDF.setFont("Helvetica", "bold");
-                        docPDF.text("REGISTRO DI GESTIONE PLICO E SEGGIO DI CLASSE (A cura del Coordinatore/Somministratore)", 18, blockY + 6);
+                        docPDF.text("REGISTRO DI GESTIONE PLICO E SEGGIO DI CLASSE (A cura del Docente Coordinatore o Somministratore)", 18, blockY + 6);
                         docPDF.setFont("Helvetica", "normal");
                         
                         docPDF.text("- Orario di ricezione plico contenente i tagliandini: ____ : ____", 18, blockY + 13);
@@ -1955,6 +2273,318 @@
             }
         };
 
+        function renderChartsTab(container) {
+            if (!globalScrutinioData) {
+                container.innerHTML = `
+                    <div class="text-center py-10 bg-white rounded-2xl shadow border p-6">
+                        <i data-lucide="bar-chart-2" class="mx-auto w-12 h-12 text-slate-400 mb-2"></i>
+                        <h4 class="text-lg font-bold text-slate-800">Nessun Dato Disponibile</h4>
+                        <p class="text-sm text-slate-500 mb-6">È necessario aggiornare i dati di scrutinio nella Tab 4 prima di visualizzare le statistiche.</p>
+                        <button onclick="switchAdminTab('verbali')" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-6 rounded-xl text-sm shadow transition-colors">
+                            Procedi al Caricamento Dati
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const totalRegistered = globalScrutinioData.totalTokens || 1;
+            const overallVoted = globalScrutinioData.usedTokens || 0;
+            const overallPct = ((overallVoted / totalRegistered) * 100).toFixed(1);
+
+            let classOptions = Object.keys(globalScrutinioData.statTurnout).map(c => `
+                <option value="${c}">${c.replace('_', ' ')}</option>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="space-y-6">
+                    <!-- Riga Statistiche Riassuntive -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-white p-4 rounded-xl shadow border border-slate-200">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Iscritti Totali</span>
+                            <p class="text-2xl font-black text-slate-900 mt-1">${totalRegistered}</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow border border-slate-200">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Affluenza Totale</span>
+                            <p class="text-2xl font-black text-blue-900 mt-1">${overallVoted} <span class="text-sm font-semibold text-slate-500">(${overallPct}%)</span></p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow border border-slate-200">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Consiglio (Voti)</span>
+                            <p class="text-2xl font-black text-indigo-900 mt-1">${globalScrutinioData.turnoutConsiglio}</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow border border-slate-200">
+                            <span class="text-xs font-bold text-slate-400 uppercase">Rappresentanti (Voti)</span>
+                            <p class="text-2xl font-black text-purple-900 mt-1">${globalScrutinioData.turnoutClasse}</p>
+                        </div>
+                    </div>
+
+                    <!-- Layout Grafici SVG Integrati (Inclusi Grafici a Torta) -->
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Grafico Consiglio d'Istituto -->
+                        <div class="bg-white p-5 rounded-2xl shadow border border-slate-200 text-center">
+                            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2">Distribuzione Voti Consiglio d'Istituto</h4>
+                            <div id="chart-consiglio-pie" class="mb-4"></div>
+                            <div id="chart-consiglio-container" class="flex flex-col space-y-2 text-left"></div>
+                        </div>
+
+                        <!-- Grafico Consulta Provinciale -->
+                        <div class="bg-white p-5 rounded-2xl shadow border border-slate-200 text-center">
+                            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2">Preferenze Consulta Provinciale</h4>
+                            <div id="chart-consulta-pie" class="mb-4"></div>
+                            <div id="chart-consulta-container" class="flex flex-col space-y-2 text-left"></div>
+                        </div>
+                    </div>
+
+                    <!-- Esploratore Classe e Risultati Rappresentanti di Classe -->
+                    <div class="bg-white p-5 rounded-2xl shadow border border-slate-200">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-3 mb-4 gap-2">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider">Esploratore dei Risultati per Classe</h4>
+                                <p class="text-xs text-slate-500">Seleziona una classe per analizzare l'affluenza scorporata e i candidati eletti.</p>
+                            </div>
+                            <select id="scoutClassSelector" onchange="renderScoutClassResults()" class="p-2 border rounded-xl text-xs font-bold bg-slate-50 focus:ring-2 focus:ring-purple-200 outline-none">
+                                ${classOptions}
+                            </select>
+                        </div>
+
+                        <div id="scout-class-results-area" class="grid md:grid-cols-3 gap-6">
+                            <!-- Popolato dinamicamente -->
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Rendering grafici Consiglio & Consulta
+            renderSVGConsiglioChart();
+            renderSVGConsultaChart();
+            renderScoutClassResults();
+        }
+
+        // --- GENERATORE DI GRAFICI A TORTA SVG IN PURO JAVASCRIPT ---
+        function generateSvgPieChart(slices) {
+            let total = slices.reduce((sum, s) => sum + s.value, 0);
+            if (total === 0) {
+                return `
+                    <svg viewBox="0 0 200 200" class="w-48 h-48 mx-auto">
+                        <circle cx="100" cy="100" r="70" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+                        <text x="100" y="105" text-anchor="middle" fill="#64748b" font-size="10" font-weight="bold">Nessun Voto</text>
+                    </svg>
+                `;
+            }
+
+            let svgPaths = [];
+            let currentAngle = 0;
+
+            slices.forEach((slice) => {
+                if (slice.value === 0) return;
+                let angle = (slice.value / total) * 360;
+                
+                if (angle === 360) {
+                    svgPaths.push(`<circle cx="100" cy="100" r="70" fill="${slice.color}" stroke="#ffffff" stroke-width="1.5" />`);
+                    return;
+                }
+                
+                let x1 = 100 + 70 * Math.cos((currentAngle - 90) * Math.PI / 180);
+                let y1 = 100 + 70 * Math.sin((currentAngle - 90) * Math.PI / 180);
+                
+                currentAngle += angle;
+                
+                let x2 = 100 + 70 * Math.cos((currentAngle - 90) * Math.PI / 180);
+                let y2 = 100 + 70 * Math.sin((currentAngle - 90) * Math.PI / 180);
+                
+                let largeArcFlag = angle > 180 ? 1 : 0;
+                
+                svgPaths.push(`<path d="M 100 100 L ${x1} ${y1} A 70 70 0 ${largeArcFlag} 1 ${x2} ${y2} Z" fill="${slice.color}" stroke="#ffffff" stroke-width="1.5" />`);
+            });
+
+            return `<svg viewBox="0 0 200 200" class="w-48 h-48 mx-auto">${svgPaths.join('')}</svg>`;
+        }
+
+        function renderSVGConsiglioChart() {
+            const container = document.getElementById('chart-consiglio-container');
+            const pieContainer = document.getElementById('chart-consiglio-pie');
+            const data = globalScrutinioData.votiConsiglio;
+            
+            let slices = [];
+            const colors = ['#1e3a8a', '#0284c7', '#3b82f6', '#10b981'];
+
+            Object.entries(configElezioni.listeConsiglio).forEach(([id, info], idx) => {
+                slices.push({
+                    label: info.nome,
+                    value: data[id]?.count || 0,
+                    color: colors[idx % colors.length]
+                });
+            });
+
+            // Genera Torta
+            pieContainer.innerHTML = generateSvgPieChart(slices);
+
+            // Genera Legenda / Dettaglio
+            const maxVotes = Math.max(...slices.map(l => l.value), 1);
+            let legendHtml = '';
+            
+            slices.forEach((l) => {
+                const pct = ((l.value / maxVotes) * 100).toFixed(0);
+                legendHtml += `
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs font-bold text-slate-700">
+                            <span class="flex items-center"><span class="w-3 h-3 rounded-full mr-1.5" style="background-color: ${l.color}"></span> ${l.label}</span>
+                            <span>${l.value} voti</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-500" style="width: ${pct}%; background-color: ${l.color}"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = legendHtml;
+        }
+
+        function renderSVGConsultaChart() {
+            const container = document.getElementById('chart-consulta-container');
+            const pieContainer = document.getElementById('chart-consulta-pie');
+            const data = globalScrutinioData.votiConsulta;
+            
+            let slices = [];
+            const colors = ['#4f46e5', '#818cf8', '#a5b4fc', '#c7d2fe'];
+
+            Object.values(configElezioni.listeConsulta).forEach((l) => {
+                l.candidati.forEach((c, idx) => {
+                    const dbListaData = data['lista_unica'] || { preferenze: {} };
+                    slices.push({
+                        label: c,
+                        value: dbListaData.preferenze[c] || 0,
+                        color: colors[idx % colors.length]
+                    });
+                });
+            });
+
+            pieContainer.innerHTML = generateSvgPieChart(slices);
+
+            const maxVotes = Math.max(...slices.map(c => c.value), 1);
+            let legendHtml = '';
+
+            slices.forEach((c) => {
+                const pct = ((c.value / maxVotes) * 100).toFixed(0);
+                legendHtml += `
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs font-bold text-slate-700">
+                            <span class="flex items-center"><span class="w-3 h-3 rounded-full mr-1.5" style="background-color: ${c.color}"></span> ${c.label}</span>
+                            <span>${c.value} preferenze</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-500" style="width: ${pct}%; background-color: ${c.color}"></div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = legendHtml;
+        }
+
+        window.renderScoutClassResults = function() {
+            const selector = document.getElementById('scoutClassSelector');
+            if(!selector) return;
+            const classKey = selector.value;
+            const resultsArea = document.getElementById('scout-class-results-area');
+
+            const item = globalScrutinioData.statTurnout[classKey] || { total: 0, voted: 0, votedConsiglio: 0, votedConsulta: 0, votedClasse: 0 };
+            
+            // 1. Box Affluenza Classe
+            const affluenzaHtml = `
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-between">
+                    <div>
+                        <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Affluenza Gruppo Classe</h5>
+                        <div class="space-y-2 text-xs font-semibold text-slate-700">
+                            <div class="flex justify-between"><span>Iscritti totali:</span><span class="font-extrabold text-slate-900">${item.total}</span></div>
+                            <div class="flex justify-between"><span>Hanno Votato (Tot):</span><span class="font-extrabold text-blue-900">${item.voted}</span></div>
+                            <div class="flex justify-between"><span>Consiglio d'Istituto:</span><span class="font-extrabold text-slate-900">${item.votedConsiglio}</span></div>
+                            <div class="flex justify-between"><span>Consulta Provinciale:</span><span class="font-extrabold text-indigo-900">${item.votedConsulta}</span></div>
+                            <div class="flex justify-between"><span>Rappresentante Classe:</span><span class="font-extrabold text-purple-900">${item.votedClasse}</span></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // 2. Classifica Candidati Rappresentanti di Classe
+            const classVotesObj = globalScrutinioData.votiClasse[classKey] || {};
+            const { eletti, list, dettagliSorteggio } = determinizzaElettiClasse(classKey, classVotesObj, item.total);
+
+            let candidatesHtml = '';
+            let pieAndWinnersHtml = '';
+
+            if (list.length > 0) {
+                // Genera Torta SVG per la classe
+                const classColors = ['#9333ea', '#a855f7', '#c084fc', '#e9d5ff', '#f3e8ff'];
+                let classSlices = list.map((cand, idx) => ({
+                    label: cand.name,
+                    value: cand.votes,
+                    color: classColors[idx % classColors.length]
+                }));
+
+                candidatesHtml = `
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h5 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Preferenze Scritte Alunni</h5>
+                        <div class="mb-4">${generateSvgPieChart(classSlices)}</div>
+                        <ul class="text-xs font-semibold space-y-2 text-slate-700 max-h-[140px] overflow-y-auto">
+                            ${list.map((cand, idx) => `
+                                <li class="flex justify-between border-b pb-1 border-slate-200">
+                                    <span class="uppercase flex items-center">
+                                        <span class="w-2.5 h-2.5 rounded-full mr-1" style="background-color: ${classSlices[idx].color}"></span>
+                                        ${cand.name}
+                                    </span>
+                                    <span class="font-extrabold text-slate-950">${cand.votes} voti</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `;
+
+                pieAndWinnersHtml = `
+                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-200 flex flex-col justify-between">
+                        <div>
+                            <h5 class="text-xs font-bold text-purple-900 uppercase tracking-wider mb-3">Rappresentanti Eletti della Classe</h5>
+                            <div class="space-y-2 mb-3">
+                                ${eletti.map((stud, idx) => `
+                                    <div class="flex items-center justify-between bg-white p-2.5 rounded-lg border border-purple-100">
+                                        <div class="flex items-center space-x-2">
+                                            <span class="bg-purple-100 text-purple-800 font-extrabold text-xs px-2 py-0.5 rounded-full">Pos ${idx + 1}</span>
+                                            <span class="font-bold text-slate-900 uppercase text-xs">${stud.name}</span>
+                                        </div>
+                                        ${stud.sorteggiato ? `<span class="bg-yellow-100 text-yellow-800 font-bold text-[10px] px-1.5 py-0.5 rounded" title="Determinizzato a seguito di estrazione ex-aequo">SORTEGGIATO</span>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                            ${dettagliSorteggio ? `
+                                <div class="bg-yellow-50 border border-yellow-100 p-2 rounded text-[10px] text-yellow-800 leading-tight">
+                                    <strong>Nota di Sorteggio:</strong> ${dettagliSorteggio}
+                                </div>
+                            ` : ''}
+                        </div>
+                        <p class="text-[9px] text-purple-700 font-bold mt-2">Normativa O.M. 215/1991: Massimi due eletti per gruppo classe.</p>
+                    </div>
+                `;
+            } else {
+                candidatesHtml = `
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center py-8 text-slate-400 italic text-xs flex flex-col items-center justify-center">
+                        <i data-lucide="eye-off" class="w-8 h-8 text-slate-300 mb-2"></i>
+                        Nessun voto espresso per la classe corrente.
+                    </div>
+                `;
+                pieAndWinnersHtml = `
+                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-200 text-center py-8 text-purple-400 italic text-xs flex flex-col items-center justify-center">
+                        <i data-lucide="award" class="w-8 h-8 text-purple-300 mb-2"></i>
+                        Nessun candidato eletto per mancanza di preferenze.
+                    </div>
+                `;
+            }
+
+            resultsArea.innerHTML = affluenzaHtml + candidatesHtml + pieAndWinnersHtml;
+            lucide.createIcons();
+        };
+
+        // --- INIZIALIZZAZIONE DELLA PAGINA SU WINDOW LOAD ---
         window.onload = async () => {
             showPage('loading');
             await syncConfigFromDB();
