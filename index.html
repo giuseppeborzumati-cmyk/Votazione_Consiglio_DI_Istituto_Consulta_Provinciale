@@ -154,7 +154,6 @@
             }
         };
 
-        // --- GESTIONE NOTIFICHE CUSTOM (Senza Alert) ---
         window.showNotification = function(title, message, type = 'info') {
             const modal = document.getElementById('custom-alert-modal');
             const iconContainer = document.getElementById('custom-alert-icon');
@@ -184,7 +183,6 @@
             document.getElementById('custom-alert-modal').classList.add('hidden');
         };
 
-        // --- SINCRONIZZAZIONE CONFIGURAZIONE CON FIRESTORE ---
         async function syncConfigFromDB() {
             try {
                 const configRef = doc(db, 'config', 'settings_v2');
@@ -233,7 +231,7 @@
             container.innerHTML = `
                 <div class="flex flex-col items-center justify-center h-80">
                     <div class="spinner mb-4"></div>
-                    <p class="text-slate-600 font-bold text-lg">Caricamento in corso...attendere</p>
+                    <p class="text-slate-600 font-bold text-lg">Caricamento in corso non chiudere la pagina...</p>
                 </div>
             `;
         }
@@ -402,7 +400,7 @@
                 <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 mb-6">
                     <div class="border-b pb-4 mb-6">
                         <h2 class="text-2xl font-black text-slate-800">Elezione Consiglio d'Istituto</h2>
-                        <p class="text-slate-500 text-sm mt-1">Seleziona la lista elettorale per esprimere il voto di lista. All'interno della stessa lista, puoi esprimere fino a un massimo di 2 preferenze per i candidati.</p>
+                        <p class="text-slate-500 text-sm mt-1">Seleziona la lista elettorale per esprimere il voto di lista. All'interno della stessa lista, puoi esprimere fino a unax 2 preferenze per i candidati.</p>
                     </div>
                     
                     <div class="space-y-6" id="liste-consiglio-container">
@@ -512,7 +510,7 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Nome e Cognome del Candidato</label>
-                            <input type="text" id="candClasseInput" placeholder="ES: Mario Rossi" class="w-full p-4 border rounded-xl font-semibold outline-none focus:border-purple-600 focus:ring-2 focus:ring-purple-100 transition-all uppercase animate-pulse">
+                            <input type="text" id="candClasseInput" placeholder="ES: Mario Rossi" class="w-full p-4 border rounded-xl font-semibold outline-none focus:border-purple-600 focus:ring-2 focus:ring-purple-100 transition-all uppercase">
                         </div>
                         <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 flex items-start space-x-3 text-purple-900">
                             <i data-lucide="info" class="w-5 h-5 mt-0.5 flex-shrink-0"></i>
@@ -674,7 +672,6 @@
             };
         }
 
-        // --- GESTIONE DEI DATI TEMPORANEI (CARRELLO) ---
         window.updatePrefConsiglio = function(selectedListaId) {
             for (const id of Object.keys(configElezioni.listeConsiglio)) {
                 document.getElementById(`pref-${id}`).classList.add('hidden');
@@ -880,7 +877,6 @@
             }
         };
 
-        // --- ACCESSO AREA RISERVATA COMMISSIONE ---
         function renderAdminLogin(container) {
             container.innerHTML = `
                 <div class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-xl border border-slate-200 mt-10">
@@ -914,10 +910,15 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h2 class="text-2xl font-black text-slate-800">Cruscotto Commissione Elettorale</h2>
+                        <div class="flex items-center space-x-2">
+                            <h2 class="text-2xl font-black text-slate-800">Cruscotto Commissione Elettorale</h2>
+                            <span id="realtime-status-badge" class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5 animate-pulse">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span> Sincronizzazione Attiva
+                            </span>
+                        </div>
                         <p class="text-slate-500 text-sm">Organismo di vigilanza istituzionale delle elezioni</p>
                     </div>
-                    <button onclick="showPage('studentLogin')" class="bg-slate-800 text-white font-bold px-5 py-2.5 rounded-xl hover:bg-slate-700 flex items-center space-x-2"><i data-lucide="log-out" class="w-4 h-4"></i> <span>Esci</span></button>
+                    <button onclick="logoutAdmin()" class="bg-slate-800 text-white font-bold px-5 py-2.5 rounded-xl hover:bg-slate-700 flex items-center space-x-2"><i data-lucide="log-out" class="w-4 h-4"></i> <span>Esci</span></button>
                 </div>
 
                 <!-- Tabs di navigazione Admin -->
@@ -934,7 +935,13 @@
                 </div>
             `;
             renderActiveAdminTab();
+            startAdminRealtimeListeners();
         }
+
+        window.logoutAdmin = function() {
+            stopAdminRealtimeListeners();
+            showPage('studentLogin');
+        };
 
         window.switchAdminTab = function(tabId) {
             activeAdminTab = tabId;
@@ -1339,16 +1346,17 @@
                         <button onclick="esportaVerbalePDF()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-colors flex items-center space-x-1.5 shadow">
                             <i data-lucide="file-text" class="w-4 h-4"></i> <span>Esporta Verbale Ufficiale (O.M. 215/1991)</span>
                         </button>
-                        <button onclick="loadRisultati()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-colors flex items-center space-x-1.5 shadow">
-                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> <span>Elabora Scrutinio</span>
-                        </button>
                     </div>
                 </div>
 
                 <div id="scrutinio-realtime-results" class="space-y-6">
-                    <p class="text-center text-slate-500 italic py-10">Clicca "Elabora Scrutinio" per raccogliere, sommare e visualizzare i dati elettorali correnti dall'urna decentralizzata.</p>
+                    <p class="text-center text-slate-500 italic py-10">In attesa di dati dal cloud...</p>
                 </div>
             `;
+            // Trigger immediato per mostrare i dati caricati
+            if (globalScrutinioData) {
+                renderScrutinioUI();
+            }
         }
 
         window.processExcel = function() {
@@ -1590,10 +1598,7 @@
             return { eletti, list, dettagliSorteggio };
         }
 
-        window.loadRisultati = async function() {
-            const container = document.getElementById('scrutinio-realtime-results');
-            container.innerHTML = `<div class="text-center py-10"><div class="spinner inline-block"></div><p class="text-slate-500 font-bold mt-2">Aggregazione e ricompilazione statistiche dal cloud...</p></div>`;
-
+        async function elaboraDatiScrutinio() {
             try {
                 // Lettura dei token per determinare l'affluenza reale e scorporata
                 const tokSnap = await getDocs(collection(db, "tokens"));
@@ -1646,17 +1651,31 @@
                         });
                     }
 
-                    // Pivot per matrice di calcolo
+                    // Pivot con dettaglio candidati/voti per classe
                     if (!votiPerClasseELista[classKey]) {
-                        votiPerClasseELista[classKey] = { total: 0 };
-                        Object.keys(configElezioni.listeConsiglio).forEach(lId => {
-                            votiPerClasseELista[classKey][lId] = 0;
+                        votiPerClasseELista[classKey] = { total: 0, liste: {} };
+                        Object.entries(configElezioni.listeConsiglio).forEach(([lId, lData]) => {
+                            votiPerClasseELista[classKey].liste[lId] = {
+                                count: 0,
+                                preferenze: {}
+                            };
+                            lData.candidati.forEach(cand => {
+                                votiPerClasseELista[classKey].liste[lId].preferenze[cand] = 0;
+                            });
                         });
                     }
-                    if (votiPerClasseELista[classKey][listId] !== undefined) {
-                        votiPerClasseELista[classKey][listId]++;
+
+                    if (votiPerClasseELista[classKey].liste[listId]) {
+                        votiPerClasseELista[classKey].liste[listId].count++;
+                        votiPerClasseELista[classKey].total++;
+                        if (vData.preferenze && Array.isArray(vData.preferenze)) {
+                            vData.preferenze.forEach(pref => {
+                                if (votiPerClasseELista[classKey].liste[listId].preferenze[pref] !== undefined) {
+                                    votiPerClasseELista[classKey].liste[listId].preferenze[pref]++;
+                                }
+                            });
+                        }
                     }
-                    votiPerClasseELista[classKey].total++;
                 });
 
                 // Aggreghiamo in memoria i voti decentralizzati della Consulta
@@ -1740,168 +1759,206 @@
                     votiPerClasseELista: votiPerClasseELista
                 };
 
-                let html = `
-                    <div class="grid md:grid-cols-3 gap-6">
-                        <!-- Card statistiche -->
-                        <div class="bg-white p-5 rounded-2xl border shadow-sm md:col-span-1 flex flex-col justify-between">
-                            <div>
-                                <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Statistiche Affluenza Scorporata</h4>
-                                <div class="space-y-3 mb-4">
-                                    <div class="flex justify-between items-center border-b pb-1">
-                                        <span class="text-xs font-semibold text-slate-700">Totale Iscritti:</span>
-                                        <span class="font-extrabold text-slate-950">${totalTokensCount}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center border-b pb-1">
-                                        <span class="text-xs font-semibold text-slate-700">Votanti Totali:</span>
-                                        <span class="font-extrabold text-blue-900">${usedTokensCount}</span>
-                                    </div>
-                                    <div class="flex justify-between items-center border-b pb-1">
-                                        <span class="text-xs font-semibold text-slate-700">Affluenza Consiglio:</span>
-                                        <span class="font-extrabold text-slate-900">${consiglioVotiSnap.size} (${totalTokensCount > 0 ? ((consiglioVotiSnap.size / totalTokensCount) * 100).toFixed(1) : '0.0'}%)</span>
-                                    </div>
-                                    <div class="flex justify-between items-center border-b pb-1">
-                                        <span class="text-xs font-semibold text-slate-700">Affluenza Consulta:</span>
-                                        <span class="font-extrabold text-indigo-900">${consultaVotiSnap.size} (${totalTokensCount > 0 ? ((consultaVotiSnap.size / totalTokensCount) * 100).toFixed(1) : '0.0'}%)</span>
-                                    </div>
-                                    <div class="flex justify-between items-center">
-                                        <span class="text-xs font-semibold text-slate-700">Affluenza Classe:</span>
-                                        <span class="font-extrabold text-purple-900">${classeVotiSnap.size} (${totalTokensCount > 0 ? ((classeVotiSnap.size / totalTokensCount) * 100).toFixed(1) : '0.0'}%)</span>
-                                    </div>
+            } catch (err) {
+                console.error("Errore nell'elaborazione statistica dei voti:", err);
+            }
+        }
+
+        function renderScrutinioUI() {
+            const container = document.getElementById('scrutinio-realtime-results');
+            if (!container) return;
+
+            if (!globalScrutinioData) {
+                container.innerHTML = `<p class="text-center text-slate-500 italic py-10">Scrutinio non ancora pronto.</p>`;
+                return;
+            }
+
+            const totalTokensCount = globalScrutinioData.totalTokens;
+            const usedTokensCount = globalScrutinioData.usedTokens;
+            const statTurnout = globalScrutinioData.statTurnout;
+            const votiConsiglio = globalScrutinioData.votiConsiglio;
+            const seggiAssegnatiConsiglio = globalScrutinioData.seggiAssegnatiConsiglio;
+            const votiPerClasseELista = globalScrutinioData.votiPerClasseELista;
+            const schedeVotateList = globalScrutinioData.schedeVotate;
+
+            let html = `
+                <div class="grid md:grid-cols-3 gap-6">
+                    <!-- Card statistiche -->
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm md:col-span-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Statistiche Affluenza Scorporata</h4>
+                            <div class="space-y-3 mb-4">
+                                <div class="flex justify-between items-center border-b pb-1">
+                                    <span class="text-xs font-semibold text-slate-700">Totale Iscritti:</span>
+                                    <span class="font-extrabold text-slate-950">${totalTokensCount}</span>
+                                </div>
+                                <div class="flex justify-between items-center border-b pb-1">
+                                    <span class="text-xs font-semibold text-slate-700">Votanti Totali:</span>
+                                    <span class="font-extrabold text-blue-900">${usedTokensCount}</span>
+                                </div>
+                                <div class="flex justify-between items-center border-b pb-1">
+                                    <span class="text-xs font-semibold text-slate-700">Affluenza Consiglio:</span>
+                                    <span class="font-extrabold text-slate-900">${globalScrutinioData.turnoutConsiglio} (${totalTokensCount > 0 ? ((globalScrutinioData.turnoutConsiglio / totalTokensCount) * 100).toFixed(1) : '0.0'}%)</span>
+                                </div>
+                                <div class="flex justify-between items-center border-b pb-1">
+                                    <span class="text-xs font-semibold text-slate-700">Affluenza Consulta:</span>
+                                    <span class="font-extrabold text-indigo-900">${globalScrutinioData.turnoutConsulta} (${totalTokensCount > 0 ? ((globalScrutinioData.turnoutConsulta / totalTokensCount) * 100).toFixed(1) : '0.0'}%)</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-semibold text-slate-700">Affluenza Classe:</span>
+                                    <span class="font-extrabold text-purple-900">${globalScrutinioData.turnoutClasse} (${totalTokensCount > 0 ? ((globalScrutinioData.turnoutClasse / totalTokensCount) * 100).toFixed(1) : '0.0'}%)</span>
                                 </div>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Scrutinio e attribuzione seggi -->
-                        <div class="bg-white p-5 rounded-2xl border shadow-sm md:col-span-2">
-                            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2 flex justify-between">
-                                <span>Consiglio d'Istituto</span>
-                                <span class="text-blue-900 font-extrabold text-xs">Assegnazione Seggi (O.M. 215/1991)</span>
-                            </h4>
-                            <div class="space-y-4">
-                `;
+                    <!-- Scrutinio e attribuzione seggi -->
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm md:col-span-2">
+                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2 flex justify-between">
+                            <span>Consiglio d'Istituto</span>
+                            <span class="text-blue-900 font-extrabold text-xs">Assegnazione Seggi (O.M. 215/1991)</span>
+                        </h4>
+                        <div class="space-y-4">
+            `;
 
-                for (const [idLista, data] of Object.entries(configElezioni.listeConsiglio)) {
-                    const dbData = votiConsiglio[idLista] || { count: 0, preferenze: {} };
-                    const seggi = seggiAssegnatiConsiglio[idLista] || 0;
+            for (const [idLista, data] of Object.entries(configElezioni.listeConsiglio)) {
+                const dbData = votiConsiglio[idLista] || { count: 0, preferenze: {} };
+                const seggi = seggiAssegnatiConsiglio[idLista] || 0;
 
-                    const candOrdinati = data.candidati.map(c => ({
-                        nome: c,
-                        voti: dbData.preferenze[c] || 0
-                    })).sort((a, b) => b.voti - a.voti);
-
-                    html += `
-                        <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
-                            <div class="flex justify-between items-center mb-2">
-                                <div>
-                                    <h5 class="font-extrabold text-slate-900 text-sm">${data.nome}</h5>
-                                    <span class="text-xs text-slate-500 font-bold">Voti di lista: ${dbData.count}</span>
-                                </div>
-                                <span class="bg-red-100 text-red-900 font-black text-xs px-2.5 py-1 rounded-full uppercase tracking-wider">Seggi: ${seggi}</span>
-                            </div>
-                            <ul class="text-[11px] space-y-1 pt-2 border-t border-slate-200">
-                                ${candOrdinati.map((c, idx) => {
-                                    const eletto = idx < seggi && c.voti > 0 ? '<span class="text-emerald-700 font-bold ml-1">[Eletto]</span>' : '';
-                                    return `<li class="flex justify-between items-center text-slate-700 border-b border-dashed border-slate-200 pb-0.5">
-                                        <span>${c.nome} ${eletto}</span>
-                                        <span class="font-bold text-slate-900">${c.voti} pref.</span>
-                                    </li>`;
-                                }).join('')}
-                            </ul>
-                        </div>
-                    `;
-                }
+                const candOrdinati = data.candidati.map(c => ({
+                    nome: c,
+                    voti: dbData.preferenze[c] || 0
+                })).sort((a, b) => b.voti - a.voti);
 
                 html += `
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                        <div class="flex justify-between items-center mb-2">
+                            <div>
+                                <h5 class="font-extrabold text-slate-900 text-sm">${data.nome}</h5>
+                                <span class="text-xs text-slate-500 font-bold">Voti di lista: ${dbData.count}</span>
                             </div>
+                            <span class="bg-red-100 text-red-900 font-black text-xs px-2.5 py-1 rounded-full uppercase tracking-wider">Seggi: ${seggi}</span>
                         </div>
-                    </div>
-
-                    <!-- MATRICE DI CALCOLO PIVOT / CLASSE -->
-                    <div class="bg-white p-5 rounded-2xl border shadow-sm mt-6">
-                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 border-b pb-2 flex justify-between items-center">
-                            <span>Distribuzione Voti Consiglio per Classe (Matrice Pivot)</span>
-                            <span class="text-[10px] bg-slate-100 px-2.5 py-1 rounded-lg text-slate-600 font-semibold">Generata dinamicamente dalle schede</span>
-                        </h4>
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse text-xs">
-                                <thead>
-                                    <tr class="bg-slate-100 text-slate-700 font-bold">
-                                        <th class="p-2 border">Classe/Sezione</th>
-                                        ${Object.values(configElezioni.listeConsiglio).map(l => `<th class="p-2 border">${l.nome}</th>`).join('')}
-                                        <th class="p-2 border">Totale Voti Consiglio</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${Object.keys(statTurnout).map(classKey => {
-                                        const cleanClass = classKey.replace('_', ' ');
-                                        const dataClass = votiPerClasseELista[classKey] || { total: 0 };
-                                        return `
-                                            <tr class="hover:bg-slate-50">
-                                                <td class="p-2 border font-bold text-slate-800">${cleanClass}</td>
-                                                ${Object.keys(configElezioni.listeConsiglio).map(lId => `
-                                                    <td class="p-2 border font-semibold text-slate-600">${dataClass[lId] || 0}</td>
-                                                `).join('')}
-                                                <td class="p-2 border font-bold text-blue-900">${dataClass.total || 0}</td>
-                                            </tr>
-                                        `;
-                                    }).join('')}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <!-- REGISTRO DETTAGLIATO SCHEDE PER TOKEN (AFFLUENZA SCORPORATA) -->
-                    <div class="bg-white p-5 rounded-2xl border shadow-sm mt-6">
-                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 border-b pb-2">Registro Dettagliato Schede Votate (Ricognizione Anonima per Token)</h4>
-                        <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
-                            <table class="w-full text-left border-collapse text-xs">
-                                <thead>
-                                    <tr class="bg-slate-100 text-slate-700 font-bold sticky top-0">
-                                        <th class="p-2 border">Token</th>
-                                        <th class="p-2 border">Classe</th>
-                                        <th class="p-2 border">Voto Consiglio</th>
-                                        <th class="p-2 border">Preferenze Consiglio</th>
-                                        <th class="p-2 border">Voto Consulta</th>
-                                        <th class="p-2 border">Preferenza Consulta</th>
-                                        <th class="p-2 border">Voto Classe Rappresentante</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    ${schedeVotateList.length > 0 ? schedeVotateList.map(s => {
-                                        const consiglioTxt = s.votoConsiglio ? s.votoConsiglio.nomeLista : '<span class="text-slate-400 italic">Bianca</span>';
-                                        const consiglioPrefs = s.votoConsiglio && s.votoConsiglio.preferenze.length > 0 ? s.votoConsiglio.preferenze.join(', ') : '-';
-                                        const consultaTxt = s.votoConsulta ? s.votoConsulta.nomeLista : '<span class="text-slate-400 italic">Bianca</span>';
-                                        const consultaPrefs = s.votoConsulta && s.votoConsulta.preferenze.length > 0 ? s.votoConsulta.preferenze.join(', ') : '-';
-                                        const classeTxt = s.votoClasse ? s.votoClasse : '<span class="text-slate-400 italic">Bianca</span>';
-                                        return `
-                                            <tr class="hover:bg-slate-50 border-b">
-                                                <td class="p-2 border font-mono font-bold text-red-700">${s.token}</td>
-                                                <td class="p-2 border">${s.classe} ${s.sezione}</td>
-                                                <td class="p-2 border font-semibold">${consiglioTxt}</td>
-                                                <td class="p-2 border italic text-slate-600">${consiglioPrefs}</td>
-                                                <td class="p-2 border">${consultaTxt}</td>
-                                                <td class="p-2 border italic text-slate-600">${consultaPrefs}</td>
-                                                <td class="p-2 border font-bold uppercase text-purple-900">${classeTxt}</td>
-                                            </tr>
-                                        `;
-                                    }).join('') : '<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">Nessun voto di ricognizione presente in archivio.</td></tr>'}
-                                </tbody>
-                            </table>
-                        </div>
+                        <ul class="text-[11px] space-y-1 pt-2 border-t border-slate-200">
+                            ${candOrdinati.map((c, idx) => {
+                                const eletto = idx < seggi && c.voti > 0 ? '<span class="text-emerald-700 font-bold ml-1">[Eletto]</span>' : '';
+                                return `<li class="flex justify-between items-center text-slate-700 border-b border-dashed border-slate-200 pb-0.5">
+                                    <span>${c.nome} ${eletto}</span>
+                                    <span class="font-bold text-slate-900">${c.voti} pref.</span>
+                                </li>`;
+                            }).join('')}
+                        </ul>
                     </div>
                 `;
-
-                container.innerHTML = html;
-
-            } catch (err) {
-                console.error(err);
-                container.innerHTML = `<p class="text-red-500 text-sm font-bold text-center py-4">Errore nell'elaborazione dello scrutinio.</p>`;
             }
-        };
+
+            html += `
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MATRICE DI CALCOLO PIVOT / CLASSE CON TABELLINA CANDIDATI DETTAGLIATA -->
+                <div class="bg-white p-5 rounded-2xl border shadow-sm mt-6">
+                    <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 border-b pb-2 flex justify-between items-center">
+                        <span>Distribuzione Voti Consiglio per Classe (Matrice Pivot)</span>
+                        <span class="text-[10px] bg-slate-100 px-2.5 py-1 rounded-lg text-slate-600 font-semibold">Generata dinamicamente dalle schede</span>
+                    </h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 font-bold">
+                                    <th class="p-2 border w-1/4">Classe/Sezione</th>
+                                    ${Object.values(configElezioni.listeConsiglio).map(l => `<th class="p-2 border w-1/3">${l.nome}</th>`).join('')}
+                                    <th class="p-2 border w-12 text-center">Totale Voti</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Object.keys(statTurnout).map(classKey => {
+                                    const cleanClass = classKey.replace('_', ' ');
+                                    const dataClass = votiPerClasseELista[classKey] || { total: 0, liste: {} };
+                                    return `
+                                        <tr class="hover:bg-slate-50 border-b">
+                                            <td class="p-3 border font-bold text-slate-800 vertical-align-top">${cleanClass}</td>
+                                            ${Object.entries(configElezioni.listeConsiglio).map(([lId, lData]) => {
+                                                const listVotesClassCount = dataClass.liste?.[lId]?.count || 0;
+                                                return `
+                                                    <td class="p-3 border text-slate-700">
+                                                        <div class="bg-blue-50/50 p-2 rounded-lg border border-blue-100">
+                                                            <div class="text-xs font-bold text-blue-950 flex justify-between">
+                                                                <span>Voti Lista:</span>
+                                                                <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded">${listVotesClassCount}</span>
+                                                            </div>
+                                                            <div class="mt-1.5 space-y-1 text-[11px] border-t border-slate-200/60 pt-1">
+                                                                ${lData.candidati.map(cand => {
+                                                                    const votes = dataClass.liste?.[lId]?.preferenze?.[cand] || 0;
+                                                                    return `
+                                                                        <div class="flex justify-between items-center text-slate-600">
+                                                                            <span>${cand}</span>
+                                                                            <span class="font-extrabold text-slate-800">${votes}</span>
+                                                                        </div>
+                                                                    `;
+                                                                }).join('')}
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                `;
+                                            }).join('')}
+                                            <td class="p-3 border font-extrabold text-blue-900 text-center text-sm">${dataClass.total || 0}</td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- REGISTRO DETTAGLIATO SCHEDE PER TOKEN (AFFLUENZA SCORPORATA) -->
+                <div class="bg-white p-5 rounded-2xl border shadow-sm mt-6">
+                    <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 border-b pb-2">Registro Dettagliato Schede Votate (Ricognizione Anonima per Token)</h4>
+                    <div class="overflow-x-auto max-h-[300px] overflow-y-auto">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-700 font-bold sticky top-0">
+                                    <th class="p-2 border">Token</th>
+                                    <th class="p-2 border">Classe</th>
+                                    <th class="p-2 border">Voto Consiglio</th>
+                                    <th class="p-2 border">Preferenze Consiglio</th>
+                                    <th class="p-2 border">Voto Consulta</th>
+                                    <th class="p-2 border">Preferenza Consulta</th>
+                                    <th class="p-2 border">Voto Classe Rappresentante</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${schedeVotateList.length > 0 ? schedeVotateList.map(s => {
+                                    const consiglioTxt = s.votoConsiglio ? s.votoConsiglio.nomeLista : '<span class="text-slate-400 italic">Bianca</span>';
+                                    const consiglioPrefs = s.votoConsiglio && s.votoConsiglio.preferenze.length > 0 ? s.votoConsiglio.preferenze.join(', ') : '-';
+                                    const consultaTxt = s.votoConsulta ? s.votoConsulta.nomeLista : '<span class="text-slate-400 italic">Bianca</span>';
+                                    const consultaPrefs = s.votoConsulta && s.votoConsulta.preferenze.length > 0 ? s.votoConsulta.preferenze.join(', ') : '-';
+                                    const classeTxt = s.votoClasse ? s.votoClasse : '<span class="text-slate-400 italic">Bianca</span>';
+                                    return `
+                                        <tr class="hover:bg-slate-50 border-b">
+                                            <td class="p-2 border font-mono font-bold text-red-700">${s.token}</td>
+                                            <td class="p-2 border">${s.classe} ${s.sezione}</td>
+                                            <td class="p-2 border font-semibold">${consiglioTxt}</td>
+                                            <td class="p-2 border italic text-slate-600">${consiglioPrefs}</td>
+                                            <td class="p-2 border">${consultaTxt}</td>
+                                            <td class="p-2 border italic text-slate-600">${consultaPrefs}</td>
+                                            <td class="p-2 border font-bold uppercase text-purple-900">${classeTxt}</td>
+                                        </tr>
+                                    `;
+                                }).join('') : '<tr><td colspan="7" class="p-4 text-center text-slate-400 italic">Nessun voto di ricognizione presente in archivio.</td></tr>'}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
 
         window.esportaExcelCompleto = function() {
             if(!globalScrutinioData) {
-                showNotification("Azione Necessaria", "Nessun dato scrutinato disponibile. Premi prima 'Elabora Scrutinio'.", "error");
+                showNotification("Azione Necessaria", "Nessun dato scrutinato disponibile. Attendi che i dati si carichino in tempo reale.", "error");
                 return;
             }
 
@@ -1938,17 +1995,23 @@
                 const headerPivot = ["Classe/Sezione"];
                 Object.values(configElezioni.listeConsiglio).forEach(l => {
                     headerPivot.push(l.nome);
+                    l.candidati.forEach(c => {
+                        headerPivot.push(`Pref. ${c}`);
+                    });
                 });
                 headerPivot.push("Totale Voti");
                 rowsPivot.push(headerPivot);
 
                 Object.keys(globalScrutinioData.statTurnout).forEach(classKey => {
                     const cleanClass = classKey.replace('_', ' ');
-                    const dataClass = globalScrutinioData.votiPerClasseELista[classKey] || { total: 0 };
+                    const dataClass = globalScrutinioData.votiPerClasseELista[classKey] || { total: 0, liste: {} };
                     
                     const row = [cleanClass];
-                    Object.keys(configElezioni.listeConsiglio).forEach(lId => {
-                        row.push(dataClass[lId] || 0);
+                    Object.entries(configElezioni.listeConsiglio).forEach(([lId, lData]) => {
+                        row.push(dataClass.liste?.[lId]?.count || 0);
+                        lData.candidati.forEach(cand => {
+                            row.push(dataClass.liste?.[lId]?.preferenze?.[cand] || 0);
+                        });
                     });
                     row.push(dataClass.total || 0);
                     rowsPivot.push(row);
@@ -1996,7 +2059,7 @@
 
         window.esportaVerbalePDF = function() {
             if(!globalScrutinioData) {
-                showNotification("Azione Necessaria", "Nessun dato scrutinato disponibile. Premi prima 'Elabora Scrutinio'.", "error");
+                showNotification("Azione Necessaria", "Nessun dato scrutinato disponibile.", "error");
                 return;
             }
 
@@ -2250,10 +2313,7 @@
                     <div class="text-center py-10 bg-white rounded-2xl shadow border p-6">
                         <i data-lucide="bar-chart-2" class="mx-auto w-12 h-12 text-slate-400 mb-2"></i>
                         <h4 class="text-lg font-bold text-slate-800">Nessun Dato Disponibile</h4>
-                        <p class="text-sm text-slate-500 mb-6">È necessario aggiornare i dati di scrutinio nella Tab 4 prima di visualizzare le statistiche.</p>
-                        <button onclick="switchAdminTab('verbali')" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-6 rounded-xl text-sm shadow transition-colors">
-                            Procedi al Caricamento Dati
-                        </button>
+                        <p class="text-sm text-slate-500 mb-6">In attesa che arrivino dati dall'urna cloud...</p>
                     </div>
                 `;
                 return;
@@ -2549,7 +2609,40 @@
             lucide.createIcons();
         };
 
-        // --- INIZIALIZZAZIONE DELLA PAGINA SU WINDOW LOAD ---
+        let activeRealtimeUnsubscribers = [];
+
+        function startAdminRealtimeListeners() {
+            stopAdminRealtimeListeners();
+
+            const collectionsToListen = ['tokens', 'voti_consiglio', 'voti_consulta', 'voti_classe', 'schede_votate'];
+            let debounceTimer = null;
+
+            collectionsToListen.forEach(colName => {
+                const unsub = onSnapshot(collection(db, colName), () => {
+                    clearTimeout(debounceTimer);
+                    debounceTimer = setTimeout(async () => {
+                        await elaboraDatiScrutinio();
+                        // Se siamo nella tab verbali o charts, ri-renderizza automaticamente la UI reattiva!
+                        if (activeAdminTab === 'verbali') {
+                            renderScrutinioUI();
+                        } else if (activeAdminTab === 'charts') {
+                            renderChartsTab(document.getElementById('admin-tab-content'));
+                        }
+                    }, 300); // Piccolo debounce per non sovraccaricare la CPU con aggiornamenti rapidi multipli
+                }, (error) => {
+                    console.error(`Errore sinc real-time per raccolta ${colName}:`, error);
+                });
+                activeRealtimeUnsubscribers.push(unsub);
+            });
+        }
+
+        function stopAdminRealtimeListeners() {
+            activeRealtimeUnsubscribers.forEach(unsub => {
+                if (typeof unsub === 'function') unsub();
+            });
+            activeRealtimeUnsubscribers = [];
+        }
+
         window.onload = async () => {
             showPage('loading');
             await syncConfigFromDB();
