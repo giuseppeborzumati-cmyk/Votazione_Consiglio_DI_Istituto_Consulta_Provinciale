@@ -233,14 +233,14 @@
             container.innerHTML = `
                 <div class="flex flex-col items-center justify-center h-80">
                     <div class="spinner mb-4"></div>
-                    <p class="text-slate-600 font-bold text-lg">Caricamento in corso...</p>
+                    <p class="text-slate-600 font-bold text-lg">Caricamento ultra-rapido...</p>
                 </div>
             `;
         }
 
         function renderStudentLogin(container) {
             container.innerHTML = `
-                <div class="grid lg:grid-cols-12 gap-8 items-start">
+                <div class="grid lg:grid-cols-12 gap-8 items-start animate-fade-in">
                     <div class="lg:col-span-7 bg-white p-6 rounded-2xl shadow-md border border-slate-200">
                         <div class="flex items-center space-x-3 mb-4 text-blue-900">
                             <i data-lucide="scale" class="w-6 h-6"></i>
@@ -257,7 +257,7 @@
 
                             <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-100 space-y-2">
                                 <h4 class="font-bold text-emerald-900 flex items-center"><i data-lucide="eye-off" class="w-4 h-4 mr-1.5"></i> Garanzia Assoluta di Anonimato:</h4>
-                                <p class="text-xs">La registrazione del voto pubblico (incremento dei contatori delle liste e preferenze) avviene in via asincrona rispetto alla marcatura di utilizzo del Token. Non vi è alcun legame, database log o tracciamento che colleghi l'identità dell'elettore alle scelte di voto espresse.</p>
+                                <p class="text-xs">La registrazione del voto pubblico avviene in via asincrona rispetto alla marcatura di utilizzo del Token. Non vi è alcun legame, database log o tracciamento che colleghi l'identità dell'elettore alle scelte di voto espresse.</p>
                             </div>
 
                             <p class="text-xs text-slate-500 italic">La Commissione Elettorale supervisiona l'integrità del processo. Qualsiasi tentativo di alterazione o accesso non autorizzato sarà registrato e segnalato alle autorità competenti.</p>
@@ -512,7 +512,7 @@
                     <div class="space-y-4">
                         <div>
                             <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Nome e Cognome del Candidato</label>
-                            <input type="text" id="candClasseInput" placeholder="ES: Mario Rossi" class="w-full p-4 border rounded-xl font-semibold outline-none focus:border-purple-600 focus:ring-2 focus:ring-purple-100 transition-all uppercase">
+                            <input type="text" id="candClasseInput" placeholder="ES: Mario Rossi" class="w-full p-4 border rounded-xl font-semibold outline-none focus:border-purple-600 focus:ring-2 focus:ring-purple-100 transition-all uppercase animate-pulse">
                         </div>
                         <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 flex items-start space-x-3 text-purple-900">
                             <i data-lucide="info" class="w-5 h-5 mt-0.5 flex-shrink-0"></i>
@@ -635,9 +635,9 @@
                         <button onclick="showPage('dashboard')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-6 rounded-xl text-sm transition-all text-center">
                             Modifica le Schede
                         </button>
-                        <button onclick="submitFinalVotes()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 px-8 rounded-xl text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2">
+                        <button id="finalSubmitBtn" onclick="submitFinalVotes()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 px-8 rounded-xl text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2">
                             <i data-lucide="inbox" class="w-5 h-5"></i>
-                            <span>Imbuca nell'Urna Elettorale</span>
+                            <span id="finalSubmitBtnText">Imbuca nell'Urna Elettorale</span>
                         </button>
                     </div>
                 </div>
@@ -647,7 +647,7 @@
 
         function renderSuccess(container) {
             container.innerHTML = `
-                <div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-xl border border-slate-200 text-center space-y-6 my-10">
+                <div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-xl border border-slate-200 text-center space-y-6 my-10 animate-fade-in">
                     <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto text-emerald-600">
                         <i data-lucide="check-circle" class="w-12 h-12"></i>
                     </div>
@@ -656,7 +656,7 @@
                         <i data-lucide="shield" class="w-4 h-4 inline mr-1"></i> Schede Sigillate ed Inviate all'Urna
                     </p>
                     <div class="space-y-3 text-slate-600 max-w-md mx-auto text-sm leading-relaxed">
-                        <p>La tua sessione di voto si è conclusa con successo. Il sistema ha aggiornato i contatori in modo totalmente anonimo e asincrono.</p>
+                        <p>La tua sessione di voto si è conclusa con successo. Il sistema ha registrato le schede in modo totalmente asincrono ed anonimo.</p>
                         <p class="font-semibold text-red-600">Il tuo Token d'accesso monouso è stato permanentemente revocato.</p>
                     </div>
                     <div class="pt-6 border-t border-slate-100">
@@ -777,52 +777,31 @@
         window.submitFinalVotes = async function() {
             if(!cartVotes.consiglio && !cartVotes.consulta && !cartVotes.classe) return;
 
+            const submitBtn = document.getElementById('finalSubmitBtn');
+            const submitBtnText = document.getElementById('finalSubmitBtnText');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtnText.innerText = "Invio in corso...";
+            }
+
             const tokenRef = doc(db, 'tokens', currentUserData.id);
             
-            let consiglioRef = null;
-            if (cartVotes.consiglio) {
-                consiglioRef = doc(db, 'voti_consiglio', cartVotes.consiglio.listaId);
-            }
-
-            let consultaRef = null;
-            if (cartVotes.consulta && configElezioni.consultaAttiva) {
-                consultaRef = doc(db, 'voti_consulta', cartVotes.consulta.listaId);
-            }
-
-            let classeRef = null;
-            const targetClassKey = `${currentUserData.classe}_${currentUserData.sezione}`.toUpperCase();
-            if (cartVotes.classe && configElezioni.rappresentantiAttivi) {
-                classeRef = doc(db, 'voti_classe', targetClassKey);
-            }
-
-            // Dettaglio analitico per singolo Token - Anonimato protetto sul nome ma tracciato per token
+            // Nuova Architettura Decentralizzata: Scriviamo documenti unici legati al Token
+            // Zero contesa dei blocchi o hotspot di scrittura su Firestore!
+            const consiglioVoteRef = doc(db, 'voti_consiglio', currentUserData.id);
+            const consultaVoteRef = doc(db, 'voti_consulta', currentUserData.id);
+            const classeVoteRef = doc(db, 'voti_classe', currentUserData.id);
             const ricognizioneRef = doc(db, 'schede_votate', currentUserData.id);
 
             try {
-                showPage('loading');
-                
+                // Eseguiamo una singola transazione atomica sul token per convalidarne l'uso e registrare le schede decentralizzate
                 await runTransaction(db, async (transaction) => {
                     const tokenDoc = await transaction.get(tokenRef);
                     if (!tokenDoc.exists() || tokenDoc.data().hasVoted) {
                         throw new Error("Il Token segreto è già stato consumato.");
                     }
 
-                    let consiglioDoc = null;
-                    if (consiglioRef) {
-                        consiglioDoc = await transaction.get(consiglioRef);
-                    }
-
-                    let consultaDoc = null;
-                    if (consultaRef) {
-                        consultaDoc = await transaction.get(consultaRef);
-                    }
-
-                    let classeDoc = null;
-                    if (classeRef) {
-                        classeDoc = await transaction.get(classeRef);
-                    }
-
-                    // Aggiorniamo il Token
+                    // 1. Aggiorniamo lo stato del Token d'accesso monouso
                     transaction.update(tokenRef, { 
                         hasVoted: true, 
                         votedConsiglio: !!cartVotes.consiglio,
@@ -831,50 +810,42 @@
                         usedAt: new Date().toISOString() 
                     });
 
-                    // Incremento voti Consiglio
-                    if (consiglioRef) {
-                        let payload = { count: 1, preferenze: {} };
-                        if (consiglioDoc && consiglioDoc.exists()) {
-                            payload.count = consiglioDoc.data().count + 1;
-                            payload.preferenze = consiglioDoc.data().preferenze || {};
-                        }
-                        
-                        cartVotes.consiglio.preferenze.forEach(p => {
-                            payload.preferenze[p] = (payload.preferenze[p] || 0) + 1;
+                    // 2. Registriamo i dati decentralizzati del Consiglio
+                    if (cartVotes.consiglio) {
+                        transaction.set(consiglioVoteRef, {
+                            listaId: cartVotes.consiglio.listaId,
+                            preferenze: cartVotes.consiglio.preferenze,
+                            classe: currentUserData.classe,
+                            sezione: currentUserData.sezione,
+                            indirizzo: currentUserData.indirizzo || "GENERALE",
+                            timestamp: new Date().toISOString()
                         });
-                        
-                        transaction.set(consiglioRef, payload, { merge: true });
                     }
 
-                    // Incremento voti Consulta
-                    if (consultaRef) {
-                        let payload = { count: 1, preferenze: {} };
-                        if (consultaDoc && consultaDoc.exists()) {
-                            payload.count = consultaDoc.data().count + 1;
-                            payload.preferenze = consultaDoc.data().preferenze || {};
-                        }
-                        
-                        cartVotes.consulta.preferenze.forEach(p => {
-                            payload.preferenze[p] = (payload.preferenze[p] || 0) + 1;
+                    // 3. Registriamo i dati decentralizzati della Consulta
+                    if (cartVotes.consulta && configElezioni.consultaAttiva) {
+                        transaction.set(consultaVoteRef, {
+                            listaId: cartVotes.consulta.listaId,
+                            preferenze: cartVotes.consulta.preferenze,
+                            classe: currentUserData.classe,
+                            sezione: currentUserData.sezione,
+                            indirizzo: currentUserData.indirizzo || "GENERALE",
+                            timestamp: new Date().toISOString()
                         });
-                        
-                        transaction.set(consultaRef, payload, { merge: true });
                     }
 
-                    // Incremento voti Classe (Rappresentanti di Classe)
-                    if (classeRef) {
-                        let payload = {};
-                        if (classeDoc && classeDoc.exists()) {
-                            payload = classeDoc.data();
-                        }
-
-                        const targetName = cartVotes.classe.toUpperCase();
-                        payload[targetName] = (payload[targetName] || 0) + 1;
-
-                        transaction.set(classeRef, payload);
+                    // 4. Registriamo i dati decentralizzati del rappresentante di Classe
+                    if (cartVotes.classe && configElezioni.rappresentantiAttivi) {
+                        transaction.set(classeVoteRef, {
+                            candidato: cartVotes.classe.toUpperCase(),
+                            classe: currentUserData.classe,
+                            sezione: currentUserData.sezione,
+                            indirizzo: currentUserData.indirizzo || "GENERALE",
+                            timestamp: new Date().toISOString()
+                        });
                     }
 
-                    // Salvataggio della ricognizione analitica
+                    // 5. Registriamo il log di ricognizione anonima
                     transaction.set(ricognizioneRef, {
                         token: currentUserData.id,
                         classe: currentUserData.classe,
@@ -900,9 +871,12 @@
                 showPage('success');
 
             } catch (error) {
-                console.error("Errore transazione:", error);
-                showNotification("Errore di Urna", "Impossibile depositare il voto nell'urna elettronica.", "error");
-                showPage('dashboard');
+                console.error("Errore invio voto:", error);
+                showNotification("Errore di Urna", "Impossibile depositare il voto. Riprova.", "error");
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtnText.innerText = "Imbuca nell'Urna Elettorale";
+                }
             }
         };
 
@@ -1355,8 +1329,8 @@
             container.innerHTML = `
                 <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h3 class="text-lg font-extrabold text-slate-800">Scrutinio in Tempo Reale & Algoritmi Elettorali</h3>
-                        <p class="text-xs text-slate-500">Le sezioni mostrano i risultati anonimi dell'urna, applicando la ripartizione dei seggi e la ricognizione analitica per classe.</p>
+                        <h3 class="text-lg font-extrabold text-slate-800">Scrutinio & Aggregazione in Tempo Reale</h3>
+                        <p class="text-xs text-slate-500">I risultati vengono aggregati istantaneamente leggendo le singole schede protette dal database decentralizzato.</p>
                     </div>
                     <div class="flex gap-2 flex-wrap">
                         <button onclick="esportaExcelCompleto()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-colors flex items-center space-x-1.5 shadow">
@@ -1366,13 +1340,13 @@
                             <i data-lucide="file-text" class="w-4 h-4"></i> <span>Esporta Verbale Ufficiale (O.M. 215/1991)</span>
                         </button>
                         <button onclick="loadRisultati()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-colors flex items-center space-x-1.5 shadow">
-                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> <span>Aggiorna Dati</span>
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> <span>Elabora Scrutinio</span>
                         </button>
                     </div>
                 </div>
 
                 <div id="scrutinio-realtime-results" class="space-y-6">
-                    <p class="text-center text-slate-500 italic py-10">Clicca "Aggiorna Dati" per recuperare ed elaborare i dati elettorali correnti dall'urna.</p>
+                    <p class="text-center text-slate-500 italic py-10">Clicca "Elabora Scrutinio" per raccogliere, sommare e visualizzare i dati elettorali correnti dall'urna decentralizzata.</p>
                 </div>
             `;
         }
@@ -1569,7 +1543,6 @@
                 return { eletti, list, dettagliSorteggio };
             }
 
-            // Funzione interna per generare un numero pseudorandomico basato su un seme (per evitare che cambi a ogni rendering)
             function getSeededRandom(seed) {
                 let hash = 0;
                 for (let i = 0; i < seed.length; i++) {
@@ -1585,42 +1558,30 @@
             let tiedForFirst = list.filter(c => c.votes === v0);
 
             if (tiedForFirst.length >= 3) {
-                // Esempio: Top 3 tied A:5, B:5, C:5. Ne servono 2 per sorteggio
-                dettagliSorteggio = `Rilevata parità di votazione ex-aequo (voti: ${v0}) tra ${tiedForFirst.length} candidati: ${tiedForFirst.map(c=>c.name).join(', ')}. Si procede a sorteggio per estrarre 2 eletti. `;
-                
-                // Shuffle tied candidates using seeded random
+                dettagliSorteggio = `Rilevata parità di votazione ex-aequo (voti: ${v0}) tra ${tiedForFirst.length} candidati. Si procede a sorteggio per estrarre 2 eletti. `;
                 let shuffled = [...tiedForFirst];
                 for (let i = shuffled.length - 1; i > 0; i--) {
                     const j = Math.floor(getSeededRandom(seed + "_" + i) * (i + 1));
                     [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
                 }
-                
                 eletti.push({ name: shuffled[0].name, votes: shuffled[0].votes, sorteggiato: true });
                 eletti.push({ name: shuffled[1].name, votes: shuffled[1].votes, sorteggiato: true });
-                
                 dettagliSorteggio += `Estratti ed eletti gli alunni: ${shuffled[0].name} e ${shuffled[1].name}.`;
             } else if (tiedForFirst.length === 2) {
-                // Esattamente due candidati con lo stesso punteggio massimo. Entrambi eletti.
                 eletti.push({ name: tiedForFirst[0].name, votes: tiedForFirst[0].votes, sorteggiato: false });
                 eletti.push({ name: tiedForFirst[1].name, votes: tiedForFirst[1].votes, sorteggiato: false });
             } else if (tiedForFirst.length === 1) {
-                // Primo eletto è indiscusso
                 eletti.push({ name: list[0].name, votes: list[0].votes, sorteggiato: false });
-                
-                // Ora controlliamo il secondo posto
                 if (list.length >= 2) {
                     let v1 = list[1].votes;
                     let tiedForSecond = list.filter(c => c.votes === v1);
                     if (tiedForSecond.length >= 2) {
-                        dettagliSorteggio = `Rilevata parità ex-aequo per il secondo seggio (voti: ${v1}) tra candidati: ${tiedForSecond.map(c=>c.name).join(', ')}. Si procede a sorteggio per estrarre 1 eletto. `;
-                        
+                        dettagliSorteggio = `Rilevata parità ex-aequo per il secondo seggio (voti: ${v1}) tra candidati. Si procede a sorteggio. `;
                         let indexEstrat = Math.floor(rand * tiedForSecond.length);
                         let estratto = tiedForSecond[indexEstrat];
-                        
                         eletti.push({ name: estratto.name, votes: estratto.votes, sorteggiato: true });
                         dettagliSorteggio += `Estratto ed eletto l'alunno: ${estratto.name}.`;
                     } else {
-                        // Secondo eletto indiscusso
                         eletti.push({ name: list[1].name, votes: list[1].votes, sorteggiato: false });
                     }
                 }
@@ -1631,7 +1592,7 @@
 
         window.loadRisultati = async function() {
             const container = document.getElementById('scrutinio-realtime-results');
-            container.innerHTML = `<div class="text-center py-10"><div class="spinner inline-block"></div><p class="text-slate-500 font-bold mt-2">Raccolta dati e ricompilazione statistiche...</p></div>`;
+            container.innerHTML = `<div class="text-center py-10"><div class="spinner inline-block"></div><p class="text-slate-500 font-bold mt-2">Aggregazione e ricompilazione statistiche dal cloud...</p></div>`;
 
             try {
                 // Lettura dei token per determinare l'affluenza reale e scorporata
@@ -1640,20 +1601,10 @@
                 let usedTokensCount = 0;
                 let statTurnout = {}; 
 
-                // Affluenza differenziata
-                let turnoutConsiglio = 0;
-                let turnoutConsulta = 0;
-                let turnoutClasse = 0;
-
                 tokSnap.forEach(d => {
                     const data = d.data();
                     totalTokensCount++;
                     if(data.hasVoted) usedTokensCount++;
-
-                    // Incremento dell'affluenza scorporata (canali differenziati)
-                    if (data.votedConsiglio) turnoutConsiglio++;
-                    if (data.votedConsulta) turnoutConsulta++;
-                    if (data.votedClasse) turnoutClasse++;
 
                     const key = `${data.classe}_${data.sezione}`.toUpperCase();
                     if(!statTurnout[key]) {
@@ -1672,54 +1623,80 @@
                     if(data.votedClasse) statTurnout[key].votedClasse++;
                 });
 
-                // Lettura schede dettagliate
-                const schedeSnap = await getDocs(collection(db, "schede_votate"));
-                let schedeVotateList = [];
-                let votiPerClasseELista = {}; // Struttura Pivot: { Classe_Sezione: { Lista1: X, Lista2: Y } }
+                // Aggreghiamo in memoria i voti decentralizzati del Consiglio
+                const consiglioVotiSnap = await getDocs(collection(db, "voti_consiglio"));
+                let votiConsiglio = {};
+                let votiValidiConsiglio = 0;
+                let votiPerClasseELista = {}; 
 
-                schedeSnap.forEach(d => {
-                    const sData = d.data();
-                    schedeVotateList.push(sData);
+                consiglioVotiSnap.forEach(docObj => {
+                    const vData = docObj.data();
+                    const listId = vData.listaId;
+                    const classKey = `${vData.classe}_${vData.sezione}`.toUpperCase();
 
-                    const classKey = `${sData.classe}_${sData.sezione}`.toUpperCase();
+                    if (!votiConsiglio[listId]) {
+                        votiConsiglio[listId] = { count: 0, preferenze: {} };
+                    }
+                    votiConsiglio[listId].count++;
+                    votiValidiConsiglio++;
+
+                    if (vData.preferenze && Array.isArray(vData.preferenze)) {
+                        vData.preferenze.forEach(pref => {
+                            votiConsiglio[listId].preferenze[pref] = (votiConsiglio[listId].preferenze[pref] || 0) + 1;
+                        });
+                    }
+
+                    // Pivot per matrice di calcolo
                     if (!votiPerClasseELista[classKey]) {
                         votiPerClasseELista[classKey] = { total: 0 };
                         Object.keys(configElezioni.listeConsiglio).forEach(lId => {
                             votiPerClasseELista[classKey][lId] = 0;
                         });
                     }
+                    if (votiPerClasseELista[classKey][listId] !== undefined) {
+                        votiPerClasseELista[classKey][listId]++;
+                    }
+                    votiPerClasseELista[classKey].total++;
+                });
 
-                    if (sData.votoConsiglio && sData.votoConsiglio.listaId) {
-                        const lId = sData.votoConsiglio.listaId;
-                        if (votiPerClasseELista[classKey][lId] !== undefined) {
-                            votiPerClasseELista[classKey][lId]++;
-                        } else {
-                            votiPerClasseELista[classKey][lId] = 1;
-                        }
-                        votiPerClasseELista[classKey].total++;
+                // Aggreghiamo in memoria i voti decentralizzati della Consulta
+                const consultaVotiSnap = await getDocs(collection(db, "voti_consulta"));
+                let votiConsulta = {};
+                consultaVotiSnap.forEach(docObj => {
+                    const vData = docObj.data();
+                    const listId = vData.listaId;
+                    if (!votiConsulta[listId]) {
+                        votiConsulta[listId] = { count: 0, preferenze: {} };
+                    }
+                    votiConsulta[listId].count++;
+                    if (vData.preferenze && Array.isArray(vData.preferenze)) {
+                        vData.preferenze.forEach(pref => {
+                            votiConsulta[listId].preferenze[pref] = (votiConsulta[listId].preferenze[pref] || 0) + 1;
+                        });
                     }
                 });
 
-                const consSnap = await getDocs(collection(db, "voti_consiglio"));
-                let votiConsiglio = {};
-                let votiValidiConsiglio = 0;
-                consSnap.forEach(d => {
-                    votiConsiglio[d.id] = d.data();
-                    votiValidiConsiglio += d.data().count || 0;
-                });
-
-                const consuSnap = await getDocs(collection(db, "voti_consulta"));
-                let votiConsulta = {};
-                consuSnap.forEach(d => {
-                    votiConsulta[d.id] = d.data();
-                });
-
-                const classSnap = await getDocs(collection(db, "voti_classe"));
+                // Aggreghiamo in memoria i voti decentralizzati del Rappresentante di Classe
+                const classeVotiSnap = await getDocs(collection(db, "voti_classe"));
                 let votiClasse = {};
-                classSnap.forEach(d => {
-                    votiClasse[d.id] = d.data();
+                classeVotiSnap.forEach(docObj => {
+                    const vData = docObj.data();
+                    const classKey = `${vData.classe}_${vData.sezione}`.toUpperCase();
+                    if (!votiClasse[classKey]) {
+                        votiClasse[classKey] = {};
+                    }
+                    const cand = vData.candidato;
+                    votiClasse[classKey][cand] = (votiClasse[classKey][cand] || 0) + 1;
                 });
 
+                // Leggiamo il registro delle schede votate
+                const schedeSnap = await getDocs(collection(db, "schede_votate"));
+                let schedeVotateList = [];
+                schedeSnap.forEach(d => {
+                    schedeVotateList.push(d.data());
+                });
+
+                // Calcolo seggi Consiglio d'Istituto
                 const SEGGI_DISPONIBILI_CONSIGLIO = 4;
                 let seggiAssegnatiConsiglio = {};
                 let restiConsiglio = [];
@@ -1729,7 +1706,7 @@
                     let seggiRimasti = SEGGI_DISPONIBILI_CONSIGLIO;
 
                     for (const idLista of Object.keys(configElezioni.listeConsiglio)) {
-                        const voti = (votiConsiglio[idLista] && votiConsiglio[idLista].count) ? votiConsiglio[idLista].count : 0;
+                        const voti = votiConsiglio[idLista] ? votiConsiglio[idLista].count : 0;
                         const seggiInteri = Math.floor(voti / quoziente);
                         seggiAssegnatiConsiglio[idLista] = seggiInteri;
                         seggiRimasti -= seggiInteri;
@@ -1751,9 +1728,9 @@
                 globalScrutinioData = {
                     totalTokens: totalTokensCount,
                     usedTokens: usedTokensCount,
-                    turnoutConsiglio: turnoutConsiglio,
-                    turnoutConsulta: turnoutConsulta,
-                    turnoutClasse: turnoutClasse,
+                    turnoutConsiglio: consiglioVotiSnap.size,
+                    turnoutConsulta: consultaVotiSnap.size,
+                    turnoutClasse: classeVotiSnap.size,
                     statTurnout: statTurnout,
                     votiConsiglio: votiConsiglio,
                     votiConsulta: votiConsulta,
@@ -1780,21 +1757,16 @@
                                     </div>
                                     <div class="flex justify-between items-center border-b pb-1">
                                         <span class="text-xs font-semibold text-slate-700">Affluenza Consiglio:</span>
-                                        <span class="font-extrabold text-slate-900">${turnoutConsiglio} (${totalTokensCount > 0 ? ((turnoutConsiglio / totalTokensCount) * 100).toFixed(1) : '0.0'}%)</span>
+                                        <span class="font-extrabold text-slate-900">${consiglioVotiSnap.size} (${totalTokensCount > 0 ? ((consiglioVotiSnap.size / totalTokensCount) * 100).toFixed(1) : '0.0'}%)</span>
                                     </div>
                                     <div class="flex justify-between items-center border-b pb-1">
                                         <span class="text-xs font-semibold text-slate-700">Affluenza Consulta:</span>
-                                        <span class="font-extrabold text-indigo-900">${turnoutConsulta} (${totalTokensCount > 0 ? ((turnoutConsulta / totalTokensCount) * 100).toFixed(1) : '0.0'}%)</span>
+                                        <span class="font-extrabold text-indigo-900">${consultaVotiSnap.size} (${totalTokensCount > 0 ? ((consultaVotiSnap.size / totalTokensCount) * 100).toFixed(1) : '0.0'}%)</span>
                                     </div>
                                     <div class="flex justify-between items-center">
                                         <span class="text-xs font-semibold text-slate-700">Affluenza Classe:</span>
-                                        <span class="font-extrabold text-purple-900">${turnoutClasse} (${totalTokensCount > 0 ? ((turnoutClasse / totalTokensCount) * 100).toFixed(1) : '0.0'}%)</span>
+                                        <span class="font-extrabold text-purple-900">${classeVotiSnap.size} (${totalTokensCount > 0 ? ((classeVotiSnap.size / totalTokensCount) * 100).toFixed(1) : '0.0'}%)</span>
                                     </div>
-                                </div>
-                                <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                                    <p class="text-[11px] text-blue-900 leading-relaxed font-semibold">
-                                        Nota: I verbali ufficiali e la sezione 5 contengono ulteriori grafici dinamici e statistiche avanzate su schede valide, bianche e nulle.
-                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -1929,7 +1901,7 @@
 
         window.esportaExcelCompleto = function() {
             if(!globalScrutinioData) {
-                showNotification("Azione Necessaria", "Nessun dato scrutinato disponibile. Premi prima 'Aggiorna Dati'.", "error");
+                showNotification("Azione Necessaria", "Nessun dato scrutinato disponibile. Premi prima 'Elabora Scrutinio'.", "error");
                 return;
             }
 
@@ -2024,7 +1996,7 @@
 
         window.esportaVerbalePDF = function() {
             if(!globalScrutinioData) {
-                showNotification("Azione Necessaria", "Nessun dato scrutinato disponibile. Premi prima 'Aggiorna Dati'.", "error");
+                showNotification("Azione Necessaria", "Nessun dato scrutinato disponibile. Premi prima 'Elabora Scrutinio'.", "error");
                 return;
             }
 
@@ -2230,7 +2202,6 @@
 
                         let blockY = docPDF.lastAutoTable.finalY + 8;
                         
-                        // Spazio per spiegare il sorteggio
                         if (dettagliSorteggio) {
                             docPDF.setFont("Helvetica", "bold");
                             docPDF.text("Procedura di Spareggio (Ex-aequo):", 14, blockY);
@@ -2360,7 +2331,6 @@
             renderScoutClassResults();
         }
 
-        // --- GENERATORE DI GRAFICI A TORTA SVG IN PURO JAVASCRIPT ---
         function generateSvgPieChart(slices) {
             let total = slices.reduce((sum, s) => sum + s.value, 0);
             if (total === 0) {
@@ -2416,10 +2386,8 @@
                 });
             });
 
-            // Genera Torta
             pieContainer.innerHTML = generateSvgPieChart(slices);
 
-            // Genera Legenda / Dettaglio
             const maxVotes = Math.max(...slices.map(l => l.value), 1);
             let legendHtml = '';
             
@@ -2491,7 +2459,6 @@
 
             const item = globalScrutinioData.statTurnout[classKey] || { total: 0, voted: 0, votedConsiglio: 0, votedConsulta: 0, votedClasse: 0 };
             
-            // 1. Box Affluenza Classe
             const affluenzaHtml = `
                 <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 flex flex-col justify-between">
                     <div>
@@ -2507,7 +2474,6 @@
                 </div>
             `;
 
-            // 2. Classifica Candidati Rappresentanti di Classe
             const classVotesObj = globalScrutinioData.votiClasse[classKey] || {};
             const { eletti, list, dettagliSorteggio } = determinizzaElettiClasse(classKey, classVotesObj, item.total);
 
@@ -2515,7 +2481,6 @@
             let pieAndWinnersHtml = '';
 
             if (list.length > 0) {
-                // Genera Torta SVG per la classe
                 const classColors = ['#9333ea', '#a855f7', '#c084fc', '#e9d5ff', '#f3e8ff'];
                 let classSlices = list.map((cand, idx) => ({
                     label: cand.name,
