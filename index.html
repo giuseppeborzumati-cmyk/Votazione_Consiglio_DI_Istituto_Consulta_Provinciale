@@ -18,12 +18,13 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
         
+        /* Sfondo animato a bolle con l'immagine istituzionale della scuola */
         .bubble-bg {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -1;
             overflow: hidden;
-            background: linear-gradient(135deg, #e0f2fe 0%, #f1f5f9 100%);
+            background: linear-gradient(135deg, #e2e8f0 0%, #f1f5f9 100%);
         }
         .bubble {
             position: absolute;
@@ -42,7 +43,7 @@
             100% { transform: translateY(-15vh) translateX(15px) scale(1.3); opacity: 0; }
         }
         
-        /* Spinner di caricamento rapido */
+        /* Spinner di caricamento */
         .spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: #1e3a8a; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .hidden { display: none !important; }
@@ -51,7 +52,7 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between">
 
-    <!-- Sfondo Animato a Bolle (Windows Style) -->
+    <!-- Sfondo Animato a Bolle (Windows Style con Logo Scuola) -->
     <div class="bubble-bg">
         <div class="bubble w-16 h-16" style="left: 8%; animation-delay: 0s; animation-duration: 18s;"></div>
         <div class="bubble w-28 h-28" style="left: 20%; animation-delay: 3s; animation-duration: 22s;"></div>
@@ -62,7 +63,7 @@
         <div class="bubble w-20 h-20" style="left: 92%; animation-delay: 4s; animation-duration: 19s;"></div>
     </div>
 
-    <!-- Header Istituzionale con Logo della Scuola (Dinamico e Sostituibile) -->
+    <!-- Header Istituzionale con Logo della Scuola -->
     <header class="bg-gradient-header text-white p-6 shadow-xl text-center relative border-b-4 border-yellow-500 z-10">
         <div class="container mx-auto flex flex-col items-center justify-center">
             <img src="levi.png" 
@@ -143,6 +144,7 @@
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, collection, query, getDocs, onSnapshot, runTransaction, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
+        // CONFIGURAZIONE FIREBASE INSERITA DALL'UTENTE
         const firebaseConfig = {
             apiKey: "AIzaSyBDXldnedqfjaihDFXvFixO5KZZNP5SkdE",
             authDomain: "mio-sistema-voto.firebaseapp.com",
@@ -157,9 +159,10 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // PASSWORD AMMINISTRATORE RICHIESTA
         const ADMIN_PWD = "docenti_admin_2024";
         
-        let currentUserData = null; 
+        let currentUserData = null; // Token studente autenticato
         let cartVotes = { consiglio: null, consulta: null, classe: null };
         let activeAdminTab = 'config';
 
@@ -221,6 +224,7 @@
             document.getElementById('custom-alert-modal').classList.add('hidden');
         };
 
+        // Caricamento asincrono e dinamico delle liste e dello stato dal Cloud Firestore
         async function syncConfigFromDB() {
             try {
                 const configRef = doc(db, 'config', 'settings_v2');
@@ -246,6 +250,7 @@
             }
         };
 
+        // Router di navigazione dell'app a pagina singola
         window.showPage = function(pageId) {
             const container = document.getElementById('app-container');
             container.innerHTML = '';
@@ -283,12 +288,12 @@
                             <h3 class="text-xl font-bold">Quadro Normativo ed Informativa</h3>
                         </div>
                         <div class="space-y-4 text-sm text-slate-700 leading-relaxed max-h-[480px] overflow-y-auto pr-2">
-                            <p class="font-semibold text-slate-900 border-l-4 border-blue-900 pl-3">Ordinanza Ministeriale n. 215 del 18/12/1991</p>
-                            <p>Le elezioni degli organi collegiali a livello d'istituto sono disciplinate dalle norme contenute nell'O.M. 215/1991. Il presente sistema garantisce la piena aderenza ai principi di libertà, segretezza ed unicità del voto espressi dall'Art. 48 della Costituzione Italiana.</p>
+                            <p class="font-semibold text-slate-900 border-l-4 border-blue-900 pl-3">Ordinanza Ministeriale n. 215 del 15/07/1991</p>
+                            <p>Le elezioni degli organi collegiali a livello d'istituto sono regolate dal Testo Unico approvato con D.Lgs. 16 aprile 1994, n. 297 e dalle disposizioni permanenti dell'O.M. 215/1991 e s.m.i. (incluse O.M. 293/1996 e O.M. 277/1998). Il presente sistema digitale garantisce la piena aderenza ai principi di libertà, segretezza ed unicità del voto espressi dall'Art. 48 della Costituzione della Repubblica Italiana.</p>
                             
                             <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 space-y-2">
                                 <h4 class="font-bold text-blue-900 flex items-center"><i data-lucide="shield" class="w-4 h-4 mr-1.5"></i> Protocollo Crittografico Monouso:</h4>
-                                <p class="text-xs">Ciascun elettore riceve un Token segreto monouso. Una volta inserito nella cabina elettorale digitale, il sistema convalida il direito di voto. Al momento dell'invio finale nell'urna, il Token viene irrevocabilmente "bruciato" ed eliminato dal database per prevenire il doppio voto.</p>
+                                <p class="text-xs">Ciascun elettore riceve un Token segreto monouso. Una volta inserito nella cabina elettorale digitale, il sistema convalida il diritto di voto. Al momento dell'invio finale nell'urna, il Token viene irrevocabilmente "bruciato" ed eliminato dal database per prevenire il doppio voto.</p>
                             </div>
 
                             <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-100 space-y-2">
@@ -710,6 +715,7 @@
             };
         }
 
+        // --- GESTIONE DEI DATI TEMPORANEI E SELEZIONI ---
         window.updatePrefConsiglio = function(selectedListaId) {
             for (const id of Object.keys(configElezioni.listeConsiglio)) {
                 document.getElementById(`pref-${id}`).classList.add('hidden');
@@ -879,7 +885,7 @@
                         });
                     }
 
-                    // 5. Registriamo il log di ricognizione anonima
+                    // 5. Registriamo il log di ricognizione anonima (cruciale per il controllo incrociato e l'esportazione dei voti)
                     transaction.set(ricognizioneRef, {
                         token: currentUserData.id,
                         classe: currentUserData.classe,
@@ -1580,7 +1586,7 @@
             }
         };
 
-        let globalScrutinioData = null; 
+        let globalScrutinioData = null; // Memorizza i dati aggregati in locale
 
         // --- FUNZIONE DI RISOLUZIONE EX-AEQUO CON SORTEGGIO DETERMINISTICO COERENTE ---
         function determinizzaElettiClasse(classKey, votiClasseObj, iscrittiClasse = 0) {
@@ -1653,7 +1659,7 @@
                 const tokSnap = await getDocs(collection(db, "tokens"));
                 let totalTokensCount = 0;
                 let usedTokensCount = 0;
-                let statTurnout = {}; 
+                let statTurnout = {}; // Contiene l'affluenza scorporata per classe
 
                 tokSnap.forEach(d => {
                     const data = d.data();
@@ -1681,7 +1687,7 @@
                 const consiglioVotiSnap = await getDocs(collection(db, "voti_consiglio"));
                 let votiConsiglio = {};
                 let votiValidiConsiglio = 0;
-                let votiPerClasseELista = {}; 
+                let votiPerClasseELista = {}; // Contiene i voti delle liste divisi per classe
 
                 consiglioVotiSnap.forEach(docObj => {
                     const vData = docObj.data();
@@ -1783,7 +1789,7 @@
 
                 if (votiValidiConsiglio > 0) {
                     const quoziente = votiValidiConsiglio / SEGGI_DISPONIBILI_CONSIGLIO;
-                    let seggiRimasti = SEGDI_DISPONIBILI_CONSIGLIO;
+                    let seggiRimasti = SEGGI_DISPONIBILI_CONSIGLIO;
 
                     for (const idLista of Object.keys(configElezioni.listeConsiglio)) {
                         const voti = votiConsiglio[idLista] ? votiConsiglio[idLista].count : 0;
@@ -1910,9 +1916,8 @@
                         <ul class="text-[11px] space-y-1 pt-2 border-t border-slate-200">
                             ${candOrdinati.map((c, idx) => {
                                 const eletto = idx < seggi && c.voti > 0 ? '<span class="text-emerald-700 font-bold ml-1">[Eletto]</span>' : '';
-                                const labelExtra = !c.isConfigured ? ' <span class="text-amber-600 text-[9px] font-semibold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200/50" title="Questo candidato ha ricevuto voti ma è stato rimosso o rinominato dal pannello">(Modificato)</span>' : '';
                                 return `<li class="flex justify-between items-center text-slate-700 border-b border-dashed border-slate-200 pb-0.5">
-                                    <span>${c.nome}${labelExtra} ${eletto}</span>
+                                    <span>${c.nome} ${eletto}</span>
                                     <span class="font-bold text-slate-900">${c.voti} pref.</span>
                                 </li>`;
                             }).join('')}
@@ -1968,11 +1973,9 @@
                                                             <div class="mt-1.5 space-y-1 text-[11px] border-t border-slate-200/60 pt-1">
                                                                 ${listCandNames.map(cand => {
                                                                     const votes = dataClass.liste?.[lId]?.preferenze?.[cand] || 0;
-                                                                    const isConfigured = lData.candidati?.includes(cand);
-                                                                    const nameLabel = isConfigured ? cand : `${cand} <span class="text-amber-600 text-[9px] font-semibold" title="Candidato modificato o rimosso">(mod)</span>`;
                                                                     return `
                                                                         <div class="flex justify-between items-center text-slate-600">
-                                                                            <span>${nameLabel}</span>
+                                                                            <span>${cand}</span>
                                                                             <span class="font-extrabold text-slate-800">${votes}</span>
                                                                         </div>
                                                                     `;
@@ -2240,7 +2243,7 @@
 
                     candOrdinati.forEach((c, idx) => {
                         const statusEletto = idx < seggi && c.voti > 0 ? "ELETTO" : "Non eletto / Riserva";
-                        const displayName = c.isConfigured ? c.nome : `${c.nome} (Modificato/Rimosso)`;
+                        const displayName = c.nome;
                         if (idx === 0) {
                             dataConsiglioRows.push([data.nome, dbData.count, seggi, displayName, c.voti, statusEletto]);
                         } else {
@@ -2490,6 +2493,7 @@
             renderScoutClassResults();
         }
 
+        // FUNZIONE AUSILIARIA PER GENERARE GRAFICI A TORTA SVG VETTORIALI INTERATTIVI
         function generateSvgPieChart(slices) {
             let total = slices.reduce((sum, s) => sum + s.value, 0);
             if (total === 0) {
@@ -2714,6 +2718,7 @@
             lucide.createIcons();
         };
 
+        // --- SISTEMA DI ASCOLTO REAL-TIME RESILIENTE AL SOVRACCARICO ---
         let activeRealtimeUnsubscribers = [];
 
         function startAdminRealtimeListeners() {
@@ -2748,6 +2753,7 @@
             activeRealtimeUnsubscribers = [];
         }
 
+        // --- CARICAMENTO E PRE-FLIGHT ---
         window.onload = async () => {
             showPage('loading');
             await syncConfigFromDB();
