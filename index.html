@@ -1,1340 +1,1878 @@
 <!DOCTYPE html>
-<html lang="it" class="h-full">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema Elettorale V6 - Dinamico</title>
-    <!-- 1. Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 2. Chart.js per i grafici -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- 3. jsPDF e jsPDF-AutoTable per i verbali PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-    <!-- 4. JSZip per creare file ZIP -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <title>Votazione Elettronica - Via Briantina 68</title>
     
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        // Nuova palette "scolastica/professionale"
-                        'primary': {
-                            'DEFAULT': '#4f46e5', // Indigo 600
-                            '50': '#eef2ff',
-                            '100': '#e0e7ff',
-                            '200': '#c7d2fe',
-                            '300': '#a5b4fc',
-                            '400': '#818cf8',
-                            '500': '#6366f1',
-                            '600': '#4f46e5',
-                            '700': '#4338ca',
-                            '800': '#3730a3',
-                            '900': '#312e81',
-                            '950': '#1e1b4b'
-                        },
-                        'secondary': {
-                            'DEFAULT': '#f59e0b', // Amber 500
-                            '500': '#f59e0b',
-                            '600': '#d97706',
-                        },
-                        'slate': {
-                            '50': '#f8fafc',
-                            '100': '#f1f5f9',
-                            '200': '#e2e8f0',
-                            '300': '#cbd5e1',
-                            '400': '#94a3b8',
-                            '500': '#64748b',
-                            '600': '#475569',
-                            '700': '#334155',
-                            '800': '#1e293b',
-                            '900': '#0f172a'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- SheetJS (Excel) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- jsPDF e AutoTable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .tab-button { transition: all 0.2s ease; border-bottom: 3px solid transparent; }
-        .tab-button.active { border-bottom-color: #4f46e5; color: #4f46e5; font-weight: 600; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        .btn-primary { background-color: #4f46e5; color: white; transition: background-color 0.2s; }
-        .btn-primary:hover { background-color: #4338ca; }
-        .btn-primary:disabled { background-color: #94a3b8; cursor: not-allowed; }
-        
-        .btn-secondary { background-color: #475569; color: white; transition: background-color 0.2s; }
-        .btn-secondary:hover { background-color: #334155; }
-        
-        .btn-danger { background-color: #dc2626; color: white; transition: background-color 0.2s; }
-        .btn-danger:hover { background-color: #b91c1c; }
-
-        .loader { border: 4px solid #e2e8f0; border-top: 4px solid #4f46e5; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: #1e3a8a; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        /* Nuova Scheda Voto */
-        .ballot-list { border: 1px solid #e2e8f0; border-radius: 0.75rem; overflow: hidden; }
-        .ballot-list-header { border-bottom: 1px solid #e2e8f0; }
-        .ballot-list-header input[type="radio"]:checked { background-color: #4f46e5; }
-        .ballot-candidate { transition: all 0.2s ease; }
-        .ballot-candidate:hover { background-color: #f1f5f9; }
-        .ballot-candidate input[type="checkbox"]:checked { background-color: #f59e0b; border-color: #d97706; }
-        .ballot-candidate input[type="checkbox"]:checked + label { color: #1e293b; font-weight: 500; }
-        .ballot-candidate input[type="checkbox"]:disabled + label { opacity: 0.5; cursor: not-allowed; }
-
-        /* Input Form Dinamici */
-        .dynamic-input {
-            background-color: white;
-            border: 1px solid #cbd5e1;
-            border-radius: 0.375rem;
-            padding: 0.5rem 0.75rem;
-            width: 100%;
-        }
+        .hidden { display: none !important; }
+        .bg-gradient-header { background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%); }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 h-full">
+<body class="min-h-screen flex flex-col justify-between">
 
-    <!-- Contenitore Principale -->
-    <div id="app-container" class="min-h-full flex flex-col justify-center items-center p-4">
-
-        <!-- Logo -->
-        <div class="mb-6 text-center">
-            <svg class="mx-auto h-16 w-16 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c.21 0 .415-.022.618-.062M12 21a9.004 9.004 0 0 1-5.617-1.61m5.617 1.61A9.004 9.004 0 0 0 17.618 19.39m-5.617-1.61c.32.04.646.062.976.062m-9.338-4.128c.29.32.592.628.903.918m9.338-4.128a9.004 9.004 0 0 0-8.43-5.61m8.43 5.61c.264.01.53.016.797.016m-8.43-5.61c1.13.045 2.285.22 3.424.536m9.338 4.128c.31-.29.613-.598.903-.918m0 0a8.96 8.96 0 0 0-2.083-3.32m2.083 3.32a8.96 8.96 0 0 1 2.083-3.32m-9.882 6.64a8.963 8.963 0 0 0-5.242-1.61m5.242 1.61a8.963 8.963 0 0 1 5.242-1.61M3 9.747a8.963 8.963 0 0 1 5.242-1.61M3 9.747a8.963 8.963 0 0 0 5.242-1.61M3 9.747c.102.32.22.632.35.934m8.43 5.61a8.963 8.963 0 0 0 5.242-1.61m-5.242 1.61c.325.04.655.062.98.062m-5.242-1.61c1.135.045 2.29.22 3.428.536m0 0c.264.01.53.016.797.016m0 0a8.963 8.963 0 0 1 5.242-1.61m-5.242 1.61c.325.04.655.062.98.062" />
+    <!-- Header Istituzionale con Logo della Scuola -->
+    <header class="bg-gradient-header text-white p-6 shadow-xl text-center relative border-b-4 border-yellow-500">
+        <div class="container mx-auto flex flex-col items-center justify-center">
+            <!-- Logo Scuola SVG -->
+            <svg class="w-16 h-16 mb-3 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
             </svg>
-            <h1 class="text-3xl md:text-4xl font-bold text-center text-slate-900">Sistema Elettorale</h1>
-            <p id="app-title" class="text-center text-slate-500 text-lg mt-2">Piattaforma di Voto d'Istituto</p>
+            <h1 class="text-3xl font-extrabold tracking-tight uppercase">Scheda per le Votazioni</h1>
+            <p class="text-yellow-300 mt-1 font-semibold tracking-wider text-sm md:text-base">VIA BRIANTINA 68, 20831 SEREGNO (MB)</p>
+            <p class="text-blue-200 text-xs mt-1">Istituto di Istruzione Secondaria Superiore</p>
         </div>
+    </header>
 
-        <div class="w-full max-w-7xl mx-auto bg-white p-6 md:p-10 rounded-2xl shadow-xl">
-            <div class="text-xs text-slate-400 text-right -mt-4 -mr-4 mb-4">
-                App: <span id="app-id-display">...</span> | User: <span id="user-id-display">...</span>
+    <!-- Contenuto Principale Dinamico -->
+    <main class="flex-grow container mx-auto p-4 md:p-8 w-full max-w-5xl" id="app-container">
+        <!-- Riempito via JS -->
+    </main>
+
+    <!-- Modal di Notifica Customizzato (Alternativa sicura ad alert) -->
+    <div id="custom-alert-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full mx-4 border border-slate-100 transform scale-95 transition-all">
+            <div class="flex items-center space-x-3 mb-4">
+                <div id="custom-alert-icon" class="p-2 rounded-full"></div>
+                <h3 id="custom-alert-title" class="text-xl font-bold text-slate-900">Notifica</h3>
             </div>
-
-            <!-- Stato: Caricamento -->
-            <div id="loading-state" class="text-center p-12">
-                <div class="loader mx-auto"></div>
-                <p id="loading-text" class="mt-4 text-lg text-slate-600">Caricamento in corso...</p>
-            </div>
-
-            <!-- Stato: Login Studente (Default) -->
-            <div id="login-state" class="hidden">
-                <div class="max-w-md mx-auto">
-                    <!-- Banner Personalizzabile -->
-                    <input type="file" id="banner-upload" class="hidden" accept="image/*">
-                    <div id="custom-banner" class="w-full h-40 bg-slate-200 rounded-lg mb-6 flex items-center justify-center text-slate-500 hover:bg-slate-300 transition cursor-pointer" onclick="document.getElementById('banner-upload').click()">
-                        <span id="banner-text">Clicca per caricare un'immagine (16:9)</span>
-                    </div>
-                    
-                    <div class="bg-slate-50 p-8 rounded-lg shadow-inner border border-slate-200">
-                        <h2 class="text-2xl font-semibold text-center text-slate-800 mb-6">Accesso Studente</h2>
-                        <form id="login-form">
-                            <div class="mb-4">
-                                <label for="username" class="block text-sm font-medium text-slate-700 mb-1">Username</label>
-                                <input type="text" id="username" name="username" required class="w-full px-4 py-2 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
-                            </div>
-                            <div class="mb-6">
-                                <label for="password" class="block text-sm font-medium text-slate-700 mb-1">Password (monouso)</label>
-                                <input type="password" id="password" name="password" required class="w-full px-4 py-2 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
-                            </div>
-                            <button type="submit" class="w-full btn-primary font-bold py-3 rounded-lg text-lg">
-                                Accedi e Vota
-                            </button>
-                            <p id="login-error" class="text-red-500 text-sm mt-4 text-center"></p>
-                        </form>
-                        
-                        <button id="admin-login-link" class="w-full mt-6 text-sm text-center text-slate-500 hover:text-primary font-medium">
-                            Sei un docente? Accedi all'Area Amministrazione &rarr;
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Stato: Login Admin -->
-            <div id="admin-login-state" class="hidden">
-                <div class="max-w-md mx-auto bg-slate-50 p-8 rounded-lg shadow-inner border border-slate-200">
-                    <h2 class="text-2xl font-semibold text-center text-slate-800 mb-6">Accesso Amministrazione</h2>
-                    <p id="admin-setup-warning" class="hidden text-center text-sm bg-yellow-100 text-yellow-800 p-3 rounded-lg mb-4">
-                        <strong>Prima configurazione richiesta.</strong> Effettua l'accesso (password: 'admin123') e vai alla scheda 'Configurazione' per creare l'elezione.
-                    </p>
-                    <form id="admin-login-form">
-                        <div class="mb-4">
-                            <label for="admin-password" class="block text-sm font-medium text-slate-700 mb-1">Password Admin</label>
-                            <input type="password" id="admin-password" name="admin-password" required class="w-full px-4 py-2 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500" value="admin123">
-                        </div>
-                        <button type="submit" class="w-full btn-secondary font-bold py-3 rounded-lg text-lg">
-                            Accedi
-                        </button>
-                        <p id="admin-login-error" class="text-red-500 text-sm mt-4 text-center"></p>
-                    </form>
-                    <div class="text-center mt-6">
-                        <a href="#" id="student-login-link" class="text-sm text-primary hover:underline">&larr; Torna al login studenti</a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Stato: Scheda di Voto -->
-            <div id="voting-state" class="hidden max-w-3xl mx-auto">
-                <h2 id="ballot-title" class="text-3xl font-bold text-center text-slate-800 mb-2">Scheda Elettorale</h2>
-                <p class="text-center text-slate-600 mb-6">Ciao <span id="student-name" class="font-bold"></span>. Puoi esprimere un massimo di **due preferenze**.</p>
-                <p id="pref-counter" class="text-center text-lg font-medium text-primary mb-6">Preferenze selezionate: <span id="pref-count" class="font-bold">0</span> / 2</p>
-
-                <form id="vote-form">
-                    <div id="ballot-box" class="space-y-8">
-                        <!-- Le liste e i candidati verranno iniettati qui da JS -->
-                    </div>
-                    
-                    <div class="mt-10 pt-6 border-t border-slate-200">
-                        <p id="vote-error" class="text-center text-red-600 font-bold mb-4"></p>
-                        
-                        <button type="submit" id="submit-vote-btn" class="w-full max-w-lg mx-auto block btn-primary font-bold py-4 rounded-lg text-xl shadow-lg">
-                            Conferma e Vota Ora
-                        </button>
-                        <p class="text-center text-sm text-slate-500 mt-4">Se non selezioni nulla e premi "Vota", il tuo voto sarà registrato come Scheda Bianca.</p>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Stato: Voto Inviato (Grazie) -->
-            <div id="thank-you-state" class="hidden text-center p-12">
-                <svg class="mx-auto h-20 w-20 text-green-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                </svg>
-                <h2 class="mt-6 text-3xl font-bold text-slate-800">Grazie per aver votato!</h2>
-                <p class="mt-4 text-lg text-slate-600">Il tuo voto è stato registrato in modo anonimo e sicuro.</p>
-                 <button id="student-logout-btn" class="mt-8 text-sm text-slate-500 hover:underline">Chiudi sessione</button>
-            </div>
-
-            <!-- Stato: Dashboard Admin -->
-            <div id="admin-dashboard-state" class="hidden">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-3xl font-bold text-slate-800">Dashboard Amministrazione</h2>
-                    <button id="admin-logout-btn" class="btn-secondary px-4 py-2 rounded-lg">Logout</button>
-                </div>
-
-                <!-- Navigazione Tab Admin -->
-                <div class="border-b border-slate-300 mb-6">
-                    <nav class="flex space-x-6 overflow-x-auto">
-                        <button class="tab-button py-3 px-1 text-lg text-slate-500" data-tab="tab-results" onclick="openTab(event, 'tab-results')">Risultati</button>
-                        <button class="tab-button py-3 px-1 text-lg text-slate-500" data-tab="tab-turnout" onclick="openTab(event, 'tab-turnout')">Voti per Classe</button>
-                        <button class="tab-button py-3 px-1 text-lg text-slate-500" data-tab="tab-credentials" onclick="openTab(event, 'tab-credentials')">Credenziali</button>
-                        <button class="tab-button py-3 px-1 text-lg text-slate-500" data-tab="tab-verbali" onclick="openTab(event, 'tab-verbali')">Verbali ZIP</button>
-                        <button class="tab-button py-3 px-1 text-lg text-slate-500" data-tab="tab-data" onclick="openTab(event, 'tab-data')">Configurazione</button>
-                    </nav>
-                </div>
-
-                <!-- Tab: Risultati -->
-                <div id="tab-results" class="tab-content">
-                    <h3 id="results-title" class="text-2xl font-semibold mb-6">Risultati in Diretta</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
-                        <div class="bg-slate-50 p-5 rounded-lg shadow border-l-4 border-slate-400">
-                            <div class="text-sm font-medium text-slate-600">Aventi Diritto</div>
-                            <div id="total-voters" class="text-3xl font-bold text-slate-900">...</div>
-                        </div>
-                        <div class="bg-slate-50 p-5 rounded-lg shadow border-l-4 border-primary-500">
-                            <div class="text-sm font-medium text-primary-700">Voti Espressi</div>
-                            <div id="total-votes-live" class="text-3xl font-bold text-primary-900">...</div>
-                        </div>
-                        <div class="bg-slate-50 p-5 rounded-lg shadow border-l-4 border-green-500">
-                            <div class="text-sm font-medium text-green-700">Voti Validi</div>
-                            <div id="valid-votes-live" class="text-3xl font-bold text-green-900">...</div>
-                        </div>
-                        <div class="bg-slate-50 p-5 rounded-lg shadow border-l-4 border-yellow-500">
-                            <div class="text-sm font-medium text-yellow-700">Nulli (Bianche)</div>
-                            <div id="null-votes-blank-live" class="text-3xl font-bold text-yellow-900">...</div>
-                        </div>
-                        <div class="bg-slate-50 p-5 rounded-lg shadow border-l-4 border-red-500">
-                            <div class="text-sm font-medium text-red-700">Nulli (Disgiunti)</div>
-                            <div id="null-votes-mismatch-live" class="text-3xl font-bold text-red-900">...</div>
-                        </div>
-                    </div>
-                    <!-- Grafici -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h3 class="text-xl font-semibold mb-4 text-center">Riepilogo Voti di Lista</h3>
-                            <div style="height: 300px;"><canvas id="list-votes-chart"></canvas></div>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h3 class="text-xl font-semibold mb-4 text-center">Top 10 Candidati (Preferenze)</h3>
-                            <div style="height: 300px;"><canvas id="candidate-votes-chart"></canvas></div>
-                        </div>
-                    </div>
-                    <!-- Assegnazione Seggi -->
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <h3 class="text-xl font-semibold mb-4">Assegnazione Seggi (Calcolo Proporzionale)</h3>
-                        <p class="text-sm text-slate-600 mb-4">Seggi totali da assegnare: <span id="total-seats" class="font-bold">...</span></p>
-                        <div id="seat-allocation-results" class="space-y-4"></div>
-                    </div>
-                </div>
-
-                <!-- Tab: Voti per Classe -->
-                <div id="tab-turnout" class="tab-content">
-                    <h3 class="text-2xl font-semibold mb-6">Dettaglio Voti per Classe</h3>
-                    <div id="class-turnout-loader" class="text-center p-8 hidden"><div class="loader mx-auto"></div></div>
-                    <div id="class-turnout-list" class="space-y-4">
-                        <!-- Elenco classi caricato da JS -->
-                    </div>
-                    <!-- Modal per Dettaglio Classe -->
-                    <div id="class-detail-modal" class="hidden fixed z-50 inset-0 bg-slate-900 bg-opacity-75 flex items-center justify-center">
-                        <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
-                            <div class="flex justify-between items-center mb-4">
-                                <h3 id="class-detail-title" class="text-2xl font-bold">Dettaglio Classe</h3>
-                                <button onclick="document.getElementById('class-detail-modal').classList.add('hidden')" class="text-slate-500 text-3xl font-bold">&times;</button>
-                            </div>
-                            <div id="class-detail-content"></div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tab: Credenziali -->
-                <div id="tab-credentials" class="tab-content">
-                    <h3 class="text-2xl font-semibold mb-4">Elenco Credenziali Studenti</h3>
-                    <div id="credentials-warning" class="hidden bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded-lg mb-6" role="alert">
-                        <p class="font-bold">Database Studenti Vuoto!</p>
-                        <p>Non è stato trovato nessuno studente. Vai su "Configurazione" per caricare gli studenti.</p>
-                    </div>
-                    <div class="flex items-center space-x-4 bg-slate-100 p-4 rounded-lg mb-6">
-                        <label for="class-filter-select" class="font-medium text-slate-700">Filtra per Classe:</label>
-                        <select id="class-filter-select" class="flex-grow p-2 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
-                            <option value="">Seleziona una classe...</option>
-                        </select>
-                        <button id="class-filter-btn" class="btn-primary px-5 py-2 rounded-lg font-medium">Carica Elenco</button>
-                    </div>
-                    <div id="credentials-loader" class="hidden text-center p-8"><div class="loader mx-auto"></div></div>
-                    <div id="credentials-table-container" class="hidden overflow-x-auto">
-                        <table class="min-w-full bg-white shadow-md rounded-lg">
-                            <thead class="bg-slate-200">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase">Cognome</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase">Nome</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase">Username</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase">Password</th>
-                                    <th class="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase">Ha Votato?</th>
-                                </tr>
-                            </thead>
-                            <tbody id="credentials-table-body" class="divide-y divide-slate-200"></tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <!-- Tab: Verbali ZIP -->
-                <div id="tab-verbali" class="tab-content">
-                    <div class="bg-white p-6 rounded-lg shadow-md max-w-2xl mx-auto">
-                        <h3 class="text-2xl font-semibold mb-6">Generazione Verbali Elettorali (ZIP)</h3>
-                        <p class="text-sm text-slate-600 mb-6">Inserisci i dati della commissione. Questi verranno inseriti in tutti i verbali PDF, che saranno poi compressi in un unico file .zip.</p>
-                        <div class="space-y-4">
-                            <div>
-                                <label for="pdf-scuola" class="block text-sm font-medium text-slate-700">Nome Istituto</label>
-                                <input type="text" id="pdf-scuola" class="dynamic-input" value="I.I.S. [Nome Scuola]">
-                            </div>
-                            <div>
-                                <label for="pdf-indirizzo" class="block text-sm font-medium text-slate-700">Indirizzo Scuola (Via, Città)</label>
-                                <input type="text" id="pdf-indirizzo" class="dynamic-input" value="Via [Indirizzo], [Città]">
-                            </div>
-                            <div>
-                                <label for="pdf-pec" class="block text-sm font-medium text-slate-700">Email PEC / Istituzionale</label>
-                                <input type="email" id="pdf-pec" class="dynamic-input" value="[email]@istruzione.it">
-                            </div>
-                            <div>
-                                <label for="pdf-commissione" class="block text-sm font-medium text-slate-700">Membri Commissione (uno per riga)</label>
-                                <textarea id="pdf-commissione" rows="3" class="dynamic-input">[Nome Cognome] - Presidente
-[Nome Cognome] - Vice-Presidente</textarea>
-                            </div>
-                            <div>
-                                <label for="pdf-presidente" class="block text-sm font-medium text-slate-700">Presidente di Seggio (per firma)</label>
-                                <input type="text" id="pdf-presidente" class="dynamic-input" value="[Nome Presidente Seggio]">
-                            </div>
-                            <div>
-                                <label for="pdf-segretario" class="block text-sm font-medium text-slate-700">Segretario Verbalizzante (per firma)</label>
-                                <input type="text" id="pdf-segretario" class="dynamic-input" value="[Nome Segretario]">
-                            </div>
-                            
-                            <button id="generate-zip-btn" class="w-full btn-primary bg-green-600 hover:bg-green-700 font-bold py-3 text-lg rounded-lg">
-                                Genera e Scarica Verbali.zip
-                            </button>
-                            <p id="zip-status" class="text-center text-primary"></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tab: Configurazione (NUOVA LOGICA) -->
-                <div id="tab-data" class="tab-content">
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        <!-- Colonna Sinistra: Impostazioni e Studenti -->
-                        <div class="lg:col-span-1 space-y-6">
-                            <!-- Blocco Info Elezione -->
-                            <div class="bg-slate-50 p-6 rounded-lg shadow-inner border border-slate-200">
-                                <h4 class="text-xl font-semibold text-slate-800 mb-3">Impostazioni Elezione</h4>
-                                <div>
-                                    <label for="config-election-name" class="block text-sm font-medium text-slate-700">Nome Elezione</label>
-                                    <input type="text" id="config-election-name" class="dynamic-input" value="Elezioni d'Istituto 2025">
-                                </div>
-                                <div class="mt-4">
-                                    <label for="config-total-seats" class="block text-sm font-medium text-slate-700">Numero Seggi da Assegnare</label>
-                                    <input type="number" id="config-total-seats" class="dynamic-input" value="15" min="1">
-                                </div>
-                                <button id="save-config-btn" class="w-full mt-6 btn-primary py-2 rounded-lg font-medium">
-                                    Salva Impostazioni (Liste/Seggi)
-                                </button>
-                            </div>
-                            
-                            <!-- Blocco Carica Studenti -->
-                            <div class="bg-slate-50 p-6 rounded-lg shadow-inner border border-slate-200">
-                                <h4 class="text-xl font-semibold text-slate-800 mb-3">Gestione Studenti</h4>
-                                <p class="text-sm text-slate-600 mb-4">
-                                    Incolla l'elenco. Le credenziali saranno generate automaticamente.
-                                    <br><strong>Formato:</strong> <code>Nome,Cognome,Classe</code>
-                                </p>
-                                <textarea id="manual-upload-data" rows="6" class="dynamic-input font-mono text-sm" placeholder="Mario,Rossi,1A..."></textarea>
-                                <button id="manual-upload-btn" class="w-full mt-4 btn-primary bg-green-600 hover:bg-green-700 py-2 rounded-lg font-medium">
-                                    Carica e Genera Credenziali
-                                </button>
-                                <hr class="my-6 border-slate-300">
-                                <button id="delete-students-btn" class="w-full btn-danger py-2 rounded-lg font-medium">
-                                    CANCELLA TUTTI gli Studenti
-                                </button>
-                            </div>
-
-                            <!-- Blocco Reset Voti -->
-                             <div class="bg-slate-50 p-6 rounded-lg shadow-inner border border-slate-200">
-                                <h4 class="text-xl font-semibold text-slate-800 mb-3">Reset Voti</h4>
-                                <p class="text-sm text-slate-600 mb-4">Azzera tutti i contatori di voto e lo stato "ha votato" degli studenti.</p>
-                                <button id="reset-votes-btn" class="w-full btn-secondary py-2 rounded-lg font-medium">Azzera Solo Voti</button>
-                            </div>
-                        </div>
-                        
-                        <!-- Colonna Destra: Editor Liste -->
-                        <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow">
-                            <div class="flex justify-between items-center mb-4">
-                                <h4 class="text-xl font-semibold text-slate-800">Editor Liste e Candidati</h4>
-                                <button id="add-new-list-btn" class="btn-primary px-4 py-2 text-sm rounded-md font-medium">
-                                    + Aggiungi Lista
-                                </button>
-                            </div>
-                            <div id="list-config-area" class="space-y-6">
-                                <!-- Le liste configurate appariranno qui -->
-                                <p class="text-slate-500 text-center py-8">Nessuna lista configurata. Clicca 'Aggiungi Lista' per iniziare.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Log -->
-                    <div id="admin-action-feedback" class="mt-6 p-4 rounded-lg hidden"></div>
-                </div>
+            <p id="custom-alert-message" class="text-slate-600 text-sm mb-6"></p>
+            <div class="flex justify-end">
+                <button onclick="closeNotification()" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2.5 px-6 rounded-xl text-sm shadow transition-colors">
+                    Ho capito
+                </button>
             </div>
         </div>
     </div>
 
+    <!-- Footer di Conformità Legale -->
+    <footer class="bg-slate-900 text-slate-400 p-6 text-center text-xs border-t border-slate-800">
+        <div class="container mx-auto space-y-2">
+            <p class="font-semibold text-slate-300 text-sm">Sistema Elettorale Blindato Digitale</p>
+            <p>Conforme all'Ordinanza Ministeriale n. 215 del 18/12/1991 e s.m.i. • Crittografia End-to-End Monouso</p>
+            <div class="pt-3">
+                <button onclick="showPage('adminLogin')" class="text-blue-400 hover:text-blue-300 font-bold underline transition-colors">
+                    Accesso Riservato Commissione Elettorale
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Firebase SDK e Logica Applicativa -->
     <script type="module">
-        // Import Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, updateDoc, onSnapshot, collection, getDoc, runTransaction, getDocs, query, where, writeBatch, deleteDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, query, getDocs, onSnapshot, runTransaction, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // Inizializzazione delle librerie JS
-        const { jsPDF } = jspdf;
-        // JSZip è disponibile globalmente come 'JSZip'
-        
-        // --- GESTIONE CONFIGURAZIONE FIREBASE (RICHIESTA 1) ---
-        
-        // Configurazione Firebase fornita dall'utente (usata come FALLBACK)
-        const userFirebaseConfig = {
-          apiKey: "AIzaSyBDXldnedqfjaihDFXvFixO5KZZNP5SkdE",
-          authDomain: "mio-sistema-voto.firebaseapp.com",
-          projectId: "mio-sistema-voto",
-          storageBucket: "mio-sistema-voto.firebasestorage.app",
-          messagingSenderId: "188743609131",
-          appId: "1:188743609131:web:da7666758444a40be3336e",
-          measurementId: "G-PT9V4V0B3E"
+        // CONFIGURAZIONE FIREBASE FORNITA
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDXldnedqfjaihDFXvFixO5KZZNP5SkdE",
+            authDomain: "mio-sistema-voto.firebaseapp.com",
+            projectId: "mio-sistema-voto",
+            storageBucket: "mio-sistema-voto.firebasestorage.app",
+            messagingSenderId: "188743609131",
+            appId: "1:188743609131:web:da7666758444a40be3336e",
+            measurementId: "G-PT9V4V0B3E"
         };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // COSTANTI AMMINISTRATIVE
+        const ADMIN_PWD = "docenti_admin_2024";
         
-        // Configurazione iniettata dal Canvas (PRIORITARIA)
-        const injectedConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
-        
-        // Usa la config iniettata se esiste, altrimenti usa quella fornita dall'utente
-        const firebaseConfig = injectedConfig || userFirebaseConfig;
-        
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-election-v6-id';
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        // STATO APPLICATIVO
+        let currentUserData = null; 
+        let cartVotes = { consiglio: null, consulta: null, classe: null };
+        let activeAdminTab = 'config';
 
-        // Variabili Globali dell'App
-        let app, db, auth;
-        let userId, isAuthReady = false;
-        let currentStudent = null; // Dati studente loggato
-        
-        let listVotesChart, candidateVotesChart; // Istanze grafici principali
-        let classDetailChart; // Istanza grafico modale classe
-        
-        let allVotersCache = null; // Cache credenziali admin
-        
-        // Configurazione dell'elezione (caricata dal DB)
-        let ELECTION_CONFIG = {
-            electionName: "Elezioni Scolastiche",
-            totalSeats: 15,
-            totalStudents: 0,
-            classes: [],
-            lists: [] // Questo array verrà popolato dal DB
-        };
-        
-        // Variabili per l'editor di configurazione
-        let localConfig = JSON.parse(JSON.stringify(ELECTION_CONFIG)); // Copia locale per l'editor
-
-        // --- INIZIALIZZAZIONE FIREBASE E AUTENTICAZIONE ---
-
-        try {
-            // setLogLevel('debug');
-            app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-            console.log("Firebase inizializzato.");
-        } catch (error) {
-            console.error("Errore inizializzazione Firebase:", error);
-            document.getElementById('loading-state').innerHTML = `<p class="text-red-600 font-bold text-center">Errore critico di connessione. Impossibile continuare.</p>`;
-        }
-
-        onAuthStateChanged(auth, async (user) => {
-            if (!user) {
-                try {
-                    if (initialAuthToken) await signInWithCustomToken(auth, initialAuthToken);
-                    else await signInAnonymously(auth);
-                } catch (error) { console.error("Accesso automatico fallito:", error); }
-            }
-            userId = auth.currentUser?.uid || `anon-${crypto.randomUUID()}`;
-            isAuthReady = true;
-            document.getElementById('app-id-display').textContent = appId;
-            document.getElementById('user-id-display').textContent = userId.substring(0, 8);
-            await checkConfiguration();
-        });
-        
-        function getPublicCollectionRef(collectionName) {
-            return collection(db, 'artifacts', appId, 'public', 'data', collectionName);
-        }
-
-        // --- CONTROLLO CONFIGURAZIONE (RICHIESTA 2) ---
-        
-        async function checkConfiguration() {
-            if (!db) {
-                document.getElementById('loading-state').innerHTML = '<p class="text-red-500">Errore: Database non connesso.</p>';
-                return;
-            }
-            
-            const configDocRef = doc(getPublicCollectionRef('config'), 'election_info');
-            const configDoc = await getDoc(configDocRef);
-            
-            hideAllStates();
-            if (configDoc.exists()) {
-                // Configurazione trovata, carica l'app
-                console.log("Configurazione trovata. Caricamento login studente.");
-                ELECTION_CONFIG = configDoc.data();
-                localConfig = JSON.parse(JSON.stringify(ELECTION_CONFIG)); // Sincronizza config locale
-                
-                document.getElementById('app-title').textContent = ELECTION_CONFIG.electionName || "Piattaforma di Voto";
-                document.getElementById('login-state').classList.remove('hidden'); // MOSTRA LOGIN STUDENTE
-            } else {
-                // Configurazione NON trovata, mostra login admin con avviso
-                console.log("Configurazione non trovata. Mostro admin login con avviso.");
-                document.getElementById('admin-login-state').classList.remove('hidden');
-                document.getElementById('admin-setup-warning').classList.remove('hidden');
-            }
-            document.getElementById('loading-state').classList.add('hidden');
-        }
-
-        // --- GESTIONE VISTE (STATI) ---
-
-        function hideAllStates() {
-            ['loading-state', 'login-state', 'admin-login-state', 'election-choice-state', 'voting-state', 'thank-you-state', 'admin-dashboard-state'].forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.classList.add('hidden');
-            });
-        }
-        
-        document.getElementById('banner-upload').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = (event) => {
-                    const banner = document.getElementById('custom-banner');
-                    banner.style.backgroundImage = `url('${event.target.result}')`;
-                    document.getElementById('banner-text').classList.add('hidden');
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        document.getElementById('admin-login-link').addEventListener('click', (e) => {
-            e.preventDefault();
-            hideAllStates();
-            document.getElementById('admin-login-state').classList.remove('hidden');
-        });
-        document.getElementById('student-login-link').addEventListener('click', (e) => {
-            e.preventDefault();
-            hideAllStates();
-            document.getElementById('login-state').classList.remove('hidden');
-        });
-        document.getElementById('admin-logout-btn').addEventListener('click', () => {
-            hideAllStates();
-            document.getElementById('login-state').classList.remove('hidden');
-            if (listVotesChart) listVotesChart.destroy();
-            if (candidateVotesChart) candidateVotesChart.destroy();
-            if (classDetailChart) classDetailChart.destroy();
-        });
-        document.getElementById('student-logout-btn').addEventListener('click', () => {
-            currentStudent = null;
-            hideAllStates();
-            document.getElementById('login-state').classList.remove('hidden');
-        });
-         document.getElementById('thank-you-state').addEventListener('click', () => {
-            currentStudent = null;
-            hideAllStates();
-            document.getElementById('login-state').classList.remove('hidden');
-        });
-        
-        window.openTab = (evt, tabName) => {
-            if (evt) evt.currentTarget.blur();
-            Array.from(document.getElementsByClassName('tab-content')).forEach(tab => tab.classList.remove('active'));
-            Array.from(document.getElementsByClassName('tab-button')).forEach(btn => btn.classList.remove('active'));
-            
-            document.getElementById(tabName).classList.add('active');
-            const activeButton = document.querySelector(`.tab-button[data-tab="${tabName}"]`);
-            if (activeButton) activeButton.classList.add('active');
-            
-            // Logica specifica per tab
-            if (tabName === 'tab-data') {
-                renderConfigEditor(); // Popola l'editor con la config caricata
-            }
-            if (tabName === 'tab-turnout') {
-                loadClassList(); // Carica l'elenco delle classi
-            }
-            if (tabName === 'tab-credentials') {
-                populateClassFilter(); // Popola il filtro classi
-            }
-        }
-        
-        function populateClassFilter() {
-            const classSelect = document.getElementById('class-filter-select');
-            classSelect.innerHTML = '<option value="">Seleziona una classe...</option>';
-            const classes = ELECTION_CONFIG.classes || [];
-            classes.forEach(c => {
-                classSelect.innerHTML += `<option value="${c}">${c}</option>`;
-            });
-        }
-
-        // --- LOGICA DI LOGIN ---
-
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = e.target.username.value.trim().toUpperCase();
-            const password = e.target.password.value;
-            const errorEl = document.getElementById('login-error');
-            errorEl.textContent = "";
-
-            if (!username || !password) {
-                errorEl.textContent = "Username e Password sono obbligatori.";
-                return;
-            }
-            
-            const voterRef = doc(getPublicCollectionRef('voters'), username);
-            try {
-                // Transazione per il login monouso
-                await runTransaction(db, async (transaction) => {
-                    const voterDoc = await transaction.get(voterRef);
-                    if (!voterDoc.exists()) throw new Error("Username non trovato.");
-                    
-                    const voterData = voterDoc.data();
-                    if (voterData.password !== password) throw new Error("Password errata.");
-                    
-                    if (voterData.hasVoted) {
-                        throw new Error("Hai già votato. Impossibile accedere di nuovo.");
-                    }
-                    
-                    // Blocca il voto
-                    transaction.update(voterRef, { hasVoted: true, votedAt: new Date().toISOString() });
-                    currentStudent = voterData; // Salva i dati
-                });
-
-                // Transazione riuscita
-                showBallot();
-
-            } catch (error) {
-                console.error("Errore di login:", error.message);
-                errorEl.textContent = error.message;
-            }
-        });
-
-        document.getElementById('admin-login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const password = e.target['admin-password'].value;
-            const errorEl = document.getElementById('admin-login-error');
-            
-            if (password === 'admin123') {
-                errorEl.textContent = "";
-                hideAllStates();
-                document.getElementById('admin-dashboard-state').classList.remove('hidden');
-                
-                // Popola i dati statici (post-load)
-                document.getElementById('total-voters').textContent = ELECTION_CONFIG.totalStudents || 0;
-                document.getElementById('total-seats').textContent = ELECTION_CONFIG.totalSeats || 'N/D';
-                
-                if (!ELECTION_CONFIG.lists || ELECTION_CONFIG.lists.length === 0) {
-                    // Se non c'è config, forza l'apertura del tab setup
-                    openTab(null, 'tab-data');
-                } else {
-                    openTab(null, 'tab-results');
-                }
-                startAdminListeners(); 
-            } else {
-                errorEl.textContent = "Password amministrazione errata.";
-            }
-        });
-        
-        // --- LOGICA DI VOTO STUDENTE (RICHIESTA 3, 5) ---
-        
-        function showBallot() {
-            hideAllStates();
-            document.getElementById('voting-state').classList.remove('hidden');
-            
-            document.getElementById('ballot-title').textContent = ELECTION_CONFIG.electionName || "Scheda Elettorale";
-            document.getElementById('student-name').textContent = `${currentStudent.firstName} ${currentStudent.lastName} (Classe ${currentStudent.class})`;
-            
-            document.getElementById('vote-error').textContent = "";
-            document.getElementById('pref-count').textContent = "0";
-            document.getElementById('submit-vote-btn').disabled = false;
-            
-            buildBallot();
-        }
-
-        // Nuova grafica scheda
-        function buildBallot() {
-            const ballotBox = document.getElementById('ballot-box');
-            ballotBox.innerHTML = "";
-            
-            ELECTION_CONFIG.lists.forEach(list => {
-                const listCard = document.createElement('div');
-                listCard.className = 'ballot-list bg-white shadow-md';
-                listCard.id = `list-container-${list.id}`;
-                
-                const logoUrl = list.logoUrl || `https://placehold.co/100x50/e2e8f0/334155?text=${encodeURIComponent(list.name)}`;
-                
-                listCard.innerHTML = `
-                    <div class="ballot-list-header p-4 flex justify-between items-center bg-slate-50">
-                        <div class="flex items-center space-x-4">
-                            <img src="${logoUrl}" alt="Logo ${list.name}" class="h-10 w-16 object-contain rounded border border-slate-200" onerror="this.src='https://placehold.co/100x50/e2e8f0/334155?text=Logo'">
-                            <h3 class="text-xl md:text-2xl font-bold text-slate-800">${list.name}</h3>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                            <label for="list-radio-${list.id}" class="text-sm font-medium">Vota Lista</label>
-                            <input type="radio" name="list-vote" id="list-radio-${list.id}" value="${list.id}" class="h-5 w-5 text-primary focus:ring-primary">
-                        </div>
-                    </div>
-                    <div class="p-4 md:p-6 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
-                        ${list.candidates.map(cand => `
-                            <div class="ballot-candidate flex items-center p-2 rounded-lg">
-                                <input type="checkbox" id="cand-check-${cand.id}" value="${cand.id}" data-list-id="${list.id}" class="h-5 w-5 rounded text-secondary focus:ring-secondary border-slate-300">
-                                <label for="cand-check-${cand.id}" class="ml-3 block text-md text-slate-700 cursor-pointer">
-                                    ${cand.lastName} ${cand.firstName}
-                                </label>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-                ballotBox.appendChild(listCard);
-            });
-            
-            addBallotListeners();
-        }
-        
-        function addBallotListeners() {
-            const form = document.getElementById('vote-form');
-            form.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.addEventListener('change', () => {
-                    const checkedCount = form.querySelectorAll('input[type="checkbox"]:checked').length;
-                    document.getElementById('pref-count').textContent = checkedCount;
-                    
-                    form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                        cb.disabled = (checkedCount >= 2 && !cb.checked);
-                    });
-                });
-            });
-        }
-
-        // --- SUBMIT VOTO (Logica Voto Nullo - RICHIESTA 5) ---
-        
-        document.getElementById('vote-form').addEventListener('submit', (e) => submitVote(e));
-
-        async function submitVote(e) {
-            e.preventDefault();
-            const form = document.getElementById('vote-form');
-            const errorEl = document.getElementById('vote-error');
-            const submitBtn = document.getElementById('submit-vote-btn');
-            
-            errorEl.textContent = "";
-            submitBtn.disabled = true;
-
-            const selectedListRadio = form.querySelector('input[name="list-vote"]:checked');
-            const selectedCandidatesChecks = Array.from(form.querySelectorAll('input[type="checkbox"]:checked'));
-            
-            let voteStatus = "VALID";
-            let targetListId = null;
-            let candidateIds = [];
-
-            // --- NUOVA LOGICA VOTO NULLO ---
-            
-            if (!selectedListRadio && selectedCandidatesChecks.length === 0) {
-                // 1. Scheda Bianca (Nessuna selezione)
-                voteStatus = "NULL_BIANCA";
-            
-            } else {
-                // C'è almeno una selezione, valida
-                targetListId = selectedListRadio ? selectedListRadio.value : null;
-                candidateIds = selectedCandidatesChecks.map(cb => cb.value);
-
-                if (selectedCandidatesChecks.length > 0) {
-                    const firstCandListId = selectedCandidatesChecks[0].dataset.listId;
-                    
-                    // 2. Voto Disgiunto (candidati di liste diverse)
-                    if (!selectedCandidatesChecks.every(cb => cb.dataset.listId === firstCandListId)) {
-                        voteStatus = "NULL_DISGIUNTO";
-                    }
-                    
-                    // 3. Voto Disgiunto (lista e candidato di liste diverse)
-                    if (targetListId && targetListId !== firstCandListId) {
-                        voteStatus = "NULL_DISGIUNTO";
-                    }
-                    
-                    // 4. Voto Valido (implicito)
-                    if (!targetListId && voteStatus === "VALID") {
-                        targetListId = firstCandListId; // Voto implicito alla lista
-                    }
-                }
-            }
-            
-            // --- FINE LOGICA VOTO NULLO ---
-            
-            const voterRef = doc(getPublicCollectionRef('voters'), currentStudent.username);
-            const resultsRef = doc(getPublicCollectionRef('results'), 'current');
-            const classResultsRef = doc(getPublicCollectionRef('class_results'), currentStudent.class);
-            
-            try {
-                await runTransaction(db, async (transaction) => {
-                    const resultsDoc = await transaction.get(resultsRef);
-                    const classResultsDoc = await transaction.get(classResultsRef);
-                    
-                    if (!resultsDoc.exists()) throw new Error("Errore: Risultati non inizializzati.");
-                    if (!classResultsDoc) {
-                        // Se il doc classe non esiste, crealo al volo
-                        const classData = { totalVotes: 0, validVotes: 0, nullVotesBianche: 0, nullVotesDisgiunte: 0, listVotes: {}, candidateVotes: {} };
-                        ELECTION_CONFIG.lists.forEach(l => {
-                            classData.listVotes[l.id] = 0;
-                            l.candidates.forEach(c => classData.candidateVotes[c.id] = 0);
-                        });
-                        transaction.set(classResultsRef, classData);
-                    }
-                    
-                    const currentResults = resultsDoc.data();
-                    const currentClassResults = classResultsDoc.exists() ? classResultsDoc.data() : { totalVotes: 0, validVotes: 0, nullVotesBianche: 0, nullVotesDisgiunte: 0, listVotes: {}, candidateVotes: {} }; // Usa dati di default
-                    
-                    // Aggiorna conteggi
-                    currentResults.totalVotes = (currentResults.totalVotes || 0) + 1;
-                    currentClassResults.totalVotes = (currentClassResults.totalVotes || 0) + 1;
-                    
-                    if (voteStatus === "VALID") {
-                        currentResults.validVotes += 1;
-                        currentClassResults.validVotes += 1;
-                        
-                        if (targetListId) {
-                            currentResults.listVotes[targetListId] += 1;
-                            currentClassResults.listVotes[targetListId] = (currentClassResults.listVotes[targetListId] || 0) + 1;
-                        }
-                        candidateIds.forEach(id => {
-                            currentResults.candidateVotes[id] += 1;
-                            currentClassResults.candidateVotes[id] = (currentClassResults.candidateVotes[id] || 0) + 1;
-                        });
-                    } else if (voteStatus === "NULL_BIANCA") {
-                        currentResults.nullVotesBianche += 1;
-                        currentClassResults.nullVotesBianche += 1;
-                    } else if (voteStatus === "NULL_DISGIUNTO") {
-                        currentResults.nullVotesDisgiunte += 1;
-                        currentClassResults.nullVotesDisgiunte += 1;
-                    }
-                    
-                    // Scrive le transazioni
-                    transaction.update(voterRef, { voteStatus: voteStatus, votedList: targetListId, votedCandidates: candidateIds });
-                    transaction.update(resultsRef, currentResults);
-                    transaction.set(classResultsRef, currentClassResults); // set() per gestire la creazione
-                });
-                
-                // Successo
-                hideAllStates();
-                document.getElementById('thank-you-state').classList.remove('hidden');
-
-            } catch (error) {
-                console.error("Errore critico transazione voto:", error);
-                errorEl.textContent = `Errore Server: ${error.message}. Riprova.`;
-                submitBtn.disabled = false;
-            }
-        }
-
-        // --- FUNZIONI DASHBOARD ADMIN ---
-
-        let resultsListener = null;
-
-        function startAdminListeners() {
-            if (resultsListener) resultsListener(); // Sgancia il listener precedente
-            
-            const resultsRef = doc(getPublicCollectionRef('results'), 'current');
-            resultsListener = onSnapshot(resultsRef, (doc) => {
-                if (doc.exists()) {
-                    updateAdminDashboard(doc.data());
-                } else {
-                    console.warn(`Documento risultati non trovato.`);
-                }
-            }, (error) => console.error("Errore listener risultati:", error));
-        }
-        
-        function updateAdminDashboard(results) {
-            const validVotes = results.validVotes || 0;
-            const nullBianche = results.nullVotesBianche || 0;
-            const nullDisgiunte = results.nullVotesDisgiunte || 0;
-            const totalVotes = validVotes + nullBianche + nullDisgiunte;
-            
-            document.getElementById('total-votes-live').textContent = totalVotes;
-            document.getElementById('valid-votes-live').textContent = validVotes;
-            document.getElementById('null-votes-blank-live').textContent = nullBianche;
-            document.getElementById('null-votes-mismatch-live').textContent = nullDisgiunte;
-            
-            const config = ELECTION_CONFIG; // Usa la config globale
-
-            updateCharts(results.listVotes, results.candidateVotes, validVotes, config);
-            calculateSeats(results.listVotes, results.candidateVotes, validVotes, config);
-        }
-
-        function updateCharts(listVotes, candidateVotes, totalValidVotes, config) {
-            // ... (logica grafici, identica a v5 ma legge da config)
-            const listCtx = document.getElementById('list-votes-chart').getContext('2d');
-            const listLabels = config.lists.map(l => l.name);
-            const listData = config.lists.map(l => listVotes[l.id] || 0);
-            const listColors = config.lists.map(l => l.logoUrl || '#64748b'); // Fallback
-
-            if (listVotesChart) listVotesChart.destroy();
-            listVotesChart = new Chart(listCtx, {
-                type: 'doughnut', data: { labels: listLabels, datasets: [{ data: listData, backgroundColor: listColors }] },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-            
-            const candidateCtx = document.getElementById('candidate-votes-chart').getContext('2d');
-            const allCandidates = config.lists.flatMap(l => l.candidates.map(c => ({...c, votes: candidateVotes[c.id] || 0, color: l.logoUrl || '#64748b' })));
-            const top10 = allCandidates.sort((a, b) => b.votes - a.votes).slice(0, 10);
-            
-            if (candidateVotesChart) candidateVotesChart.destroy();
-            candidateVotesChart = new Chart(candidateCtx, {
-                type: 'bar',
-                data: {
-                    labels: top10.map(c => `${c.lastName} ${c.firstName}`),
-                    datasets: [{ label: 'Preferenze', data: top10.map(c => c.votes), backgroundColor: top10.map(c => c.color) }]
+        // IMPOSTAZIONI DINAMICHE CARICATE DA FIRESTORE (con fallback locali)
+        let configElezioni = {
+            consultaAttiva: true,
+            rappresentantiAttivi: true,
+            commissione: [
+                "Laura Iavarone",
+                "Giuseppe Borzumati",
+                "Chiara De Ponti",
+                "Rosaria Del Vecchio",
+                "Angela Terrana"
+            ],
+            listeConsiglio: {
+                "lista1": { 
+                    nome: "Levi ed Oltre", 
+                    candidati: ["Pellicano Alfredo", "Colanero Michele", "Diano Alex", "Scanziani Cardoso Pereira Bruna Edoarda"] 
                 },
-                options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
-            });
-        }
-        
-        function calculateSeats(listVotes, candidateVotes, totalValidVotes, config) {
-            // ... (logica seggi, identica a v5 ma legge da config)
-            const seatsContainer = document.getElementById('seat-allocation-results');
-            seatsContainer.innerHTML = "";
-            const totalSeats = config.totalSeats;
-            if (totalValidVotes === 0) { seatsContainer.innerHTML = '<p>Nessun voto valido.</p>'; return; }
-
-            const quota = totalValidVotes / totalSeats;
-            let seatsAllocated = 0;
-            let listResults = config.lists.map(list => {
-                const votes = listVotes[list.id] || 0;
-                const fullSeats = quota > 0 ? Math.floor(votes / quota) : 0;
-                const remainder = quota > 0 ? votes % quota : 0;
-                seatsAllocated += fullSeats;
-                return { ...list, votes, fullSeats, remainder, totalSeats: fullSeats };
-            });
-            
-            const remainingSeats = totalSeats - seatsAllocated;
-            listResults.sort((a, b) => b.remainder - a.remainder);
-            for (let i = 0; i < remainingSeats && i < listResults.length; i++) { listResults[i].totalSeats += 1; }
-            
-            listResults.sort((a, b) => b.totalSeats - a.votes);
-
-            listResults.forEach(list => {
-                const listCandidates = list.candidates.map(c => ({ ...c, votes: candidateVotes[c.id] || 0 })).sort((a, b) => b.votes - a.votes);
-                const elected = listCandidates.slice(0, list.totalSeats);
-                
-                seatsContainer.innerHTML += `
-                    <div class="p-4 bg-white rounded-lg shadow border-l-4 border-primary-500">
-                        <div class="flex justify-between items-center">
-                            <h4 class="text-xl font-bold text-primary-600">${list.name}</h4>
-                            <span class="text-2xl font-bold text-slate-800">${list.totalSeats} Seggi</span>
-                        </div>
-                        <h5 class="font-semibold mt-3 mb-1">Eletti:</h5>
-                        <ul class="list-disc list-inside text-sm text-slate-700 space-y-1">
-                            ${elected.length > 0 ? elected.map(c => `<li><strong>${c.lastName} ${c.firstName}</strong> (${c.votes} pref.)</li>`).join('') : '<li><i>Nessun eletto</i></li>'}
-                        </ul>
-                    </div>
-                `;
-            });
-        }
-        
-        // --- Voti per Classe ---
-        
-        async function loadClassList() {
-            // ... (Identica a v5, ma legge da ELECTION_CONFIG.classes)
-            const container = document.getElementById('class-turnout-list');
-            container.innerHTML = "";
-            const loader = document.getElementById('class-turnout-loader');
-            loader.classList.remove('hidden');
-
-            const classes = ELECTION_CONFIG.classes || [];
-            if (classes.length === 0) {
-                 container.innerHTML = `<p class="text-center text-slate-500">Nessuna classe trovata. Carica gli studenti nella scheda 'Configurazione'.</p>`;
-                 loader.classList.add('hidden');
-                 return;
+                "lista2": { 
+                    nome: "Forever Young - Secondo Capitolo", 
+                    candidati: ["Boscolo Riccardo", "Forte Alice Anna", "Giacomet Niccolò", "Cervone Giacomo"] 
+                }
+            },
+            listeConsulta: {
+                "lista_unica": {
+                    nome: "Make Brianza Great Again",
+                    candidati: ["Boscolo Riccardo", "Cervone Giacomo"]
+                }
             }
-            
-            classes.forEach(className => {
-                container.innerHTML += `
-                    <div class="p-4 bg-white rounded-lg shadow flex justify-between items-center">
-                        <span class="text-lg font-medium text-slate-700">${className}</span>
-                        <button class="btn-secondary px-4 py-1 text-sm rounded-full" onclick="showClassDetail('${className}')">
-                            Mostra Dettaglio
-                        </button>
-                    </div>
-                `;
-            });
-            loader.classList.add('hidden');
-        }
-        
-        window.showClassDetail = async (className) => {
-            // ... (Identica a v5, ma legge da ELECTION_CONFIG e usa nuovi campi nulli)
-            const modal = document.getElementById('class-detail-modal');
-            const content = document.getElementById('class-detail-content');
-            const title = document.getElementById('class-detail-title');
-            
-            title.textContent = `Dettaglio Classe: ${className}`;
-            content.innerHTML = '<div class="loader mx-auto"></div>';
+        };
+
+        // MODALE CUSTOMIZZATO DI NOTIFICA
+        window.showNotification = function(title, message, type = 'info') {
+            const modal = document.getElementById('custom-alert-modal');
+            const iconContainer = document.getElementById('custom-alert-icon');
+            const titleEl = document.getElementById('custom-alert-title');
+            const msgEl = document.getElementById('custom-alert-message');
+
+            titleEl.textContent = title;
+            msgEl.textContent = message;
+
+            iconContainer.className = 'p-2 rounded-full ';
+            if (type === 'error') {
+                iconContainer.className += 'bg-red-100 text-red-600';
+                iconContainer.innerHTML = '<i data-lucide="shield-alert" class="w-6 h-6"></i>';
+            } else if (type === 'success') {
+                iconContainer.className += 'bg-emerald-100 text-emerald-600';
+                iconContainer.innerHTML = '<i data-lucide="check-circle-2" class="w-6 h-6"></i>';
+            } else {
+                iconContainer.className += 'bg-blue-100 text-blue-600';
+                iconContainer.innerHTML = '<i data-lucide="info" class="w-6 h-6"></i>';
+            }
+
             modal.classList.remove('hidden');
-            
-            const classResultsRef = doc(getPublicCollectionRef('class_results'), className);
-            const classDoc = await getDoc(classResultsRef);
-            
-            if (!classDoc.exists()) {
-                content.innerHTML = '<p class="text-red-500">Nessun voto ancora registrato per questa classe.</p>';
-                return;
+            lucide.createIcons();
+        };
+
+        window.closeNotification = function() {
+            document.getElementById('custom-alert-modal').classList.add('hidden');
+        };
+
+        // Caricamento impostazioni iniziali da DB
+        async function syncConfigFromDB() {
+            try {
+                const configRef = doc(db, 'config', 'settings_v2');
+                const snap = await getDoc(configRef);
+                if (snap.exists()) {
+                    configElezioni = snap.data();
+                } else {
+                    // Crea prima inizializzazione se assente
+                    await setDoc(configRef, configElezioni);
+                }
+            } catch (err) {
+                console.error("Errore sinc config:", err);
             }
+        }
+
+        async function saveConfigToDB() {
+            try {
+                const configRef = doc(db, 'config', 'settings_v2');
+                await setDoc(configRef, configElezioni);
+                showNotification("Successo", "Configurazione elettorale salvata sul database cloud con successo!", "success");
+            } catch (err) {
+                console.error("Errore salvataggio config:", err);
+                showNotification("Errore", "Impossibile salvare la configurazione sul database.", "error");
+            }
+        }
+
+        // --- SISTEMA DI NAVIGAZIONE ---
+        window.showPage = function(pageId) {
+            const container = document.getElementById('app-container');
+            container.innerHTML = '';
             
-            const data = classDoc.data();
-            const config = ELECTION_CONFIG;
-            
-            let html = `
-                <div class="grid grid-cols-4 gap-4 text-center mb-6">
-                    <div class="p-3 bg-slate-100 rounded-lg">
-                        <div class="text-xs uppercase text-slate-500">Votanti</div>
-                        <div class="text-2xl font-bold">${data.totalVotes}</div>
+            switch(pageId) {
+                case 'loading': renderLoading(container); break;
+                case 'studentLogin': renderStudentLogin(container); break;
+                case 'dashboard': renderDashboard(container); break;
+                case 'votoConsiglio': renderVotoConsiglio(container); break;
+                case 'votoConsulta': renderVotoConsulta(container); break;
+                case 'votoClasse': renderVotoClasse(container); break;
+                case 'riepilogo': renderRiepilogo(container); break;
+                case 'success': renderSuccess(container); break;
+                case 'adminLogin': renderAdminLogin(container); break;
+                case 'adminPanel': renderAdminPanel(container); break;
+            }
+            lucide.createIcons();
+        };
+
+        // --- SCHERMATE DI RENDER ---
+
+        function renderLoading(container) {
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center h-80">
+                    <div class="spinner mb-4"></div>
+                    <p class="text-slate-600 font-bold text-lg">Inizializzazione del protocollo di sicurezza...</p>
+                </div>
+            `;
+        }
+
+        function renderStudentLogin(container) {
+            container.innerHTML = `
+                <div class="grid lg:grid-cols-12 gap-8 items-start">
+                    <!-- Colonna Sinistra: Normativa & Sicurezza -->
+                    <div class="lg:col-span-7 bg-white p-6 rounded-2xl shadow-md border border-slate-200">
+                        <div class="flex items-center space-x-3 mb-4 text-blue-900">
+                            <i data-lucide="scale" class="w-6 h-6"></i>
+                            <h3 class="text-xl font-bold">Quadro Normativo ed Informativa</h3>
+                        </div>
+                        <div class="space-y-4 text-sm text-slate-700 leading-relaxed max-h-[480px] overflow-y-auto pr-2">
+                            <p class="font-semibold text-slate-900 border-l-4 border-blue-900 pl-3">Ordinanza Ministeriale n. 215 del 18/12/1991</p>
+                            <p>Le elezioni degli organi collegiali a livello d'istituto sono disciplinate dalle norme contenute nell'O.M. 215/1991. Il presente sistema garantisce la piena aderenza ai principi di libertà, segretezza ed unicità del voto espressi dall'Art. 48 della Costituzione Italiana.</p>
+                            
+                            <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 space-y-2">
+                                <h4 class="font-bold text-blue-900 flex items-center"><i data-lucide="shield" class="w-4 h-4 mr-1.5"></i> Protocollo Crittografico Monouso:</h4>
+                                <p class="text-xs">Ciascun elettore riceve un Token segreto monouso. Una volta inserito nella cabina elettorale digitale, il sistema convalida il diritto di voto. Al momento dell'invio finale nell'urna, il Token viene irrevocabilmente "bruciato" ed eliminato dal database per prevenire il doppio voto.</p>
+                            </div>
+
+                            <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-100 space-y-2">
+                                <h4 class="font-bold text-emerald-900 flex items-center"><i data-lucide="eye-off" class="w-4 h-4 mr-1.5"></i> Garanzia Assoluta di Anonimato:</h4>
+                                <p class="text-xs">La registrazione del voto pubblico (incremento dei contatori delle liste e preferenze) avviene in via asincrona rispetto alla marcatura di utilizzo del Token. Non vi è alcun legame, database log o tracciamento che colleghi l'identità dell'elettore alle scelte di voto espresse.</p>
+                            </div>
+
+                            <p class="text-xs text-slate-500 italic">La Commissione Elettorale supervisiona l'integrità del processo. Qualsiasi tentativo di alterazione o accesso non autorizzato sarà registrato e segnalato alle autorità competenti.</p>
+                        </div>
                     </div>
-                    <div class="p-3 bg-green-50 rounded-lg">
-                        <div class="text-xs uppercase text-green-700">Validi</div>
-                        <div class="text-2xl font-bold text-green-600">${data.validVotes}</div>
-                    </div>
-                    <div class="p-3 bg-yellow-50 rounded-lg">
-                        <div class="text-xs uppercase text-yellow-700">Bianche</div>
-                        <div class="text-2xl font-bold text-yellow-600">${data.nullVotesBianche}</div>
-                    </div>
-                    <div class="p-3 bg-red-50 rounded-lg">
-                        <div class="text-xs uppercase text-red-700">Disgiunti</div>
-                        <div class="text-2xl font-bold text-red-600">${data.nullVotesDisgiunte}</div>
+
+                    <!-- Colonna Destra: Inserimento Token Cabina -->
+                    <div class="lg:col-span-5 bg-white p-8 rounded-2xl shadow-xl border border-slate-200 text-center">
+                        <div class="mb-6">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-900">
+                                <i data-lucide="door-closed" class="w-8 h-8"></i>
+                            </div>
+                            <h2 class="text-2xl font-black text-slate-800">Entra in Cabina</h2>
+                            <p class="text-slate-500 text-sm mt-1">Digita il codice credenziale segreto ricevuto dal docente.</p>
+                        </div>
+
+                        <div class="space-y-4">
+                            <input type="text" id="tokenInput" placeholder="ES: AB79Z2" class="w-full p-4 text-center text-3xl font-mono border-2 border-slate-300 rounded-xl uppercase tracking-widest focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none transition-all">
+                            
+                            <button id="loginBtn" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-extrabold py-4 rounded-xl shadow-lg transition-all text-lg flex items-center justify-center space-x-2">
+                                <i data-lucide="key" class="w-5 h-5"></i>
+                                <span>Accedi alla Votazione</span>
+                            </button>
+                            <p id="loginError" class="text-red-600 text-sm font-semibold hidden bg-red-50 p-2.5 rounded-lg border border-red-100"></p>
+                        </div>
                     </div>
                 </div>
-                <!-- ... (resto della modale come v5) ... -->
             `;
-             content.innerHTML = html;
+            document.getElementById('loginBtn').addEventListener('click', handleStudentLogin);
         }
 
-        // --- Gestione Credenziali ---
-        document.getElementById('class-filter-btn').addEventListener('click', async () => {
-            // ... (Identica a v5, ma legge da ELECTION_CONFIG.classes)
-            const selectedClass = document.getElementById('class-filter-select').value;
-            if (!selectedClass) return;
+        function renderDashboard(container) {
+            if(!currentUserData) return showPage('studentLogin');
 
-            const tableBody = document.getElementById('credentials-table-body');
-            const loader = document.getElementById('credentials-loader');
-            const tableContainer = document.getElementById('credentials-table-container');
+            const hasConsiglio = cartVotes.consiglio !== null;
+            const hasConsulta = cartVotes.consulta !== null;
+            const hasClasse = cartVotes.classe !== null;
 
-            tableContainer.classList.add('hidden');
-            loader.classList.remove('hidden');
-            tableBody.innerHTML = "";
-            
-            try {
-                if (!allVotersCache) {
-                    const snapshot = await getDocs(getPublicCollectionRef('voters'));
-                    if (snapshot.empty) {
-                        document.getElementById('credentials-warning').classList.remove('hidden');
-                        loader.classList.add('hidden');
-                        return;
-                    }
-                    allVotersCache = [];
-                    snapshot.forEach(doc => allVotersCache.push(doc.data()));
-                }
-                
-                const classVoters = allVotersCache
-                    .filter(v => v.class === selectedClass)
-                    .sort((a, b) => a.lastName.localeCompare(b.lastName));
-                
-                classVoters.forEach(voter => {
-                    tableBody.innerHTML += `
-                        <tr class="hover:bg-slate-50">
-                            <td class="px-6 py-4">${voter.lastName}</td>
-                            <td class="px-6 py-4">${voter.firstName}</td>
-                            <td class="px-6 py-4 font-mono">${voter.username}</td>
-                            <td class="px-6 py-4 font-mono">${voter.password}</td>
-                            <td class="px-6 py-4 font-semibold ${voter.hasVoted ? 'text-red-600' : 'text-green-600'}">${voter.hasVoted ? 'SÌ' : 'NO'}</td>
-                        </tr>
-                    `;
-                });
-                tableContainer.classList.remove('hidden');
+            const isAllCompleted = hasConsiglio && 
+                                   (!configElezioni.consultaAttiva || hasConsulta) && 
+                                   (!configElezioni.rappresentantiAttivi || hasClasse);
 
-            } catch (error) { console.error("Errore caricamento credenziali:", error); } 
-            finally { loader.classList.add('hidden'); }
-        });
+            container.innerHTML = `
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <span class="bg-blue-100 text-blue-900 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-wider">Elettore Convalidato</span>
+                        <h2 class="text-2xl font-black text-slate-800 mt-2">${currentUserData.nome} ${currentUserData.cognome}</h2>
+                        <p class="text-slate-600 text-sm font-medium mt-0.5">
+                            Classe: <span class="font-bold text-blue-900">${currentUserData.classe} ${currentUserData.sezione}</span> | Indirizzo: <span class="font-bold">${currentUserData.indirizzo || 'Generale'}</span>
+                        </p>
+                    </div>
+                    <div class="flex items-center space-x-2 text-emerald-600 bg-emerald-50 px-4 py-2.5 rounded-xl border border-emerald-100">
+                        <i data-lucide="shield-check" class="w-6 h-6"></i>
+                        <span class="font-bold text-sm">Sessione Crittografata Attiva</span>
+                    </div>
+                </div>
 
-        // --- FUNZIONI DI SETUP (RICHIESTA 4) ---
-        
-        function showFeedback(message, isError = false) {
-            const feedbackEl = document.getElementById('admin-action-feedback');
-            feedbackEl.textContent = message;
-            feedbackEl.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800');
-            feedbackEl.classList.add(isError ? 'bg-red-100' : 'bg-green-100', isError ? 'text-red-800' : 'text-green-800');
+                <div class="grid md:grid-cols-3 gap-6 mb-8">
+                    <!-- CARD 1: Consiglio d'Istituto -->
+                    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 flex flex-col justify-between hover:shadow-lg transition-all">
+                        <div>
+                            <div class="p-3 bg-blue-100 text-blue-900 rounded-xl w-fit mb-4"><i data-lucide="users"></i></div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">Consiglio d'Istituto</h3>
+                            <p class="text-slate-600 text-xs leading-relaxed mb-6">Elezione dei rappresentanti degli studenti nel Consiglio d'Istituto. Puoi esprimere la tua preferenza per una singola lista e fino a 2 preferenze nominali.</p>
+                        </div>
+                        ${hasConsiglio 
+                            ? `<div class="bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold py-3 text-center rounded-xl flex items-center justify-center space-x-1.5"><i data-lucide="check" class="w-5 h-5"></i> <span>Scheda Pronta</span></div>`
+                            : `<button onclick="showPage('votoConsiglio')" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 rounded-xl shadow transition-colors">Compila Scheda</button>`
+                        }
+                    </div>
+
+                    <!-- CARD 2: Consulta Provinciale -->
+                    ${configElezioni.consultaAttiva ? `
+                    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 flex flex-col justify-between hover:shadow-lg transition-all">
+                        <div>
+                            <div class="p-3 bg-indigo-100 text-indigo-900 rounded-xl w-fit mb-4"><i data-lucide="landmark"></i></div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">Consulta Provinciale</h3>
+                            <p class="text-slate-600 text-xs leading-relaxed mb-6">Elezione dei delegati alla Consulta Provinciale degli Studenti. Seleziona la lista ed esprimi massimo 1 preferenza nominale.</p>
+                        </div>
+                        ${hasConsulta 
+                            ? `<div class="bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold py-3 text-center rounded-xl flex items-center justify-center space-x-1.5"><i data-lucide="check" class="w-5 h-5"></i> <span>Scheda Pronta</span></div>`
+                            : `<button onclick="showPage('votoConsulta')" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-3 rounded-xl shadow transition-colors">Compila Scheda</button>`
+                        }
+                    </div>
+                    ` : `
+                    <div class="bg-slate-100 rounded-2xl border border-slate-200 p-6 flex flex-col justify-between opacity-60">
+                        <div>
+                            <div class="p-3 bg-slate-200 text-slate-500 rounded-xl w-fit mb-4"><i data-lucide="eye-off"></i></div>
+                            <h3 class="text-xl font-bold text-slate-500 mb-2">Consulta Provinciale</h3>
+                            <p class="text-slate-500 text-xs leading-relaxed mb-6">Questa votazione è stata temporaneamente disattivata dalla Commissione Elettorale per la sessione corrente.</p>
+                        </div>
+                        <div class="bg-slate-200 text-slate-600 font-bold py-3 text-center rounded-xl cursor-not-allowed">Votazione Sospesa</div>
+                    </div>
+                    `}
+
+                    <!-- CARD 3: Rappresentante di Classe -->
+                    ${configElezioni.rappresentantiAttivi ? `
+                    <div class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 flex flex-col justify-between hover:shadow-lg transition-all">
+                        <div>
+                            <div class="p-3 bg-purple-100 text-purple-900 rounded-xl w-fit mb-4"><i data-lucide="user-plus"></i></div>
+                            <h3 class="text-xl font-bold text-slate-900 mb-2">Rappresentante di Classe</h3>
+                            <p class="text-slate-600 text-xs leading-relaxed mb-6">Esprimi la preferenza per il rappresentante della tua classe inserendo il nominativo del candidato. Il voto rimarrà strettamente legato al verbale di classe.</p>
+                        </div>
+                        ${hasClasse 
+                            ? `<div class="bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold py-3 text-center rounded-xl flex items-center justify-center space-x-1.5"><i data-lucide="check" class="w-5 h-5"></i> <span>Scheda Pronta</span></div>`
+                            : `<button onclick="showPage('votoClasse')" class="w-full bg-purple-900 hover:bg-purple-800 text-white font-bold py-3 rounded-xl shadow transition-colors">Compila Scheda</button>`
+                        }
+                    </div>
+                    ` : `
+                    <div class="bg-slate-100 rounded-2xl border border-slate-200 p-6 flex flex-col justify-between opacity-60">
+                        <div>
+                            <div class="p-3 bg-slate-200 text-slate-500 rounded-xl w-fit mb-4"><i data-lucide="eye-off"></i></div>
+                            <h3 class="text-xl font-bold text-slate-500 mb-2">Rappresentante di Classe</h3>
+                            <p class="text-slate-500 text-xs leading-relaxed mb-6">Questa votazione è stata disattivata o non programmata per questa giornata dalla Commissione Elettorale.</p>
+                        </div>
+                        <div class="bg-slate-200 text-slate-600 font-bold py-3 text-center rounded-xl cursor-not-allowed">Votazione Sospesa</div>
+                    </div>
+                    `}
+                </div>
+
+                ${isAllCompleted ? `
+                    <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-2xl p-6 text-center shadow-lg animate-pulse">
+                        <h3 class="text-xl font-black text-amber-900 mb-2">Tutte le schede elettorali sono pronte</h3>
+                        <p class="text-amber-800 text-sm mb-4 max-w-xl mx-auto">Procedi al riepilogo finale per convalidare le tue scelte ed inviarle in forma cifrata ed anonima all'urna.</p>
+                        <button onclick="showPage('riepilogo')" class="bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-extrabold py-3.5 px-10 rounded-xl shadow-md text-lg transition-transform hover:scale-105 duration-200">
+                            Riepilogo e Consegna Voto
+                        </button>
+                    </div>
+                ` : `
+                    <div class="bg-slate-100 border border-slate-200 rounded-2xl p-4 text-center text-slate-600 text-sm">
+                        <p>Completa tutte le schede elettorali abilitate per poter procedere all'invio dei voti.</p>
+                    </div>
+                `}
+            `;
         }
 
-        // Popola l'editor di configurazione
-        function renderConfigEditor() {
-            document.getElementById('config-election-name').value = localConfig.electionName || "";
-            document.getElementById('config-total-seats').value = localConfig.totalSeats || 15;
-            
-            const container = document.getElementById('list-config-area');
-            container.innerHTML = "";
-            
-            if (localConfig.lists.length === 0) {
-                container.innerHTML = `<p class="text-slate-500 text-center py-8">Nessuna lista configurata. Clicca 'Aggiungi Lista' per iniziare.</p>`;
+        function renderVotoConsiglio(container) {
+            let html = `
+                <div class="mb-6 flex items-center justify-between">
+                    <button onclick="showPage('dashboard')" class="text-blue-900 hover:underline flex items-center font-bold text-sm"><i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Torna alla Cabina</button>
+                    <span class="text-xs bg-slate-200 px-3 py-1 rounded-full font-bold uppercase tracking-wider text-slate-700">Consiglio d'Istituto</span>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 mb-6">
+                    <div class="border-b pb-4 mb-6">
+                        <h2 class="text-2xl font-black text-slate-800">Elezione Consiglio d'Istituto</h2>
+                        <p class="text-slate-500 text-sm mt-1">Seleziona la lista elettorale per esprimere il voto di lista. All'interno della stessa lista, puoi esprimere fino a unax di 2 preferenze per i candidati.</p>
+                    </div>
+                    
+                    <div class="space-y-6" id="liste-consiglio-container">
+            `;
+
+            for (const [idLista, data] of Object.entries(configElezioni.listeConsiglio)) {
+                html += `
+                    <div class="border rounded-2xl p-5 bg-slate-50 hover:border-blue-400 hover:bg-white transition-all cursor-pointer shadow-sm relative overflow-hidden">
+                        <label class="flex items-start cursor-pointer mb-4">
+                            <input type="radio" name="listaConsiglio" value="${idLista}" class="mt-1 w-6 h-6 text-blue-900 border-slate-300 focus:ring-blue-900" onchange="updatePrefConsiglio('${idLista}')">
+                            <div class="ml-4">
+                                <span class="block text-xl font-extrabold text-slate-900">${data.nome}</span>
+                                <span class="text-xs text-blue-800 font-bold uppercase tracking-wide">Voto di Lista automatico con selezione</span>
+                            </div>
+                        </label>
+                        <div id="pref-${idLista}" class="ml-10 hidden space-y-3 mt-4 pt-4 border-t border-slate-200">
+                            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Esprimi Preferenze Nominali (Massimo 2):</p>
+                            <div class="grid md:grid-cols-2 gap-3">
+                                ${data.candidati.map(cand => `
+                                    <label class="flex items-center space-x-3 p-3 bg-white rounded-xl border border-slate-200 hover:border-blue-300 hover:shadow-sm cursor-pointer transition-all">
+                                        <input type="checkbox" value="${cand}" class="w-5 h-5 text-blue-900 rounded border-slate-300 pref-checkbox-${idLista}" onchange="checkMaxPref(this, '${idLista}', 2)">
+                                        <span class="text-slate-800 font-semibold text-sm">${cand}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
             }
-            
-            localConfig.lists.forEach((list, index) => {
-                const listEl = document.createElement('div');
-                listEl.className = "bg-slate-50 border border-slate-200 p-4 rounded-lg space-y-3";
+
+            html += `
+                    </div>
+                    <div class="mt-8 flex justify-end">
+                        <button onclick="saveTempConsiglio()" class="bg-blue-900 hover:bg-blue-800 text-white font-extrabold py-3.5 px-8 rounded-xl shadow transition-all">
+                            Registra Scheda Consiglio
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        function renderVotoConsulta(container) {
+            let html = `
+                <div class="mb-6 flex items-center justify-between">
+                    <button onclick="showPage('dashboard')" class="text-indigo-900 hover:underline flex items-center font-bold text-sm"><i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Torna alla Cabina</button>
+                    <span class="text-xs bg-slate-200 px-3 py-1 rounded-full font-bold uppercase tracking-wider text-slate-700">Consulta Provinciale</span>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 mb-6">
+                    <div class="border-b pb-4 mb-6">
+                        <h2 class="text-2xl font-black text-slate-800">Elezione Consulta Provinciale</h2>
+                        <p class="text-slate-500 text-sm mt-1">Seleziona la lista elettorale per esprimere il voto di lista. Puoi esprimere al massimo 1 preferenza nominale.</p>
+                    </div>
+                    
+                    <div class="space-y-6">
+            `;
+
+            for (const [idLista, data] of Object.entries(configElezioni.listeConsulta)) {
+                html += `
+                    <div class="border rounded-2xl p-5 bg-slate-50 border-indigo-200 shadow-sm relative overflow-hidden">
+                        <label class="flex items-start cursor-pointer mb-4">
+                            <input type="radio" name="listaConsulta" value="${idLista}" checked class="mt-1 w-6 h-6 text-indigo-900 border-slate-300 focus:ring-indigo-900">
+                            <div class="ml-4">
+                                <span class="block text-xl font-extrabold text-slate-900">${data.nome}</span>
+                                <span class="text-xs text-indigo-800 font-bold uppercase tracking-wide">Voto di Lista automatico con selezione</span>
+                            </div>
+                        </label>
+                        <div class="ml-10 space-y-3 mt-4 pt-4 border-t border-slate-200">
+                            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Esprimi Preferenza Nominale (Massimo 1):</p>
+                            <div class="grid md:grid-cols-2 gap-3">
+                                ${data.candidati.map(cand => `
+                                    <label class="flex items-center space-x-3 p-3 bg-white rounded-xl border border-slate-200 hover:border-indigo-300 hover:shadow-sm cursor-pointer transition-all">
+                                        <input type="checkbox" value="${cand}" class="w-5 h-5 text-indigo-900 rounded border-slate-300 pref-checkbox-consulta" onchange="checkMaxPrefConsulta(this)">
+                                        <span class="text-slate-800 font-semibold text-sm">${cand}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += `
+                    </div>
+                    <div class="mt-8 flex justify-end">
+                        <button onclick="saveTempConsulta()" class="bg-indigo-900 hover:bg-indigo-800 text-white font-extrabold py-3.5 px-8 rounded-xl shadow transition-all">
+                            Registra Scheda Consulta
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        function renderVotoClasse(container) {
+            container.innerHTML = `
+                <div class="mb-6 flex items-center justify-between">
+                    <button onclick="showPage('dashboard')" class="text-purple-900 hover:underline flex items-center font-bold text-sm"><i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Torna alla Cabina</button>
+                    <span class="text-xs bg-slate-200 px-3 py-1 rounded-full font-bold uppercase tracking-wider text-slate-700">Rappresentante di Classe</span>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 mb-6 max-w-xl mx-auto">
+                    <div class="border-b pb-4 mb-6">
+                        <h2 class="text-2xl font-black text-slate-800">Rappresentante di Classe</h2>
+                        <p class="text-slate-500 text-sm mt-1">Inserisci manualmente per esteso il Nome e Cognome dello studente della tua classe a cui desideri assegnare il voto.</p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-1.5">Nome e Cognome del Candidato</label>
+                            <input type="text" id="candClasseInput" placeholder="ES: Mario Rossi" class="w-full p-4 border rounded-xl font-semibold outline-none focus:border-purple-600 focus:ring-2 focus:ring-purple-100 transition-all uppercase">
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 flex items-start space-x-3 text-purple-900">
+                            <i data-lucide="info" class="w-5 h-5 mt-0.5 flex-shrink-0"></i>
+                            <p class="text-xs leading-relaxed">Assicurati di digitare correttamente il nome per esteso del tuo compagno di classe. Verranno considerati validi solo i voti destinati agli studenti iscritti alla tua classe (<span class="font-bold">${currentUserData.classe} ${currentUserData.sezione}</span>).</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-end">
+                        <button onclick="saveTempClasse()" class="bg-purple-900 hover:bg-purple-800 text-white font-extrabold py-3.5 px-8 rounded-xl shadow transition-all">
+                            Registra Scheda Rappresentante
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRiepilogo(container) {
+            if(!currentUserData) return showPage('studentLogin');
+
+            let html = `
+                <div class="mb-6 flex items-center justify-between">
+                    <button onclick="showPage('dashboard')" class="text-blue-900 hover:underline flex items-center font-bold text-sm"><i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Torna alla Cabina</button>
+                    <span class="text-xs bg-slate-200 px-3 py-1 rounded-full font-bold uppercase tracking-wider text-slate-700">Riepilogo Elezioni</span>
+                </div>
                 
-                listEl.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <h5 class="text-lg font-semibold text-primary-700">Lista ${index + 1}</h5>
-                        <button class="text-sm btn-danger px-3 py-1 rounded" data-index="${index}" onclick="removeList(this)">Rimuovi Lista</button>
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 mb-6 max-w-2xl mx-auto">
+                    <div class="border-b pb-4 mb-6 text-center">
+                        <h2 class="text-2xl font-black text-slate-800">Verifica le tue Schede</h2>
+                        <p class="text-slate-500 text-sm mt-1">Verifica attentamente le selezioni prima di sigillare l'urna elettronica.</p>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700">Nome Lista</label>
-                        <input type="text" class="dynamic-input list-name-input" data-index="${index}" value="${list.name}">
+                    
+                    <div class="space-y-6">
+            `;
+
+            // 1. Riepilogo Consiglio d'Istituto
+            if (cartVotes.consiglio) {
+                const listId = cartVotes.consiglio.listaId;
+                const listName = configElezioni.listeConsiglio[listId] ? configElezioni.listeConsiglio[listId].nome : "Lista Sconosciuta";
+                const prefs = cartVotes.consiglio.preferenze && cartVotes.consiglio.preferenze.length > 0 
+                    ? cartVotes.consiglio.preferenze.join(', ') 
+                    : 'Nessuna preferenza nominale espressa';
+                html += `
+                    <div class="p-4 bg-blue-50 border border-blue-200 rounded-xl">
+                        <div class="flex items-center space-x-2 text-blue-900 font-bold mb-2">
+                            <i data-lucide="users" class="w-5 h-5"></i>
+                            <span>Consiglio d'Istituto</span>
+                        </div>
+                        <div class="text-sm space-y-1 text-slate-700">
+                            <p><strong>Lista votata:</strong> ${listName}</p>
+                            <p><strong>Preferenze espresse:</strong> <span class="italic text-slate-600">${prefs}</span></p>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700">URL Logo Lista</label>
-                        <input type="text" class="dynamic-input list-logo-input" data-index="${index}" value="${list.logoUrl || ''}" placeholder="https://...">
+                `;
+            } else {
+                html += `
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-500 text-sm italic">
+                        Nessun voto registrato per il Consiglio d'Istituto (Scheda Bianca)
                     </div>
+                `;
+            }
+
+            // 2. Riepilogo Consulta Provinciale
+            if (configElezioni.consultaAttiva) {
+                if (cartVotes.consulta) {
+                    const listId = cartVotes.consulta.listaId;
+                    const listName = configElezioni.listeConsulta[listId] ? configElezioni.listeConsulta[listId].nome : "Lista Sconosciuta";
+                    const prefs = cartVotes.consulta.preferenze && cartVotes.consulta.preferenze.length > 0 
+                        ? cartVotes.consulta.preferenze.join(', ') 
+                        : 'Nessuna preferenza nominale espressa';
+                    html += `
+                        <div class="p-4 bg-indigo-50 border border-indigo-200 rounded-xl">
+                            <div class="flex items-center space-x-2 text-indigo-900 font-bold mb-2">
+                                <i data-lucide="landmark" class="w-5 h-5"></i>
+                                <span>Consulta Provinciale</span>
+                            </div>
+                            <div class="text-sm space-y-1 text-slate-700">
+                                <p><strong>Lista votata:</strong> ${listName}</p>
+                                <p><strong>Preferenza espressa:</strong> <span class="italic text-slate-600">${prefs}</span></p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-500 text-sm italic">
+                            Nessun voto registrato per la Consulta Provinciale (Scheda Bianca)
+                        </div>
+                    `;
+                }
+            }
+
+            // 3. Riepilogo Rappresentante di Classe
+            if (configElezioni.rappresentantiAttivi) {
+                if (cartVotes.classe) {
+                    html += `
+                        <div class="p-4 bg-purple-50 border border-purple-200 rounded-xl">
+                            <div class="flex items-center space-x-2 text-purple-900 font-bold mb-2">
+                                <i data-lucide="user-plus" class="w-5 h-5"></i>
+                                <span>Rappresentante di Classe</span>
+                            </div>
+                            <div class="text-sm text-slate-700">
+                                <p><strong>Candidato Scritto:</strong> <span class="font-bold uppercase">${cartVotes.classe}</span></p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl text-slate-500 text-sm italic">
+                            Nessun voto registrato per il Rappresentante di Classe (Scheda Bianca)
+                        </div>
+                    `;
+                }
+            }
+
+            html += `
+                    </div>
+
+                    <div class="mt-8 bg-amber-50 border border-amber-200 p-4 rounded-xl flex items-start space-x-3 text-amber-900 mb-6">
+                        <i data-lucide="shield-alert" class="w-5 h-5 mt-0.5 flex-shrink-0 text-amber-600"></i>
+                        <p class="text-xs leading-relaxed font-semibold">Attenzione: Cliccando su "Imbuca nell'Urna", i voti verranno memorizzati in forma aggregata ed anonima. Non potrai più accedere a questa cabina né modificare le schede.</p>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-3 justify-end">
+                        <button onclick="showPage('dashboard')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-6 rounded-xl text-sm transition-all text-center">
+                            Modifica le Schede
+                        </button>
+                        <button onclick="submitFinalVotes()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 px-8 rounded-xl text-sm shadow-md hover:shadow-lg transition-all flex items-center justify-center space-x-2">
+                            <i data-lucide="inbox" class="w-5 h-5"></i>
+                            <span>Imbuca nell'Urna Elettorale</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        function renderSuccess(container) {
+            container.innerHTML = `
+                <div class="max-w-2xl mx-auto bg-white p-8 rounded-2xl shadow-xl border border-slate-200 text-center space-y-6 my-10">
+                    <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto text-emerald-600">
+                        <i data-lucide="check-circle" class="w-12 h-12"></i>
+                    </div>
+                    <h2 class="text-3xl font-black text-slate-800">Votazione Completata!</h2>
+                    <p class="text-emerald-700 font-bold bg-emerald-50 py-2 px-4 rounded-lg inline-block text-sm">
+                        <i data-lucide="shield" class="w-4 h-4 inline mr-1"></i> Schede Sigillate ed Inviate all'Urna
+                    </p>
+                    <div class="space-y-3 text-slate-600 max-w-md mx-auto text-sm leading-relaxed">
+                        <p>La tua sessione di voto si è conclusa con successo. Il sistema ha aggiornato i contatori in modo totalmente anonimo e asincrono.</p>
+                        <p class="font-semibold text-red-600">Il tuo Token d'accesso monouso è stato permanentemente revocato.</p>
+                    </div>
+                    <div class="pt-6 border-t border-slate-100">
+                        <button onclick="window.resetSessionAndGoHome()" class="bg-blue-900 hover:bg-blue-800 text-white font-extrabold py-3.5 px-8 rounded-xl shadow-md transition-all text-sm uppercase tracking-wide">
+                            Esci e Libera la Cabina
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            window.resetSessionAndGoHome = function() {
+                currentUserData = null;
+                cartVotes = { consiglio: null, consulta: null, classe: null };
+                showPage('studentLogin');
+            };
+        }
+
+        // --- GESTIONE DEI DATI DI VOTO TEMPORANEI (CART) ---
+
+        window.updatePrefConsiglio = function(selectedListaId) {
+            for (const id of Object.keys(configElezioni.listeConsiglio)) {
+                document.getElementById(`pref-${id}`).classList.add('hidden');
+                document.querySelectorAll(`.pref-checkbox-${id}`).forEach(cb => cb.checked = false);
+            }
+            document.getElementById(`pref-${selectedListaId}`).classList.remove('hidden');
+        };
+
+        window.checkMaxPref = function(checkbox, listaId, max) {
+            const checkedBoxes = document.querySelectorAll(`.pref-checkbox-${listaId}:checked`);
+            if (checkedBoxes.length > max) {
+                checkbox.checked = false;
+                showNotification("Regolamento", `Puoi esprimere un massimo di ${max} preferenze per questa lista.`, "error");
+            }
+        };
+
+        window.saveTempConsiglio = function() {
+            const selectedLista = document.querySelector('input[name="listaConsiglio"]:checked');
+            if (!selectedLista) {
+                showNotification("Avviso", "Devi prima selezionare una Lista Elettorale.", "error");
+                return;
+            }
+            const listaId = selectedLista.value;
+            const preferenze = Array.from(document.querySelectorAll(`.pref-checkbox-${listaId}:checked`)).map(cb => cb.value);
+            
+            cartVotes.consiglio = { listaId: listaId, preferenze: preferenze };
+            showPage('dashboard');
+        };
+
+        window.checkMaxPrefConsulta = function(checkbox) {
+            const checkedBoxes = document.querySelectorAll(`.pref-checkbox-consulta:checked`);
+            if (checkedBoxes.length > 1) {
+                checkbox.checked = false;
+                showNotification("Regolamento", "Puoi esprimere un massimo di 1 preferenza nominale per la Consulta.", "error");
+            }
+        };
+
+        window.saveTempConsulta = function() {
+            const selectedLista = document.querySelector('input[name="listaConsulta"]:checked');
+            if (!selectedLista) {
+                showNotification("Avviso", "Devi selezionare la lista della Consulta Provinciale.", "error");
+                return;
+            }
+            const listaId = selectedLista.value;
+            const preferenze = Array.from(document.querySelectorAll(`.pref-checkbox-consulta:checked`)).map(cb => cb.value);
+            
+            cartVotes.consulta = { listaId: listaId, preferenze: preferenze };
+            showPage('dashboard');
+        };
+
+        window.saveTempClasse = function() {
+            const val = document.getElementById('candClasseInput').value.trim();
+            if (!val) {
+                showNotification("Dati mancanti", "Devi scrivere Nome e Cognome del candidato rappresentante.", "error");
+                return;
+            }
+            cartVotes.classe = val;
+            showPage('dashboard');
+        };
+
+        // --- LOGICA ELETTORICA DEL VOTO ---
+
+        async function handleStudentLogin() {
+            const token = document.getElementById('tokenInput').value.trim().toUpperCase();
+            const errEl = document.getElementById('loginError');
+            errEl.classList.add('hidden');
+
+            if (!token) { 
+                errEl.textContent = "È necessario inserire un Token segreto."; 
+                errEl.classList.remove('hidden'); 
+                return; 
+            }
+
+            try {
+                await signInAnonymously(auth);
+                const tokenRef = doc(db, 'tokens', token);
+                const tokenSnap = await getDoc(tokenRef);
+
+                if (!tokenSnap.exists()) {
+                    errEl.textContent = "Token non valido o errato.";
+                    errEl.classList.remove('hidden');
+                    return;
+                }
+
+                const data = tokenSnap.data();
+                if (data.hasVoted) {
+                    errEl.textContent = "Questo Token Elettorale risulta già utilizzato.";
+                    errEl.classList.remove('hidden');
+                    return;
+                }
+
+                currentUserData = { id: token, ...data };
+                showPage('dashboard');
+
+            } catch (error) {
+                console.error(error);
+                errEl.textContent = "Errore di comunicazione col server. Riprova.";
+                errEl.classList.remove('hidden');
+            }
+        }
+
+        window.submitFinalVotes = async function() {
+            if(!cartVotes.consiglio && !cartVotes.consulta && !cartVotes.classe) return;
+
+            const tokenRef = doc(db, 'tokens', currentUserData.id);
+            
+            let consiglioRef = null;
+            if (cartVotes.consiglio) {
+                consiglioRef = doc(db, 'voti_consiglio', cartVotes.consiglio.listaId);
+            }
+
+            let consultaRef = null;
+            if (cartVotes.consulta && configElezioni.consultaAttiva) {
+                consultaRef = doc(db, 'voti_consulta', cartVotes.consulta.listaId);
+            }
+
+            let classeRef = null;
+            const targetClassKey = `${currentUserData.classe}_${currentUserData.sezione}`.toUpperCase();
+            if (cartVotes.classe && configElezioni.rappresentantiAttivi) {
+                classeRef = doc(db, 'voti_classe', targetClassKey);
+            }
+
+            try {
+                showPage('loading');
+                
+                await runTransaction(db, async (transaction) => {
+                    // --- FASE 1: TUTTE LE LETTURE (READS) ---
+                    const tokenDoc = await transaction.get(tokenRef);
+                    if (!tokenDoc.exists() || tokenDoc.data().hasVoted) {
+                        throw new Error("Il Token segreto è già stato consumato.");
+                    }
+
+                    let consiglioDoc = null;
+                    if (consiglioRef) {
+                        consiglioDoc = await transaction.get(consiglioRef);
+                    }
+
+                    let consultaDoc = null;
+                    if (consultaRef) {
+                        consultaDoc = await transaction.get(consultaRef);
+                    }
+
+                    let classeDoc = null;
+                    if (classeRef) {
+                        classeDoc = await transaction.get(classeRef);
+                    }
+
+                    // --- FASE 2: TUTTE LE SCRITTURE (WRITES) ---
+                    transaction.update(tokenRef, { hasVoted: true, usedAt: new Date().toISOString() });
+
+                    if (consiglioRef) {
+                        let payload = { count: 1, preferenze: {} };
+                        if (consiglioDoc && consiglioDoc.exists()) {
+                            payload.count = consiglioDoc.data().count + 1;
+                            payload.preferenze = consiglioDoc.data().preferenze || {};
+                        }
+                        
+                        cartVotes.consiglio.preferenze.forEach(p => {
+                            payload.preferenze[p] = (payload.preferenze[p] || 0) + 1;
+                        });
+                        
+                        transaction.set(consiglioRef, payload, { merge: true });
+                    }
+
+                    if (consultaRef) {
+                        let payload = { count: 1, preferenze: {} };
+                        if (consultaDoc && consultaDoc.exists()) {
+                            payload.count = consultaDoc.data().count + 1;
+                            payload.preferenze = consultaDoc.data().preferenze || {};
+                        }
+                        
+                        cartVotes.consulta.preferenze.forEach(p => {
+                            payload.preferenze[p] = (payload.preferenze[p] || 0) + 1;
+                        });
+                        
+                        transaction.set(consultaRef, payload, { merge: true });
+                    }
+
+                    if (classeRef) {
+                        let payload = {};
+                        if (classeDoc && classeDoc.exists()) {
+                            payload = classeDoc.data();
+                        }
+
+                        const targetName = cartVotes.classe.toUpperCase();
+                        payload[targetName] = (payload[targetName] || 0) + 1;
+
+                        transaction.set(classeRef, payload);
+                    }
+                });
+
+                currentUserData = null;
+                cartVotes = { consiglio: null, consulta: null, classe: null };
+                showPage('success');
+
+            } catch (error) {
+                console.error("Errore transazione:", error);
+                showNotification("Errore di Urna", "Impossibile depositare il voto nell'urna elettronica.", "error");
+                showPage('dashboard');
+            }
+        };
+
+
+        // ==========================================
+        //  ADMIN PANEL: COMMISSIONE ELETTORALE
+        // ==========================================
+
+        function renderAdminLogin(container) {
+            container.innerHTML = `
+                <div class="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-xl border border-slate-200 mt-10">
+                    <div class="text-center mb-6">
+                        <i data-lucide="shield-alert" class="mx-auto w-12 h-12 text-red-600 mb-2"></i>
+                        <h2 class="text-2xl font-black text-slate-800">Pannello Commissione Elettorale</h2>
+                        <p class="text-slate-500 text-sm mt-1">L'accesso è riservato esclusivamente ai componenti designati ed autorizzati.</p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <input type="password" id="adminPwd" placeholder="Password Amministratore" class="w-full p-4 border rounded-xl text-center text-lg outline-none focus:border-red-600 focus:ring-2 focus:ring-red-500">
+                        <button onclick="checkAdminLogin()" class="w-full bg-red-600 hover:bg-red-700 text-white font-extrabold py-4 rounded-xl shadow transition-all">Accedi al Cruscotto</button>
+                        <button onclick="showPage('studentLogin')" class="w-full text-sm text-slate-500 hover:underline">Annulla e torna alla cabina</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.checkAdminLogin = function() {
+            const pwd = document.getElementById('adminPwd').value;
+            if (pwd === ADMIN_PWD) {
+                signInAnonymously(auth).then(() => {
+                    showPage('adminPanel');
+                });
+            } else {
+                showNotification("Errore d'Accesso", "Password Amministrativa non corretta.", "error");
+            }
+        };
+
+        function renderAdminPanel(container) {
+            container.innerHTML = `
+                <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <h6 class="text-md font-semibold text-slate-700 mt-4">Candidati</h6>
-                        <div class="space-y-2 mt-2" id="candidates-for-list-${index}">
-                            ${list.candidates.map((cand, candIndex) => `
-                                <div class="flex space-x-2">
-                                    <input type="text" class="dynamic-input cand-lastname-input" data-list-index="${index}" data-cand-index="${candIndex}" value="${cand.lastName}" placeholder="Cognome">
-                                    <input type="text" class="dynamic-input cand-firstname-input" data-list-index="${index}" data-cand-index="${candIndex}" value="${cand.firstName}" placeholder="Nome">
-                                    <button class="btn-secondary px-2 rounded text-sm" data-list-index="${index}" data-cand-index="${candIndex}" onclick="removeCandidate(this)">&times;</button>
+                        <h2 class="text-2xl font-black text-slate-800">Cruscotto Commissione Elettorale</h2>
+                        <p class="text-slate-500 text-sm">Organismo di vigilanza istituzionale delle elezioni</p>
+                    </div>
+                    <button onclick="showPage('studentLogin')" class="bg-slate-800 text-white font-bold px-5 py-2.5 rounded-xl hover:bg-slate-700 flex items-center space-x-2"><i data-lucide="log-out" class="w-4 h-4"></i> <span>Esci</span></button>
+                </div>
+
+                <!-- Tabs di navigazione Admin -->
+                <div class="flex border-b border-slate-200 mb-6 overflow-x-auto">
+                    <button onclick="switchAdminTab('config')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors ${activeAdminTab === 'config' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">1. Configurazione & Commissione</button>
+                    <button onclick="switchAdminTab('liste')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors ${activeAdminTab === 'liste' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">2. Configura Liste & Candidati</button>
+                    <button onclick="switchAdminTab('elettori')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors ${activeAdminTab === 'elettori' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">3. Generazione Credenziali (Studenti)</button>
+                    <button onclick="switchAdminTab('verbali')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors ${activeAdminTab === 'verbali' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">4. Scrutinio & Verbali (O.M. 215/1991)</button>
+                </div>
+
+                <div id="admin-tab-content">
+                    <!-- Il contenuto cambia in base al tab selezionato -->
+                </div>
+            `;
+            renderActiveAdminTab();
+        }
+
+        window.switchAdminTab = function(tabId) {
+            activeAdminTab = tabId;
+            renderActiveAdminTab();
+        };
+
+        function renderActiveAdminTab() {
+            const content = document.getElementById('admin-tab-content');
+            content.innerHTML = '';
+
+            if (activeAdminTab === 'config') {
+                renderConfigTab(content);
+            } else if (activeAdminTab === 'liste') {
+                renderListeTab(content);
+            } else if (activeAdminTab === 'elettori') {
+                renderElettoriTab(content);
+            } else if (activeAdminTab === 'verbali') {
+                renderVerbaliTab(content);
+            }
+            lucide.createIcons();
+        }
+
+        function renderConfigTab(container) {
+            container.innerHTML = `
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Configurazione Elezioni Attive -->
+                    <div class="bg-white p-6 rounded-2xl shadow border border-slate-200">
+                        <h3 class="text-lg font-extrabold text-slate-800 mb-4 border-b pb-2 flex items-center"><i data-lucide="settings-2" class="mr-2 text-slate-600"></i> Stato Votazioni Correnti</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                                <div>
+                                    <span class="font-bold text-slate-800 block">Elezioni Consulta Provinciale</span>
+                                    <span class="text-xs text-slate-500">Se attiva, gli studenti visualizzano la scheda Consulta.</span>
+                                </div>
+                                <input type="checkbox" id="toggleConsulta" class="w-6 h-6 text-red-600 rounded" ${configElezioni.consultaAttiva ? 'checked' : ''} onchange="toggleElez('consulta')">
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                                <div>
+                                    <span class="font-bold text-slate-800 block">Elezioni Rappresentante di Classe</span>
+                                    <span class="text-xs text-slate-500">Se attiva, viene richiesta la compilazione nominale per classe.</span>
+                                </div>
+                                <input type="checkbox" id="toggleRappresentanti" class="w-6 h-6 text-red-600 rounded" ${configElezioni.rappresentantiAttivi ? 'checked' : ''} onchange="toggleElez('rappresentanti')">
+                            </div>
+                        </div>
+                        <button onclick="saveConfigToDB()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl mt-6 transition-all text-sm flex items-center justify-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Salva Cambiamenti</button>
+                    </div>
+
+                    <!-- Gestione Membri Commissione Elettorale -->
+                    <div class="bg-white p-6 rounded-2xl shadow border border-slate-200">
+                        <h3 class="text-lg font-extrabold text-slate-800 mb-4 border-b pb-2 flex items-center"><i data-lucide="folder-git" class="mr-2 text-slate-600"></i> Componenti della Commissione</h3>
+                        <div class="space-y-3 mb-4 max-h-[160px] overflow-y-auto" id="lista-commissione">
+                            ${configElezioni.commissione.map((mem, index) => `
+                                <div class="flex justify-between items-center bg-slate-50 p-2.5 rounded-lg border border-slate-200">
+                                    <span class="text-sm font-semibold text-slate-800">${mem}</span>
+                                    <button onclick="rimuoviMembro(${index})" class="text-red-500 hover:text-red-700 text-xs font-bold uppercase"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                                 </div>
                             `).join('')}
                         </div>
-                        <button class="btn-secondary text-sm px-3 py-1 mt-3 rounded" data-index="${index}" onclick="addCandidate(this)">+ Aggiungi Candidato</button>
+                        <div class="flex gap-2">
+                            <input type="text" id="nuovoMembroInput" placeholder="Inserisci Nome e Cognome" class="flex-grow p-3 border rounded-xl text-sm outline-none">
+                            <button onclick="aggiungiMembro()" class="bg-red-600 text-white font-bold px-4 rounded-xl hover:bg-red-700 text-sm">Aggiungi</button>
+                        </div>
                     </div>
-                `;
-                container.appendChild(listEl);
-            });
-            
-            // Aggiungi listeners per salvare le modifiche locali
-            container.querySelectorAll('.list-name-input').forEach(input => input.onchange = (e) => localConfig.lists[e.target.dataset.index].name = e.target.value);
-            container.querySelectorAll('.list-logo-input').forEach(input => input.onchange = (e) => localConfig.lists[e.target.dataset.index].logoUrl = e.target.value);
-            container.querySelectorAll('.cand-lastname-input').forEach(input => input.onchange = (e) => localConfig.lists[e.target.dataset.listIndex].candidates[e.target.dataset.candIndex].lastName = e.target.value);
-            container.querySelectorAll('.cand-firstname-input').forEach(input => input.onchange = (e) => localConfig.lists[e.target.dataset.listIndex].candidates[e.target.dataset.candIndex].firstName = e.target.value);
+                </div>
+            `;
         }
-        
-        document.getElementById('add-new-list-btn').addEventListener('click', () => {
-            localConfig.lists.push({
-                id: `lista_${crypto.randomUUID().substring(0, 8)}`,
-                name: "Nuova Lista",
-                logoUrl: "",
-                candidates: []
-            });
-            renderConfigEditor();
-        });
-        
-        window.removeList = (btn) => {
-            localConfig.lists.splice(btn.dataset.index, 1);
-            renderConfigEditor();
-        }
-        
-        window.addCandidate = (btn) => {
-            localConfig.lists[btn.dataset.index].candidates.push({
-                id: `cand_${crypto.randomUUID().substring(0, 8)}`,
-                firstName: "",
-                lastName: "",
-                listId: localConfig.lists[btn.dataset.index].id
-            });
-            renderConfigEditor();
-        }
-        
-        window.removeCandidate = (btn) => {
-            localConfig.lists[btn.dataset.listIndex].candidates.splice(btn.dataset.candIndex, 1);
-            renderConfigEditor();
-        }
-        
-        // Salva Configurazione
-        document.getElementById('save-config-btn').addEventListener('click', async (e) => {
-            const btn = e.target;
-            btn.disabled = true;
-            
-            localConfig.electionName = document.getElementById('config-election-name').value;
-            localConfig.totalSeats = parseInt(document.getElementById('config-total-seats').value);
-            
-            // Riassegna ID candidati in modo pulito
-            localConfig.lists.forEach(list => {
-                list.candidates.forEach((cand, index) => {
-                    cand.id = `${list.id}_cand${index + 1}`;
-                    cand.listId = list.id;
-                });
-            });
-            
-            try {
-                // Salva la nuova config
-                await setDoc(doc(getPublicCollectionRef('config'), 'election_info'), localConfig);
-                
-                // Resetta i risultati per la nuova config
-                await resetResults(); 
-                
-                ELECTION_CONFIG = JSON.parse(JSON.stringify(localConfig)); // Aggiorna config globale
-                showFeedback("Configurazione salvata. I risultati sono stati azzerati.", false);
-            } catch (error) {
-                showFeedback(`Errore: ${error.message}`, true);
-            } finally {
-                btn.disabled = false;
-            }
-        });
-        
-        // Caricamento Studenti
-        document.getElementById('manual-upload-btn').addEventListener('click', async (e) => {
-            // ... (Logica di caricamento studenti, aggiornata per salvare classi)
-            const data = document.getElementById('manual-upload-data').value.trim();
-            if (!data) { /* ... */ return; }
-            const btn = e.target;
-            btn.disabled = true;
-            
-            const lines = data.split('\n');
-            const uniqueClasses = new Set(ELECTION_CONFIG.classes || []);
-            let batch = writeBatch(db);
-            let count = 0;
-            
-            for (const line of lines) {
-                const [firstName, lastName, className] = line.split(',').map(s => s.trim());
-                if (firstName && lastName && className) {
-                    const password = generatePassword(8);
-                    const username = generateUsername(firstName, lastName, className);
-                    batch.set(doc(getPublicCollectionRef('voters'), username), {
-                        username, password, firstName, lastName, class: className, hasVoted: false
-                    });
-                    uniqueClasses.add(className);
-                    count++;
-                }
-            }
-            await batch.commit();
-            
-            // Aggiorna l'elenco delle classi nella config
-            localConfig.classes = Array.from(uniqueClasses);
-            localConfig.totalStudents = (await getDocs(getPublicCollectionRef('voters'))).size;
-            await setDoc(doc(getPublicCollectionRef('config'), 'election_info'), localConfig);
-            ELECTION_CONFIG = JSON.parse(JSON.stringify(localConfig));
-            
-            showFeedback(`Caricati ${count} studenti.`, false);
-            allVotersCache = null;
-            btn.disabled = false;
-        });
 
-        // Cancella Studenti
-        document.getElementById('delete-students-btn').addEventListener('click', async (e) => {
-            // ... (Logica delete-students)
-        });
-        
-        // Reset Voti
-        document.getElementById('reset-votes-btn').addEventListener('click', async (e) => {
-            if (!confirm("Sei sicuro? Questo azzererà TUTTI i voti e lo stato 'ha votato' degli studenti.")) return;
-            const btn = e.target;
-            btn.disabled = true;
-            
+        window.toggleElez = function(type) {
+            if(type === 'consulta') {
+                configElezioni.consultaAttiva = document.getElementById('toggleConsulta').checked;
+            } else if (type === 'rappresentanti') {
+                configElezioni.rappresentantiAttivi = document.getElementById('toggleRappresentanti').checked;
+            }
+        };
+
+        window.aggiungiMembro = function() {
+            const val = document.getElementById('nuovoMembroInput').value.trim();
+            if(val) {
+                configElezioni.commissione.push(val);
+                renderActiveAdminTab();
+            }
+        };
+
+        window.rimuoviMembro = function(index) {
+            configElezioni.commissione.splice(index, 1);
+            renderActiveAdminTab();
+        };
+
+        function renderListeTab(container) {
+            let html = `
+                <div class="space-y-8">
+                    <div class="bg-white p-6 rounded-2xl shadow border border-slate-200">
+                        <div class="flex justify-between items-center border-b pb-4 mb-4">
+                            <div>
+                                <h3 class="text-lg font-extrabold text-slate-800">Gestione Liste e Candidati Elettorali</h3>
+                                <p class="text-xs text-slate-500">Modifica, aggiungi o cancella le liste e i partecipanti per il Consiglio d'Istituto e per la Consulta Provinciale.</p>
+                            </div>
+                            <button onclick="saveConfigToDB()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-5 rounded-xl text-sm flex items-center space-x-1.5 shadow transition-all">
+                                <i data-lucide="save" class="w-4 h-4"></i> <span>Salva nel Cloud</span>
+                            </button>
+                        </div>
+
+                        <div class="grid lg:grid-cols-2 gap-6">
+                            <!-- SEZIONE CONSIGLIO D'ISTITUTO -->
+                            <div class="space-y-4">
+                                <div class="bg-blue-50 p-4 rounded-xl border border-blue-200">
+                                    <h4 class="font-extrabold text-blue-900 flex items-center"><i data-lucide="users" class="mr-2"></i> Liste Consiglio d'Istituto</h4>
+                                </div>
+                                <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                                    ${Object.entries(configElezioni.listeConsiglio).map(([id, l]) => `
+                                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative">
+                                            <div class="flex justify-between items-center mb-2">
+                                                <span class="font-extrabold text-slate-900">${l.nome}</span>
+                                                <button onclick="rimuoviLista('consiglio', '${id}')" class="text-red-500 hover:text-red-700 text-xs font-bold uppercase"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                            </div>
+                                            <div class="space-y-1.5 pl-4 border-l-2 border-slate-200">
+                                                ${l.candidati.map((cand, idx) => `
+                                                    <div class="flex justify-between items-center text-xs text-slate-700">
+                                                        <span>${cand}</span>
+                                                        <button onclick="rimuoviCandidato('consiglio', '${id}', ${idx})" class="text-slate-400 hover:text-red-500"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                            <div class="flex gap-2 mt-3 pt-3 border-t border-dashed border-slate-200">
+                                                <input type="text" id="addCand-${id}" placeholder="Nuovo Candidato" class="flex-grow p-1.5 border rounded-lg text-xs outline-none">
+                                                <button onclick="aggiungiCandidato('consiglio', '${id}')" class="bg-blue-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold">Aggiungi</button>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div class="p-3 bg-slate-50 rounded-xl border flex gap-2">
+                                    <input type="text" id="nuovaListaConsiglioNome" placeholder="Nome Nuova Lista Consiglio" class="flex-grow p-2.5 border rounded-xl text-xs outline-none">
+                                    <button onclick="aggiungiLista('consiglio')" class="bg-blue-900 text-white px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Aggiungi Lista</button>
+                                </div>
+                            </div>
+
+                            <!-- SEZIONE CONSULTA PROVINCIALE -->
+                            <div class="space-y-4">
+                                <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-200">
+                                    <h4 class="font-extrabold text-indigo-900 flex items-center"><i data-lucide="landmark" class="mr-2"></i> Liste Consulta Provinciale</h4>
+                                </div>
+                                <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
+                                    ${Object.entries(configElezioni.listeConsulta).map(([id, l]) => `
+                                        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm relative">
+                                            <div class="flex justify-between items-center mb-2">
+                                                <span class="font-extrabold text-slate-900">${l.nome}</span>
+                                                <button onclick="rimuoviLista('consulta', '${id}')" class="text-red-500 hover:text-red-700 text-xs font-bold uppercase"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                            </div>
+                                            <div class="space-y-1.5 pl-4 border-l-2 border-slate-200">
+                                                ${l.candidati.map((cand, idx) => `
+                                                    <div class="flex justify-between items-center text-xs text-slate-700">
+                                                        <span>${cand}</span>
+                                                        <button onclick="rimuoviCandidato('consulta', '${id}', ${idx})" class="text-slate-400 hover:text-red-500"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                            <div class="flex gap-2 mt-3 pt-3 border-t border-dashed border-slate-200">
+                                                <input type="text" id="addCand-${id}" placeholder="Nuovo Candidato" class="flex-grow p-1.5 border rounded-lg text-xs outline-none">
+                                                <button onclick="aggiungiCandidato('consulta', '${id}')" class="bg-indigo-900 text-white px-3 py-1.5 rounded-lg text-xs font-bold">Aggiungi</button>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div class="p-3 bg-slate-50 rounded-xl border flex gap-2">
+                                    <input type="text" id="nuovaListaConsultaNome" placeholder="Nome Nuova Lista Consulta" class="flex-grow p-2.5 border rounded-xl text-xs outline-none">
+                                    <button onclick="aggiungiLista('consulta')" class="bg-indigo-900 text-white px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap">Aggiungi Lista</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        window.aggiungiLista = function(type) {
+            const inputId = type === 'consiglio' ? 'nuovaListaConsiglioNome' : 'nuovaListaConsultaNome';
+            const nome = document.getElementById(inputId).value.trim();
+            if (!nome) return;
+
+            const idStr = 'lista_' + Math.random().toString(36).substring(2, 7);
+            const targetObj = type === 'consiglio' ? configElezioni.listeConsiglio : configElezioni.listeConsulta;
+
+            targetObj[idStr] = { nome: nome, candidati: [] };
+            document.getElementById(inputId).value = '';
+            renderActiveAdminTab();
+        };
+
+        window.rimuoviLista = function(type, id) {
+            const targetObj = type === 'consiglio' ? configElezioni.listeConsiglio : configElezioni.listeConsulta;
+            delete targetObj[id];
+            renderActiveAdminTab();
+        };
+
+        window.aggiungiCandidato = function(type, idLista) {
+            const name = document.getElementById(`addCand-${idLista}`).value.trim();
+            if(!name) return;
+
+            const targetObj = type === 'consiglio' ? configElezioni.listeConsiglio : configElezioni.listeConsulta;
+            if(targetObj[idLista]) {
+                targetObj[idLista].candidati.push(name);
+                renderActiveAdminTab();
+            }
+        };
+
+        window.rimuoviCandidato = function(type, idLista, index) {
+            const targetObj = type === 'consiglio' ? configElezioni.listeConsiglio : configElezioni.listeConsulta;
+            if(targetObj[idLista]) {
+                targetObj[idLista].candidati.splice(index, 1);
+                renderActiveAdminTab();
+            }
+        };
+
+        function renderElettoriTab(container) {
+            container.innerHTML = `
+                <div class="grid lg:grid-cols-3 gap-6">
+                    <!-- Generazione Manuale Singolo Elettore -->
+                    <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 lg:col-span-1">
+                        <h3 class="text-lg font-extrabold text-slate-800 mb-4 border-b pb-2 flex items-center"><i data-lucide="user-cog" class="mr-2 text-slate-600"></i> Inserimento Manuale</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nome</label>
+                                <input type="text" id="manNome" placeholder="ES: Mario" class="w-full p-2.5 border rounded-xl text-sm outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Cognome</label>
+                                <input type="text" id="manCognome" placeholder="ES: Rossi" class="w-full p-2.5 border rounded-xl text-sm outline-none">
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Classe</label>
+                                    <input type="text" id="manClasse" placeholder="ES: 4" class="w-full p-2.5 border rounded-xl text-sm outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Sezione</label>
+                                    <input type="text" id="manSezione" placeholder="ES: L" class="w-full p-2.5 border rounded-xl text-sm outline-none">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Indirizzo di Studio</label>
+                                <input type="text" id="manIndirizzo" placeholder="ES: Liceo Scientifico" class="w-full p-2.5 border rounded-xl text-sm outline-none">
+                            </div>
+                            <button onclick="generaManualeElettore()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow text-sm transition-colors mt-2">Crea Credenziale Singola</button>
+                        </div>
+                    </div>
+
+                    <!-- Generazione Massiva Excel -->
+                    <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 lg:col-span-2">
+                        <h3 class="text-lg font-extrabold text-slate-800 mb-4 border-b pb-2 flex items-center"><i data-lucide="file-spreadsheet" class="mr-2 text-slate-600"></i> Importazione Massiva Excel</h3>
+                        <p class="text-xs text-slate-600 mb-4 leading-relaxed">Carica un file in formato Excel (.xlsx) contenente l'elenco della scuola per compilare il database in tempo reale. Le colonne necessarie sono: <b>Nome, Cognome, Classe, Sezione, Indirizzo</b>.</p>
+                        
+                        <div class="border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center hover:border-red-500 transition-all mb-4 relative">
+                            <input type="file" id="excelFile" accept=".xlsx, .xls" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                            <div class="space-y-2">
+                                <i data-lucide="upload-cloud" class="mx-auto w-10 h-10 text-slate-400"></i>
+                                <p class="text-sm font-semibold text-slate-700">Seleziona o trascina il foglio Excel qui</p>
+                            </div>
+                        </div>
+
+                        <button onclick="processExcel()" id="btnProcess" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-extrabold py-3 rounded-xl shadow transition-colors text-sm">Elabora e Salva in Database</button>
+                        
+                        <div id="excelStatus" class="mt-4 p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-800 font-bold text-sm text-center hidden flex items-center justify-center space-x-1">
+                            <i data-lucide="check-circle-2" class="w-5 h-5"></i> <span id="statusText"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Credenziali generate e Stampa dei fogli per i Coordinatori -->
+                <div class="mt-6 bg-white p-6 rounded-2xl shadow border border-slate-200">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-3 mb-4 gap-4">
+                        <div>
+                            <h3 class="text-lg font-extrabold text-slate-800">Stampa dei Registri e delle Credenziali</h3>
+                            <p class="text-xs text-slate-500">Esporta l'elenco suddiviso per classe con i Token da ritagliare e consegnare agli studenti in forma segreta.</p>
+                        </div>
+                        <button onclick="generatePDF()" class="bg-red-600 hover:bg-red-700 text-white font-extrabold px-6 py-3 rounded-xl shadow text-sm transition-colors flex items-center space-x-2">
+                            <i data-lucide="printer" class="w-4 h-4"></i>
+                            <span>Scarica PDF Registri Classi</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.generaManualeElettore = async function() {
+            const nome = document.getElementById('manNome').value.trim();
+            const cognome = document.getElementById('manCognome').value.trim();
+            const classe = document.getElementById('manClasse').value.trim().toUpperCase();
+            const sezione = document.getElementById('manSezione').value.trim().toUpperCase();
+            const indirizzo = document.getElementById('manIndirizzo').value.trim().toUpperCase();
+
+            if (!nome || !cognome || !classe || !sezione) {
+                showNotification("Dati Mancanti", "Completa i campi fondamentali: Nome, Cognome, Classe, Sezione.", "error");
+                return;
+            }
+
             try {
-                await resetResults();
+                const token = Math.random().toString(36).substring(2, 8).toUpperCase();
+                const docRef = doc(db, "tokens", token);
+                await setDoc(docRef, {
+                    token: token,
+                    nome: nome,
+                    cognome: cognome,
+                    classe: classe,
+                    sezione: sezione,
+                    indirizzo: indirizzo || "GENERALE",
+                    hasVoted: false,
+                    createdAt: new Date().toISOString()
+                });
                 
-                const voters = await getDocs(getPublicCollectionRef('voters'));
+                showNotification("Generazione Completata", `Elettore generato con successo!\nNome: ${nome} ${cognome}\nToken: ${token}`, "success");
+                
+                // Pulisci i campi
+                document.getElementById('manNome').value = '';
+                document.getElementById('manCognome').value = '';
+                document.getElementById('manClasse').value = '';
+                document.getElementById('manSezione').value = '';
+                document.getElementById('manIndirizzo').value = '';
+
+            } catch (err) {
+                console.error(err);
+                showNotification("Errore", "Salvataggio credenziale manuale non riuscito.", "error");
+            }
+        };
+
+        function renderVerbaliTab(container) {
+            container.innerHTML = `
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h3 class="text-lg font-extrabold text-slate-800">Scrutinio in Tempo Reale & Algoritmi Elettorali</h3>
+                        <p class="text-xs text-slate-500">Le sezioni mostrano i risultati anonimi dell'urna, applicando la ripartizione dei seggi.</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="esportaExcelCompleto()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-colors flex items-center space-x-1.5 shadow">
+                            <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> <span>Scarica Tabelle Excel</span>
+                        </button>
+                        <button onclick="esportaVerbalePDF()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-colors flex items-center space-x-1.5 shadow">
+                            <i data-lucide="file-text" class="w-4 h-4"></i> <span>Esporta Verbale Ufficiale</span>
+                        </button>
+                        <button onclick="loadRisultati()" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition-colors flex items-center space-x-1.5 shadow">
+                            <i data-lucide="refresh-cw" class="w-4 h-4"></i> <span>Aggiorna Dati</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="scrutinio-realtime-results" class="space-y-6">
+                    <p class="text-center text-slate-500 italic py-10">Clicca "Aggiorna Dati" per recuperare ed elaborare i dati elettorali correnti dall'urna.</p>
+                </div>
+            `;
+        }
+
+        // ==========================================
+        //  ELABORAZIONE E LOGICHE INTEGRATE (ADMIN)
+        // ==========================================
+
+        window.processExcel = function() {
+            const fileInput = document.getElementById('excelFile');
+            const statusEl = document.getElementById('excelStatus');
+            const statusText = document.getElementById('statusText');
+
+            if (!fileInput.files[0]) { 
+                showNotification("File Mancante", "Seleziona prima il file Excel compilato.", "error"); 
+                return; 
+            }
+
+            const btn = document.getElementById('btnProcess');
+            btn.disabled = true;
+            btn.innerText = "Salvataggio ed elaborazione in corso...";
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const json = XLSX.utils.sheet_to_json(worksheet, {raw: false});
+
                 let batch = writeBatch(db);
-                voters.docs.forEach((doc, i) => {
-                    batch.update(doc.ref, { hasVoted: false, votedAt: null, voteStatus: null, votedList: null, votedCandidates: null });
-                    if (i % 490 === 0) { batch.commit(); batch = writeBatch(db); }
-                });
-                await batch.commit();
-                
-                showFeedback("Voti e stato studenti azzerati.", false);
-                allVotersCache = null;
-            } catch (error) { showFeedback(`Errore: ${error.message}`, true); }
-            finally { btn.disabled = false; }
-        });
+                let count = 0;
+                let batchCount = 0;
 
-        // Funzione helper per azzerare i risultati
-        async function resetResults() {
-            const resultsRef = doc(getPublicCollectionRef('results'), 'current');
-            const initialResults = {
-                totalVotes: 0, validVotes: 0, nullVotesBianche: 0, nullVotesDisgiunte: 0,
-                listVotes: ELECTION_CONFIG.lists.reduce((acc, l) => ({ ...acc, [l.id]: 0 }), {}),
-                candidateVotes: ELECTION_CONFIG.lists.flatMap(l => l.candidates.map(c => c.id)).reduce((acc, id) => ({ ...acc, [id]: 0 }), {}),
+                try {
+                    for (let row of json) {
+                        let nome = row["Nome"] || row["nome"] || row["NOME"];
+                        let cognome = row["Cognome"] || row["cognome"] || row["COGNOME"];
+                        let classe = row["Classe"] || row["classe"] || row["CLASSE"];
+                        let sezione = row["Sezione"] || row["sezione"] || row["SEZIONE"];
+                        let indirizzo = row["Indirizzo"] || row["indirizzo"] || row["INDIRIZZO"];
+
+                        if (nome && cognome && classe && sezione) {
+                            const token = Math.random().toString(36).substring(2, 8).toUpperCase();
+                            const docRef = doc(db, "tokens", token);
+                            
+                            batch.set(docRef, {
+                                token: token,
+                                nome: String(nome).trim(),
+                                cognome: String(cognome).trim(),
+                                classe: String(classe).trim().toUpperCase(),
+                                sezione: String(sezione).trim().toUpperCase(),
+                                indirizzo: String(indirizzo || "GENERALE").trim().toUpperCase(),
+                                hasVoted: false,
+                                createdAt: new Date().toISOString()
+                            });
+
+                            count++;
+                            batchCount++;
+
+                            if (batchCount === 450) {
+                                await batch.commit();
+                                batch = writeBatch(db);
+                                batchCount = 0;
+                            }
+                        }
+                    }
+
+                    if (batchCount > 0) {
+                        await batch.commit();
+                    }
+
+                    statusText.innerText = `Protocollo concluso. Caricati con successo ${count} Elettori.`;
+                    statusEl.classList.remove('hidden');
+                    showNotification("Completato", `Elaborati e registrati con successo ${count} studenti.`, "success");
+
+                } catch (err) {
+                    console.error(err);
+                    showNotification("Errore", "Si è verificato un errore durante l'importazione massiva batch.", "error");
+                }
+
+                btn.disabled = false;
+                btn.innerText = "Elabora e Salva in Database";
             };
-            await setDoc(resultsRef, initialResults);
-            
-            // Azzera anche i risultati di classe
-            const classDocs = await getDocs(getPublicCollectionRef('class_results'));
-            let batch = writeBatch(db);
-            classDocs.forEach(doc => batch.delete(doc.ref));
-            await batch.commit();
-        }
-        
-        // --- FUNZIONE PDF REPORT ---
-        
-        document.getElementById('generate-zip-btn').addEventListener('click', async () => {
-            // ... (Logica ZIP, identica a v5 ma legge da ELECTION_CONFIG)
-        });
-        
-        async function createVerbaleAffluenza(data) {
-            // ... (Logica PDF, identica a v5 ma legge da ELECTION_CONFIG)
-        }
-        
-        async function createVerbaleRisultati(data) {
-            // ... (Logica PDF, identica a v5 ma legge da ELECTION_CONFIG)
-        }
+            reader.readAsArrayBuffer(fileInput.files[0]);
+        };
 
-        // Funzioni helper PDF
-        function addPdfHeader(doc, data, title) {
-            // ... (Identica a v5)
-        }
-        
-        function addPdfFooter(doc, data, startY) {
-            // ... (Identica a v5)
-        }
-    
+        // GENERATE REGISTRY PDF (BY CLASS)
+        window.generatePDF = async function() {
+            try {
+                const tokensRef = collection(db, "tokens");
+                const querySnapshot = await getDocs(tokensRef);
+                
+                let students = [];
+                querySnapshot.forEach((doc) => {
+                    students.push(doc.data());
+                });
+
+                if (students.length === 0) {
+                    showNotification("Errore di Stampa", "Nessun elettore registrato in database. Carica prima l'elenco.", "error");
+                    return;
+                }
+
+                const classes = {};
+                students.forEach(s => {
+                    const key = `${s.classe} ${s.sezione} - ${s.indirizzo}`.trim();
+                    if (!classes[key]) classes[key] = [];
+                    classes[key].push(s);
+                });
+
+                const { jsPDF } = window.jspdf;
+                const docPDF = new jsPDF();
+                
+                let isFirst = true;
+
+                for (const [classTitle, list] of Object.entries(classes)) {
+                    if (!isFirst) docPDF.addPage();
+                    isFirst = false;
+
+                    // Header di pagina
+                    docPDF.setFontSize(11);
+                    docPDF.setFont("Helvetica", "bold");
+                    docPDF.text("ISTITUTO D'ISTRUZIONE SUPERIORE - VIA BRIANTINA 68 SEREGNO", 14, 15);
+                    
+                    docPDF.setFontSize(9);
+                    docPDF.setFont("Helvetica", "normal");
+                    docPDF.text("Elezioni Organi Collegiali - Consegna Plichi e Tagliandini di Voto", 14, 20);
+
+                    docPDF.setFillColor(241, 245, 249);
+                    docPDF.rect(14, 23, 182, 18, "F");
+                    
+                    docPDF.setFontSize(7.5);
+                    docPDF.text("RESPONSABILITÀ DEL COORDINATORE: I presenti plichi vengono consegnati al Docente Coordinatore", 16, 27);
+                    docPDF.text("di classe, il quale deve apporre la propria firma, garantendo la segretezza e la custodia del materiale.", 16, 31);
+                    docPDF.text("All'atto della consegna del tagliandino, l'alunno firma inserendo l'ora esatta del ritiro.", 16, 35);
+                    
+                    docPDF.setFontSize(10);
+                    docPDF.setFont("Helvetica", "bold");
+                    docPDF.text(`GRUPPO CLASSE: ${classTitle}`, 14, 47);
+
+                    const tableRows = list.sort((a, b) => a.cognome.localeCompare(b.cognome)).map((s, idx) => [
+                        idx + 1,
+                        s.cognome + " " + s.nome,
+                        s.token,
+                        "", // Firma alunno
+                        "", // Ora consegna
+                        ""  // Firma referente
+                    ]);
+
+                    docPDF.autoTable({
+                        startY: 51,
+                        head: [['N.', 'Studente', 'Token Segreto', 'Firma Alunno', 'Ora Cons.', 'Firma Referente']],
+                        body: tableRows,
+                        theme: 'grid',
+                        headStyles: { fillColor: [30, 41, 59] },
+                        styles: { fontSize: 8, cellPadding: 2 },
+                        columnStyles: {
+                            2: { fontStyle: 'bold', textColor: [185, 28, 28], halign: 'center' },
+                            3: { cellWidth: 35 },
+                            4: { cellWidth: 20 },
+                            5: { cellWidth: 30 }
+                        }
+                    });
+
+                    let finalY = docPDF.lastAutoTable.finalY + 12;
+                    if(finalY > 260) {
+                        docPDF.addPage();
+                        finalY = 30;
+                    }
+
+                    docPDF.setFontSize(8.5);
+                    docPDF.setFont("Helvetica", "bold");
+                    docPDF.text("Firma del Docente Coordinatore di classe per ricevuta plichi: _________________________________", 14, finalY);
+                    docPDF.text("Ora Inizio Votazioni: ____:____", 14, finalY + 7);
+                }
+
+                docPDF.save("Registri_Consegna_Classi.pdf");
+
+            } catch (err) {
+                console.error(err);
+                showNotification("Errore", "Impossibile generare il PDF per la consegna dei plichi.", "error");
+            }
+        };
+
+        // SCRUTINIO REALTIME & CALCOLI
+        let globalScrutinioData = null; // Memorizza dati caricati
+
+        window.loadRisultati = async function() {
+            const container = document.getElementById('scrutinio-realtime-results');
+            container.innerHTML = `<div class="text-center py-10"><div class="spinner inline-block"></div><p class="text-slate-500 font-bold mt-2">Raccolta dati in corso...</p></div>`;
+
+            try {
+                // 1. Lettura Affluenza Totale
+                const tokSnap = await getDocs(collection(db, "tokens"));
+                let totalTokensCount = 0;
+                let usedTokensCount = 0;
+                let statTurnout = {}; // per class
+
+                tokSnap.forEach(d => {
+                    const data = d.data();
+                    totalTokensCount++;
+                    if(data.hasVoted) usedTokensCount++;
+
+                    const key = `${data.classe}_${data.sezione}`.toUpperCase();
+                    if(!statTurnout[key]) statTurnout[key] = { total: 0, voted: 0 };
+                    statTurnout[key].total++;
+                    if(data.hasVoted) statTurnout[key].voted++;
+                });
+
+                // 2. Lettura Consiglio
+                const consSnap = await getDocs(collection(db, "voti_consiglio"));
+                let votiConsiglio = {};
+                let votiValidiConsiglio = 0;
+                consSnap.forEach(d => {
+                    votiConsiglio[d.id] = d.data();
+                    votiValidiConsiglio += d.data().count || 0;
+                });
+
+                // 3. Lettura Consulta
+                const consuSnap = await getDocs(collection(db, "voti_consulta"));
+                let votiConsulta = {};
+                consuSnap.forEach(d => {
+                    votiConsulta[d.id] = d.data();
+                });
+
+                // 4. Lettura Rappresentanti di Classe
+                const classSnap = await getDocs(collection(db, "voti_classe"));
+                let votiClasse = {};
+                classSnap.forEach(d => {
+                    votiClasse[d.id] = d.data();
+                });
+
+                // Calcolo Seggi Consiglio d'Istituto (OM 215/1991 - Quoziente e Resti Più Alti)
+                const SEGGI_DISPONIBILI_CONSIGLIO = 4;
+                let seggiAssegnatiConsiglio = {};
+                let restiConsiglio = [];
+
+                if (votiValidiConsiglio > 0) {
+                    const quoziente = votiValidiConsiglio / SEGGI_DISPONIBILI_CONSIGLIO;
+                    let seggiRimasti = SEGGI_DISPONIBILI_CONSIGLIO;
+
+                    for (const idLista of Object.keys(configElezioni.listeConsiglio)) {
+                        const voti = (votiConsiglio[idLista] && votiConsiglio[idLista].count) ? votiConsiglio[idLista].count : 0;
+                        const seggiInteri = Math.floor(voti / quoziente);
+                        seggiAssegnatiConsiglio[idLista] = seggiInteri;
+                        seggiRimasti -= seggiInteri;
+
+                        restiConsiglio.push({
+                            id: idLista,
+                            resto: voti - (seggiInteri * quoziente)
+                        });
+                    }
+
+                    // Ripartizione per resti più alti
+                    restiConsiglio.sort((a, b) => b.resto - a.resto);
+                    for (let i = 0; i < seggiRimasti; i++) {
+                        if (restiConsiglio[i]) {
+                            seggiAssegnatiConsiglio[restiConsiglio[i].id]++;
+                        }
+                    }
+                }
+
+                // Memorizza nello stato globale per export
+                globalScrutinioData = {
+                    totalTokens: totalTokensCount,
+                    usedTokens: usedTokensCount,
+                    statTurnout: statTurnout,
+                    votiConsiglio: votiConsiglio,
+                    votiConsulta: votiConsulta,
+                    votiClasse: votiClasse,
+                    seggiAssegnatiConsiglio: seggiAssegnatiConsiglio
+                };
+
+                // COMPILAZIONE GRAFICA RISULTATI
+                let html = `
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <!-- Statistiche generali affluenza -->
+                        <div class="bg-white p-5 rounded-2xl border shadow-sm md:col-span-1 flex flex-col justify-between">
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3">Statistiche Affluenza</h4>
+                                <div class="space-y-4">
+                                    <div class="flex justify-between items-center border-b pb-2">
+                                        <span class="text-sm font-semibold text-slate-700">Totale Iscritti:</span>
+                                        <span class="font-extrabold text-slate-950">${totalTokensCount}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center border-b pb-2">
+                                        <span class="text-sm font-semibold text-slate-700">Votanti Totali:</span>
+                                        <span class="font-extrabold text-blue-900">${usedTokensCount}</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm font-semibold text-slate-700">Percentuale Affluenza:</span>
+                                        <span class="font-black text-emerald-700">${totalTokensCount > 0 ? ((usedTokensCount / totalTokensCount) * 100).toFixed(2) : '0.00'} %</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Scrutinio Consiglio d'Istituto -->
+                        <div class="bg-white p-5 rounded-2xl border shadow-sm md:col-span-2">
+                            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2 flex justify-between">
+                                <span>Consiglio d'Istituto</span>
+                                <span class="text-blue-900 font-extrabold text-xs">Assegnazione Seggi (O.M. 215/1991)</span>
+                            </h4>
+                            <div class="space-y-6">
+                `;
+
+                for (const [idLista, data] of Object.entries(configElezioni.listeConsiglio)) {
+                    const dbData = votiConsiglio[idLista] || { count: 0, preferenze: {} };
+                    const seggi = seggiAssegnatiConsiglio[idLista] || 0;
+
+                    const candOrdinati = data.candidati.map(c => ({
+                        nome: c,
+                        voti: dbData.preferenze[c] || 0
+                    })).sort((a, b) => b.voti - a.voti);
+
+                    html += `
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                            <div class="flex justify-between items-center mb-3">
+                                <div>
+                                    <h5 class="font-extrabold text-slate-900">${data.nome}</h5>
+                                    <span class="text-xs text-slate-500 font-bold">Voti di lista: ${dbData.count}</span>
+                                </div>
+                                <span class="bg-red-100 text-red-900 font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider">Seggi: ${seggi}</span>
+                            </div>
+                            <ul class="text-xs space-y-1.5 pt-2 border-t border-slate-200">
+                                ${candOrdinati.map((c, idx) => {
+                                    const eletto = idx < seggi && c.voti > 0 ? '<span class="text-emerald-700 font-bold ml-1.5">[Eletto]</span>' : '';
+                                    return `<li class="flex justify-between items-center text-slate-700 border-b border-dashed border-slate-200 pb-1">
+                                        <span>${c.nome} ${eletto}</span>
+                                        <span class="font-bold text-slate-900">${c.voti} pref.</span>
+                                    </li>`;
+                                }).join('')}
+                            </ul>
+                        </div>
+                    `;
+                }
+
+                html += `
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scrutinio Consulta Provinciale (Se Abilitata) -->
+                    ${configElezioni.consultaAttiva ? `
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm">
+                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2">Consulta Provinciale</h4>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            ${Object.entries(configElezioni.listeConsulta).map(([idLista, data]) => {
+                                const dbData = votiConsulta[idLista] || { count: 0, preferenze: {} };
+                                return `
+                                    <div class="bg-slate-50 p-4 rounded-xl border border-indigo-100">
+                                        <h5 class="font-extrabold text-slate-950">${data.nome}</h5>
+                                        <p class="text-xs text-slate-500 mb-2">Voti di Lista Totali: ${dbData.count}</p>
+                                        <ul class="text-xs space-y-1 mt-2 border-t pt-2">
+                                            ${data.candidati.map(c => `
+                                                <li class="flex justify-between">
+                                                    <span>${c.nome}</span>
+                                                    <span class="font-bold text-slate-950">${dbData.preferenze[c] || 0} preferenze</span>
+                                                </li>
+                                            `).join('')}
+                                        </ul>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <!-- Risultati per ciascuna classe (Rappresentanti di Classe) -->
+                    ${configElezioni.rappresentantiAttivi ? `
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm">
+                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2">Voti Rappresentanti di Classe (Scrutinio Interno)</h4>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            ${Object.keys(votiClasse).length > 0 ? Object.entries(votiClasse).map(([classKey, list]) => {
+                                const classFormat = classKey.replace('_', ' ');
+                                const sortedCands = Object.entries(list).sort((a, b) => b[1] - a[1]);
+                                return `
+                                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                                        <h5 class="font-extrabold text-slate-900 text-sm border-b pb-1 mb-2">Classe: ${classFormat}</h5>
+                                        <ul class="text-xs space-y-1">
+                                            ${sortedCands.map(([name, v]) => `
+                                                <li class="flex justify-between items-center">
+                                                    <span class="font-medium truncate max-w-[140px]">${name}</span>
+                                                    <span class="bg-purple-100 text-purple-900 px-1.5 py-0.5 rounded font-bold">${v} voti</span>
+                                                </li>
+                                            `).join('')}
+                                        </ul>
+                                    </div>
+                                `;
+                            }).join('') : '<p class="text-xs text-slate-500 italic p-2 col-span-3 text-center">Nessun voto depositato per i Rappresentanti di Classe.</p>'}
+                        </div>
+                    </div>
+                    ` : ''}
+                `;
+
+                container.innerHTML = html;
+
+            } catch (err) {
+                console.error(err);
+                container.innerHTML = `<p class="text-red-500 text-sm font-bold text-center py-4">Errore nell'elaborazione dello scrutinio.</p>`;
+            }
+        };
+
+        // EXPORT EXCEL DOCUMENT (SHEETJS)
+        window.esportaExcelCompleto = function() {
+            if(!globalScrutinioData) {
+                showNotification("Azione Necessaria", "Nessun dato scrutinato disponibile. Premi prima 'Aggiorna Dati'.", "error");
+                return;
+            }
+
+            try {
+                const wb = XLSX.utils.book_new();
+
+                // FOGLIO 1: Affluenza
+                const rowsAffluenza = [
+                    ["STATISTICHE GENERALI ELETTORALI"],
+                    ["Elettori Iscritti", globalScrutinioData.totalTokens],
+                    ["Elettori Votanti", globalScrutinioData.usedTokens],
+                    ["Turnout (%)", ((globalScrutinioData.usedTokens / globalScrutinioData.totalTokens) * 100).toFixed(2)],
+                    [],
+                    ["Affluenza per Classe", "Votanti", "Iscritti", "%"]
+                ];
+
+                Object.entries(globalScrutinioData.statTurnout).forEach(([k, item]) => {
+                    const rowText = k.replace('_', ' ');
+                    const per = ((item.voted / item.total) * 100).toFixed(2);
+                    rowsAffluenza.push([rowText, item.voted, item.total, per]);
+                });
+
+                const wsAffluenza = XLSX.utils.aoa_to_sheet(rowsAffluenza);
+                XLSX.utils.book_append_sheet(wb, wsAffluenza, "Affluenza");
+
+                // FOGLIO 2: Consiglio d'Istituto
+                const rowsConsiglio = [
+                    ["RISULTATI CONSIGLIO D'ISTITUTO (O.M. 215/1991)"],
+                    ["Lista", "Voti di Lista", "Seggi Assegnati", "Candidato", "Preferenze"]
+                ];
+
+                for (const [idLista, data] of Object.entries(configElezioni.listeConsiglio)) {
+                    const dbData = globalScrutinioData.votiConsiglio[idLista] || { count: 0, preferenze: {} };
+                    const seggi = globalScrutinioData.seggiAssegnatiConsiglio[idLista] || 0;
+
+                    data.candidati.forEach((c, idx) => {
+                        const v = dbData.preferenze[c] || 0;
+                        if(idx === 0) {
+                            rowsConsiglio.push([data.nome, dbData.count, seggi, c, v]);
+                        } else {
+                            rowsConsiglio.push(["", "", "", c, v]);
+                        }
+                    });
+                }
+
+                const wsConsiglio = XLSX.utils.aoa_to_sheet(rowsConsiglio);
+                XLSX.utils.book_append_sheet(wb, wsConsiglio, "Consiglio d'Istituto");
+
+                // FOGLIO 3: Consulta Provinciale
+                const rowsConsulta = [
+                    ["RISULTATI CONSULTA PROVINCIALE"],
+                    ["Lista", "Voti di Lista", "Candidato", "Preferenze"]
+                ];
+
+                for (const [idLista, data] of Object.entries(configElezioni.listeConsulta)) {
+                    const dbData = globalScrutinioData.votiConsulta[idLista] || { count: 0, preferenze: {} };
+                    data.candidati.forEach((c, idx) => {
+                        const v = dbData.preferenze[c] || 0;
+                        if(idx === 0) {
+                            rowsConsulta.push([data.nome, dbData.count, c, v]);
+                        } else {
+                            rowsConsulta.push(["", "", c, v]);
+                        }
+                    });
+                }
+
+                const wsConsulta = XLSX.utils.aoa_to_sheet(rowsConsulta);
+                XLSX.utils.book_append_sheet(wb, wsConsulta, "Consulta Provinciale");
+
+                // FOGLIO 4: Rappresentanti di Classe
+                const rowsRappr = [
+                    ["SCRUTINIO RAPPRESENTANTI DI CLASSE"],
+                    ["Classe/Sezione", "Studente Votato", "Voti Ricevuti"]
+                ];
+
+                Object.entries(globalScrutinioData.votiClasse).forEach(([k, list]) => {
+                    const kText = k.replace('_', ' ');
+                    Object.entries(list).forEach(([candName, count], idx) => {
+                        if(idx === 0) {
+                            rowsRappr.push([kText, candName, count]);
+                        } else {
+                            rowsRappr.push(["", candName, count]);
+                        }
+                    });
+                });
+
+                const wsRappr = XLSX.utils.aoa_to_sheet(rowsRappr);
+                XLSX.utils.book_append_sheet(wb, wsRappr, "Rappresentanti di Classe");
+
+                XLSX.writeFile(wb, "Scrutinio_Elettronico_Completo.xlsx");
+
+            } catch (err) {
+                console.error(err);
+                showNotification("Errore", "Si è verificato un errore durante l'esportazione in Excel.", "error");
+            }
+        };
+
+        // EXPORT PDF VERBALE (OFFICIAL)
+        window.esportaVerbalePDF = function() {
+            if(!globalScrutinioData) {
+                showNotification("Azione Necessaria", "Nessun dato scrutinato disponibile. Premi prima 'Aggiorna Dati'.", "error");
+                return;
+            }
+
+            try {
+                const { jsPDF } = window.jspdf;
+                const docPDF = new jsPDF();
+
+                // Intestazione
+                docPDF.setFontSize(14);
+                docPDF.setFont("Helvetica", "bold");
+                docPDF.text("ISTITUTO D'ISTRUZIONE SUPERIORE - VIA BRIANTINA 68 SEREGNO", 14, 20);
+                
+                docPDF.setFontSize(11);
+                docPDF.setFont("Helvetica", "normal");
+                docPDF.text("Elezioni Organi Collegiali - Rappresentanza Studentesca", 14, 26);
+                docPDF.text("Anno Scolastico corrente - O.M. 215 del 18 Dicembre 1991", 14, 31);
+
+                docPDF.setFontSize(12);
+                docPDF.setFont("Helvetica", "bold");
+                docPDF.text("VERBALE DELLE OPERAZIONI DI SCRUTINIO E ASSEGNAZIONE SEGGI", 14, 42);
+
+                // Dati generali
+                docPDF.setFontSize(10);
+                docPDF.setFont("Helvetica", "normal");
+                let y = 48;
+                docPDF.text(`La Commissione Elettorale d'Istituto, riunitasi per effettuare le operazioni di scrutinio e validazione del seggio digitale, attesta i seguenti risultati d'affluenza complessiva:`, 14, y, { maxWidth: 180 });
+                
+                y += 12;
+                docPDF.text(`- Elettori Iscritti in elenco: ${globalScrutinioData.totalTokens}`, 14, y);
+                docPDF.text(`- Elettori che hanno espresso il voto: ${globalScrutinioData.usedTokens}`, 14, y + 5);
+                docPDF.text(`- Percentuale affluenza alle urne: ${((globalScrutinioData.usedTokens / globalScrutinioData.totalTokens) * 100).toFixed(2)}%`, 14, y + 10);
+
+                // Tabella Consiglio d'Istituto
+                y += 20;
+                docPDF.setFont("Helvetica", "bold");
+                docPDF.text("1. RISULTATI ELEZIONE CONSIGLIO D'ISTITUTO & ATTRIBUZIONE SEGGI", 14, y);
+                docPDF.setFont("Helvetica", "normal");
+
+                const dataConsiglioRows = [];
+                for (const [idLista, data] of Object.entries(configElezioni.listeConsiglio)) {
+                    const dbData = globalScrutinioData.votiConsiglio[idLista] || { count: 0, preferenze: {} };
+                    const seggi = globalScrutinioData.seggiAssegnatiConsiglio[idLista] || 0;
+
+                    const candOrdinati = data.candidati.map(c => ({
+                        nome: c,
+                        voti: dbData.preferenze[c] || 0
+                    })).sort((a, b) => b.voti - a.voti);
+
+                    candOrdinati.forEach((c, idx) => {
+                        const statusEletto = idx < seggi && c.voti > 0 ? "ELETTO" : "Non eletto";
+                        if (idx === 0) {
+                            dataConsiglioRows.push([data.nome, dbData.count, seggi, c.nome, c.voti, statusEletto]);
+                        } else {
+                            dataConsiglioRows.push(["", "", "", c.nome, c.voti, statusEletto]);
+                        }
+                    });
+                }
+
+                docPDF.autoTable({
+                    startY: y + 4,
+                    head: [['Lista', 'Voti di Lista', 'Seggi', 'Candidato', 'Preferenze', 'Stato']],
+                    body: dataConsiglioRows,
+                    theme: 'grid',
+                    headStyles: { fillColor: [30, 41, 59] },
+                    styles: { fontSize: 8.5 }
+                });
+
+                // Sezione firme dei membri commissione
+                let finalY = docPDF.lastAutoTable.finalY + 15;
+                if(finalY > 230) {
+                    docPDF.addPage();
+                    finalY = 25;
+                }
+
+                docPDF.setFont("Helvetica", "bold");
+                docPDF.text("COMPONENTE LA COMMISSIONE ELETTORALE (Firma per convalida)", 14, finalY);
+                docPDF.setFont("Helvetica", "normal");
+
+                let fY = finalY + 10;
+                configElezioni.commissione.forEach(c => {
+                    docPDF.text(`- ${c} : __________________________________`, 14, fY);
+                    fY += 8;
+                });
+
+                docPDF.save("Verbale_Ufficiale_Elezioni.pdf");
+
+            } catch (err) {
+                console.error(err);
+                showNotification("Errore", "Si è verificato un errore durante la generazione del Verbale PDF.", "error");
+            }
+        };
+
+        // --- INIZIALIZZAZIONE AVVIO CABINA ---
+        window.onload = async () => {
+            showPage('loading');
+            await syncConfigFromDB();
+            showPage('studentLogin');
+        };
     </script>
 </body>
 </html>
