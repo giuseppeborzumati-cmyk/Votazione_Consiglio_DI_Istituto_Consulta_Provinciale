@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Votazione Elettronica - Via Briantina 68</title>
+    <title>Votazione Elettronica - I.I.S. Levi Seregno</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,66 +18,61 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; overflow-x: hidden; }
         
-        /* Sfondo animato a bolle con l'immagine istituzionale della scuola */
-        .bubble-bg {
+        /* Maxi-Bolle animate di sfondo con logo */
+        .maxi-bubble-bg {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -1;
             overflow: hidden;
-            background: linear-gradient(135deg, #e2e8f0 0%, #f1f5f9 100%);
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
         }
-        .bubble {
+        .maxi-bubble {
             position: absolute;
             background-image: url('levi.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            filter: drop-shadow(0 4px 12px rgba(30, 58, 138, 0.05));
-            animation: floatBubble 16s infinite ease-in-out;
+            opacity: 0.07;
             pointer-events: none;
+            animation: floatAndSway 24s infinite ease-in-out;
         }
-        @keyframes floatBubble {
-            0% { transform: translateY(110vh) translateX(0) scale(0.6); opacity: 0; }
-            15% { opacity: 0.07; }
-            85% { opacity: 0.07; }
-            100% { transform: translateY(-15vh) translateX(15px) scale(1.3); opacity: 0; }
+        @keyframes floatAndSway {
+            0% { transform: translateY(105vh) translateX(0) scale(1); }
+            50% { transform: translateY(30vh) translateX(50px) scale(1.15); }
+            100% { transform: translateY(-20vh) translateX(-20px) scale(0.9); }
         }
         
-        /* Spinner di caricamento */
-        .spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: #1e3a8a; animation: spin 1s linear infinite; }
+        /* Spinner di caricamento istantaneo */
+        .spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 42px; height: 42px; border-radius: 50%; border-left-color: #1e3a8a; animation: spin 0.8s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .hidden { display: none !important; }
         .bg-gradient-header { background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between">
+<body class="min-h-screen flex flex-col justify-between relative">
 
-    <!-- Sfondo Animato a Bolle (Windows Style con Logo Scuola) -->
-    <div class="bubble-bg">
-        <div class="bubble w-16 h-16" style="left: 8%; animation-delay: 0s; animation-duration: 18s;"></div>
-        <div class="bubble w-28 h-28" style="left: 20%; animation-delay: 3s; animation-duration: 22s;"></div>
-        <div class="bubble w-12 h-12" style="left: 38%; animation-delay: 1s; animation-duration: 14s;"></div>
-        <div class="bubble w-24 h-24" style="left: 50%; animation-delay: 5s; animation-duration: 25s;"></div>
-        <div class="bubble w-32 h-32" style="left: 68%; animation-delay: 2s; animation-duration: 20s;"></div>
-        <div class="bubble w-14 h-14" style="left: 82%; animation-delay: 7s; animation-duration: 16s;"></div>
-        <div class="bubble w-20 h-20" style="left: 92%; animation-delay: 4s; animation-duration: 19s;"></div>
+    <div class="maxi-bubble-bg">
+        <div class="maxi-bubble w-64 h-64" style="left: 5%; animation-delay: 0s; animation-duration: 28s;"></div>
+        <div class="maxi-bubble w-96 h-96" style="left: 30%; animation-delay: 5s; animation-duration: 34s;"></div>
+        <div class="maxi-bubble w-80 h-80" style="left: 65%; animation-delay: 2s; animation-duration: 30s;"></div>
+        <div class="maxi-bubble w-72 h-72" style="left: 80%; animation-delay: 8s; animation-duration: 25s;"></div>
     </div>
 
-    <!-- Header Istituzionale con Logo della Scuola -->
+    <!-- Header Istituzionale -->
     <header class="bg-gradient-header text-white p-6 shadow-xl text-center relative border-b-4 border-yellow-500 z-10">
         <div class="container mx-auto flex flex-col items-center justify-center">
             <img src="levi.png" 
                  id="school-logo" 
                  alt="Logo I.I.S. Levi" 
-                 class="h-24 max-w-[240px] mb-3 rounded-xl shadow-lg border-2 border-yellow-400 object-contain p-2 bg-white"
-                 onerror="this.src='https://placehold.co/120x120/1e3a8a/ffffff?text=I.I.S.+LEVI'"/>
+                 class="h-28 max-w-[280px] mb-3 rounded-xl shadow-lg border-2 border-yellow-400 object-contain p-2 bg-white"
+                 onerror="this.src='https://placehold.co/150x150/1e3a8a/ffffff?text=I.I.S.+LEVI'"/>
             <h1 class="text-3xl font-extrabold tracking-tight uppercase">Scheda per le Votazioni</h1>
             <p class="text-yellow-300 mt-1 font-semibold tracking-wider text-sm md:text-base">VIA BRIANTINA 68, 20831 SEREGNO (MB)</p>
             <p class="text-blue-200 text-xs mt-1">Istituto di Istruzione Secondaria Superiore</p>
         </div>
     </header>
 
-    <!-- Contenuto Principale Dinamico -->
+    <!-- Contenuto Dinamico Alternato via JS -->
     <main class="flex-grow container mx-auto p-4 md:p-8 w-full max-w-5xl z-10" id="app-container">
         <!-- Riempito via JS -->
     </main>
@@ -108,7 +103,7 @@
                 <h3 class="text-xl font-bold">Azione Altamente Distruttiva</h3>
             </div>
             <p class="text-slate-600 text-sm mb-4">
-                Attenzione: questa operazione cancellerà irrevocabilmente tutti i voti espressi, i token degli studenti e i dati di scrutinio del database cloud.
+                Attenzione: questa operazione cancellerà irrevocabilmente tutti i voti espressi, i token degli studenti, i token del personale scolastico e i dati di scrutinio del database cloud.
             </p>
             <p class="text-xs text-red-700 bg-red-50 p-2.5 rounded-lg border border-red-100 font-semibold mb-6">
                 Digita la password amministrativa per autorizzare lo svuotamento completo delle raccolte.
@@ -141,7 +136,6 @@
         </div>
     </footer>
 
-    <!-- Firebase SDK e Logica Applicativa -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
@@ -165,15 +159,18 @@
         // PASSWORD AMMINISTRATORE RICHIESTA
         const ADMIN_PWD = "docenti_admin_2024";
         
-        let currentUserData = null; // Token studente autenticato
+        let currentUserData = null; // Token studente o docente/ATA autenticato
         let currentClassMasterData = null; // Referente di classe autenticato
-        let cartVotes = { consiglio: null, istituto: null, consulta: null, classe: null };
+        let cartVotes = { consiglio: null, istituto: null, consulta: null, classe: null, custom: {} };
         let activeAdminTab = 'config';
 
         // Configurazione delle liste di default caricate asincronamente
         let configElezioni = {
+            consiglioAttivo: true,
             consultaAttiva: true,
-            rappresentantiAttivi: true,
+            rappresentantiIstitutoAttivo: true,
+            rappresentantiClasseAttivo: true,
+            customElections: [], // Elezioni personalizzate create dall'admin
             commissione: [
                 { nome: "Laura Iavarone", ruolo: "Presidente" },
                 { nome: "Giuseppe Borzumati", ruolo: "Segretario" },
@@ -264,7 +261,6 @@
             }
         };
 
-        // Router di navigazione dell'app a pagina singola
         window.showPage = function(pageId) {
             const container = document.getElementById('app-container');
             container.innerHTML = '';
@@ -277,6 +273,7 @@
                 case 'votoIstituto': renderVotoIstituto(container); break;
                 case 'votoConsulta': renderVotoConsulta(container); break;
                 case 'votoClasse': renderVotoClasse(container); break;
+                case 'votoCustom': renderVotoCustom(container); break;
                 case 'riepilogo': renderRiepilogo(container); break;
                 case 'success': renderSuccess(container); break;
                 case 'classMasterLogin': renderClassMasterLogin(container); break;
@@ -291,7 +288,7 @@
             container.innerHTML = `
                 <div class="flex flex-col items-center justify-center h-80">
                     <div class="spinner mb-4"></div>
-                    <p class="text-slate-600 font-bold text-lg">Caricamento in corso non chiudere la pagina...</p>
+                    <p class="text-slate-600 font-bold text-lg">Caricamento ultra-rapido...</p>
                 </div>
             `;
         }
@@ -310,7 +307,7 @@
                             
                             <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 space-y-2">
                                 <h4 class="font-bold text-blue-900 flex items-center"><i data-lucide="shield" class="w-4 h-4 mr-1.5"></i> Protocollo Crittografico Monouso:</h4>
-                                <p class="text-xs">Ciascun elettore riceve un Token segreto monouso. Una volta inserito nella cabina elettorale digitale, il sistema convalida il diritto di voto. Al momento dell'invio finale nell'urna, il Token viene irrevocabilmente "bruciato" ed eliminato dal database per prevenire il doppio voto.</p>
+                                <p class="text-xs">Ciascun elettore (Studente, Docente o ATA) riceve un Token segreto monouso. Una volta inserito nella cabina elettorale digitale, il sistema convalida il diritto di voto. Al momento dell'invio finale nell'urna, il Token viene irrevocabilmente "bruciato" ed eliminato dal database per prevenire il doppio voto.</p>
                             </div>
 
                             <div class="bg-emerald-50 p-3 rounded-lg border border-emerald-100 space-y-2">
@@ -328,7 +325,7 @@
                                 <i data-lucide="door-closed" class="w-8 h-8"></i>
                             </div>
                             <h2 class="text-2xl font-black text-slate-800">Entra in Cabina</h2>
-                            <p class="text-slate-500 text-sm mt-1">Digita il codice credenziale segreto ricevuto dal docente.</p>
+                            <p class="text-slate-500 text-sm mt-1">Digita il codice credenziale segreto (Token) ricevuto.</p>
                         </div>
 
                         <div class="space-y-4">
@@ -349,22 +346,54 @@
         function renderDashboard(container) {
             if(!currentUserData) return showPage('studentLogin');
 
-            const hasConsiglio = cartVotes.consiglio !== null;
-            const hasIstituto = cartVotes.istituto !== null;
-            const hasConsulta = cartVotes.consulta !== null;
-            const hasClasse = cartVotes.classe !== null;
+            const isStudent = currentUserData.tipo === 'STUDENTE';
+            const isDocente = currentUserData.tipo === 'DOCENTE';
+            const isATA = currentUserData.tipo === 'ATA';
 
-            const isAllCompleted = hasConsiglio && hasIstituto && 
-                                   (!configElezioni.consultaAttiva || hasConsulta) && 
-                                   (!configElezioni.rappresentantiAttivi || hasClasse);
+            const activeCustoms = (configElezioni.customElections || []).filter(e => {
+                if (e.target === 'tutti') return true;
+                if (e.target === 'studenti' && isStudent) return true;
+                if (e.target === 'docenti' && isDocente) return true;
+                if (e.target === 'ata' && isATA) return true;
+                return false;
+            });
+
+            // Controllo se ha completato tutte le schede elettorali attive
+            let isAllCompleted = true;
+
+            // 1. Consiglio d'Istituto
+            const showConsiglio = configElezioni.consiglioAttivo;
+            const hasConsiglio = cartVotes.consiglio !== null;
+            if (showConsiglio && !hasConsiglio) isAllCompleted = false;
+
+            // 2. Consulta (Solo Studenti)
+            const showConsulta = configElezioni.consultaAttiva && isStudent;
+            const hasConsulta = cartVotes.consulta !== null;
+            if (showConsulta && !hasConsulta) isAllCompleted = false;
+
+            // 3. Rappresentanti Istituto (Solo Studenti)
+            const showIstituto = configElezioni.rappresentantiIstitutoAttivo && isStudent;
+            const hasIstituto = cartVotes.istituto !== null;
+            if (showIstituto && !hasIstituto) isAllCompleted = false;
+
+            // 4. Rappresentanti Classe (Solo Studenti)
+            const showClasse = configElezioni.rappresentantiClasseAttivo && isStudent;
+            const hasClasse = cartVotes.classe !== null;
+            if (showClasse && !hasClasse) isAllCompleted = false;
+
+            // 5. Custom Elections
+            activeCustoms.forEach(c => {
+                const hasVotedCustom = cartVotes.custom[c.id] !== undefined;
+                if (!hasVotedCustom) isAllCompleted = false;
+            });
 
             container.innerHTML = `
                 <div class="bg-white/95 backdrop-blur-md p-6 rounded-2xl shadow-md border border-slate-200 mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                        <span class="bg-blue-100 text-blue-900 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-wider">Elettore Convalidato</span>
+                        <span class="bg-blue-100 text-blue-900 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-wider">${currentUserData.tipo} Convalidato</span>
                         <h2 class="text-2xl font-black text-slate-800 mt-2">${currentUserData.nome} ${currentUserData.cognome}</h2>
                         <p class="text-slate-600 text-sm font-medium mt-0.5">
-                            Classe: <span class="font-bold text-blue-900">${currentUserData.classe} ${currentUserData.sezione}</span> | Indirizzo: <span class="font-bold">${currentUserData.indirizzo || 'Generale'}</span>
+                            ${isStudent ? `Classe: <span class="font-bold text-blue-900">${currentUserData.classe} ${currentUserData.sezione}</span> | Indirizzo: <span class="font-bold">${currentUserData.indirizzo || 'Generale'}</span>` : `Personale Scolastico | Componente: <span class="font-bold text-red-700">${currentUserData.tipo}</span>`}
                         </p>
                     </div>
                     <div class="flex items-center space-x-2 text-emerald-600 bg-emerald-50 px-4 py-2.5 rounded-xl border border-emerald-100">
@@ -373,21 +402,24 @@
                     </div>
                 </div>
 
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <!-- CARD 1: Consiglio d'Istituto -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- CARD 1: Consiglio d'Istituto (Tutti) -->
+                    ${showConsiglio ? `
                     <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-md border border-slate-200 p-6 flex flex-col justify-between hover:shadow-lg transition-all">
                         <div>
                             <div class="p-3 bg-blue-100 text-blue-900 rounded-xl w-fit mb-4"><i data-lucide="users"></i></div>
                             <h3 class="text-xl font-bold text-slate-900 mb-2">Consiglio d'Istituto</h3>
-                            <p class="text-slate-600 text-xs leading-relaxed mb-6">Elezione dei rappresentanti degli studenti nel Consiglio d'Istituto. Puoi esprimere la tua preferenza per una singola lista e fino a 2 preferenze nominali.</p>
+                            <p class="text-slate-600 text-xs leading-relaxed mb-6">Elezione dei rappresentanti nel Consiglio d'Istituto. Puoi esprimere la tua preferenza per una singola lista e fino a 2 preferenze nominali.</p>
                         </div>
                         ${hasConsiglio 
                             ? `<div class="bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold py-3 text-center rounded-xl flex items-center justify-center space-x-1.5"><i data-lucide="check" class="w-5 h-5"></i> <span>Scheda Pronta</span></div>`
                             : `<button onclick="showPage('votoConsiglio')" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 rounded-xl shadow transition-colors">Compila Scheda</button>`
                         }
                     </div>
+                    ` : ''}
 
-                    <!-- CARD 2: Rappresentanti d'Istituto -->
+                    <!-- CARD 2: Rappresentanti d'Istituto (Solo Studenti) -->
+                    ${showIstituto ? `
                     <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-md border border-slate-200 p-6 flex flex-col justify-between hover:shadow-lg transition-all">
                         <div>
                             <div class="p-3 bg-teal-100 text-teal-900 rounded-xl w-fit mb-4"><i data-lucide="graduation-cap"></i></div>
@@ -399,9 +431,10 @@
                             : `<button onclick="showPage('votoIstituto')" class="w-full bg-teal-900 hover:bg-teal-850 text-white font-bold py-3 rounded-xl shadow transition-colors">Compila Scheda</button>`
                         }
                     </div>
+                    ` : ''}
 
-                    <!-- CARD 3: Consulta Provinciale -->
-                    ${configElezioni.consultaAttiva ? `
+                    <!-- CARD 3: Consulta Provinciale (Solo Studenti) -->
+                    ${showConsulta ? `
                     <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-md border border-slate-200 p-6 flex flex-col justify-between hover:shadow-lg transition-all">
                         <div>
                             <div class="p-3 bg-indigo-100 text-indigo-900 rounded-xl w-fit mb-4"><i data-lucide="landmark"></i></div>
@@ -413,19 +446,10 @@
                             : `<button onclick="showPage('votoConsulta')" class="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-3 rounded-xl shadow transition-colors">Compila Scheda</button>`
                         }
                     </div>
-                    ` : `
-                    <div class="bg-slate-100 rounded-2xl border border-slate-200 p-6 flex flex-col justify-between opacity-60">
-                        <div>
-                            <div class="p-3 bg-slate-200 text-slate-500 rounded-xl w-fit mb-4"><i data-lucide="eye-off"></i></div>
-                            <h3 class="text-xl font-bold text-slate-500 mb-2">Consulta Provinciale</h3>
-                            <p class="text-slate-500 text-xs leading-relaxed mb-6">Questa votazione è stata temporaneamente disattivata dalla Commissione Elettorale per la sessione corrente.</p>
-                        </div>
-                        <div class="bg-slate-200 text-slate-600 font-bold py-3 text-center rounded-xl cursor-not-allowed">Votazione Sospesa</div>
-                    </div>
-                    `}
+                    ` : ''}
 
-                    <!-- CARD 4: Rappresentante di Classe -->
-                    ${configElezioni.rappresentantiAttivi ? `
+                    <!-- CARD 4: Rappresentante di Classe (Solo Studenti) -->
+                    ${showClasse ? `
                     <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-md border border-slate-200 p-6 flex flex-col justify-between hover:shadow-lg transition-all">
                         <div>
                             <div class="p-3 bg-purple-100 text-purple-900 rounded-xl w-fit mb-4"><i data-lucide="user-plus"></i></div>
@@ -437,16 +461,25 @@
                             : `<button onclick="showPage('votoClasse')" class="w-full bg-purple-900 hover:bg-purple-800 text-white font-bold py-3 rounded-xl shadow transition-colors">Compila Scheda</button>`
                         }
                     </div>
-                    ` : `
-                    <div class="bg-slate-100 rounded-2xl border border-slate-200 p-6 flex flex-col justify-between opacity-60">
-                        <div>
-                            <div class="p-3 bg-slate-200 text-slate-500 rounded-xl w-fit mb-4"><i data-lucide="eye-off"></i></div>
-                            <h3 class="text-xl font-bold text-slate-500 mb-2">Rappresentante di Classe</h3>
-                            <p class="text-slate-500 text-xs leading-relaxed mb-6">Questa votazione è stata disattivata o non programmata per questa giornata dalla Commissione Elettorale.</p>
+                    ` : ''}
+
+                    <!-- ELEZIONI PERSONALIZZATE (CUSTOM) -->
+                    ${activeCustoms.map(c => {
+                        const hasVotedCustom = cartVotes.custom[c.id] !== undefined;
+                        return `
+                        <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-md border border-slate-200 p-6 flex flex-col justify-between hover:shadow-lg transition-all border-l-4 border-yellow-500">
+                            <div>
+                                <div class="p-3 bg-yellow-100 text-yellow-900 rounded-xl w-fit mb-4"><i data-lucide="vote"></i></div>
+                                <h3 class="text-xl font-bold text-slate-900 mb-2">${c.nome}</h3>
+                                <p class="text-slate-600 text-xs leading-relaxed mb-6">Votazione personalizzata istituita dalla Commissione Elettorale per la componente corrente.</p>
+                            </div>
+                            ${hasVotedCustom 
+                                ? `<div class="bg-emerald-50 border border-emerald-200 text-emerald-800 font-bold py-3 text-center rounded-xl flex items-center justify-center space-x-1.5"><i data-lucide="check" class="w-5 h-5"></i> <span>Scheda Pronta</span></div>`
+                                : `<button onclick="startVotoCustom('${c.id}')" class="w-full bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold py-3 rounded-xl shadow transition-colors">Compila Scheda</button>`
+                            }
                         </div>
-                        <div class="bg-slate-200 text-slate-600 font-bold py-3 text-center rounded-xl cursor-not-allowed">Votazione Sospesa</div>
-                    </div>
-                    `}
+                        `;
+                    }).join('')}
                 </div>
 
                 ${isAllCompleted ? `
@@ -459,11 +492,18 @@
                     </div>
                 ` : `
                     <div class="bg-slate-100/90 border border-slate-200 rounded-2xl p-4 text-center text-slate-600 text-sm">
-                        <p>Completa tutte le schede elettorali abilitate per poter procedere all'invio dei voti.</p>
+                        <p>Completa tutte le schede elettorali disponibili per poter procedere all'invio dei voti.</p>
                     </div>
                 `}
             `;
+            lucide.createIcons();
         }
+
+        let currentCustomElectionId = null;
+        window.startVotoCustom = function(id) {
+            currentCustomElectionId = id;
+            showPage('votoCustom');
+        };
 
         // --- SCHEDE DI VOTO ---
 
@@ -655,6 +695,64 @@
             `;
         }
 
+        function renderVotoCustom(container) {
+            const currentCustom = (configElezioni.customElections || []).find(e => e.id === currentCustomElectionId);
+            if (!currentCustom) {
+                showPage('dashboard');
+                return;
+            }
+
+            let html = `
+                <div class="mb-6 flex items-center justify-between">
+                    <button onclick="showPage('dashboard')" class="text-yellow-600 hover:underline flex items-center font-bold text-sm"><i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Torna alla Cabina</button>
+                    <span class="text-xs bg-slate-200 px-3 py-1 rounded-full font-bold uppercase tracking-wider text-slate-700">Voto Custom</span>
+                </div>
+                <div class="bg-white/95 backdrop-blur-md p-6 rounded-2xl shadow-md border border-slate-200 mb-6">
+                    <div class="border-b pb-4 mb-6">
+                        <h2 class="text-2xl font-black text-slate-800">${currentCustom.nome}</h2>
+                        <p class="text-slate-500 text-sm mt-1">Seleziona la lista. Puoi indicare fino a un massimo di 2 preferenze nominali.</p>
+                    </div>
+                    
+                    <div class="space-y-6">
+            `;
+
+            (currentCustom.liste || []).forEach(l => {
+                html += `
+                    <div class="border rounded-2xl p-5 bg-slate-50 hover:border-yellow-400 hover:bg-white transition-all cursor-pointer shadow-sm relative overflow-hidden">
+                        <label class="flex items-start cursor-pointer mb-4">
+                            <input type="radio" name="listaCustom" value="${l.id}" class="mt-1 w-6 h-6 text-yellow-500 border-slate-300 focus:ring-yellow-500" onchange="updatePrefCustom('${l.id}')">
+                            <div class="ml-4">
+                                <span class="block text-xl font-extrabold text-slate-900">${l.nome}</span>
+                                <span class="text-xs text-yellow-600 font-bold uppercase tracking-wide">Voto di Lista automatico con selezione</span>
+                            </div>
+                        </label>
+                        <div id="pref-custom-${l.id}" class="ml-10 hidden space-y-3 mt-4 pt-4 border-t border-slate-200">
+                            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Esprimi Preferenze Nominali (Massimo 2):</p>
+                            <div class="grid md:grid-cols-2 gap-3">
+                                ${(l.candidati || []).map(cand => `
+                                    <label class="flex items-center space-x-3 p-3 bg-white rounded-xl border border-slate-200 hover:border-yellow-300 hover:shadow-sm cursor-pointer transition-all">
+                                        <input type="checkbox" value="${cand}" class="w-5 h-5 text-yellow-500 rounded border-slate-300 pref-custom-checkbox-${l.id}" onchange="checkMaxPrefCustom(this, '${l.id}', 2)">
+                                        <span class="text-slate-800 font-semibold text-sm">${cand}</span>
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                    <div class="mt-8 flex justify-end">
+                        <button onclick="saveTempCustom()" class="bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold py-3.5 px-8 rounded-xl shadow transition-all">
+                            Registra Scheda Personalizzata
+                        </button>
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
         // --- RIEPILOGO, INVIO E SUCCESSO ---
 
         function renderRiepilogo(container) {
@@ -718,7 +816,7 @@
             }
 
             // Scheda 3: Consulta
-            if (configElezioni.consultaAttiva) {
+            if (configElezioni.consultaAttiva && currentUserData.tipo === 'STUDENTE') {
                 if (cartVotes.consulta) {
                     const listId = cartVotes.consulta.listaId;
                     const listName = configElezioni.listeConsulta[listId] ? configElezioni.listeConsulta[listId].nome : "Lista Sconosciuta";
@@ -741,7 +839,7 @@
             }
 
             // Scheda 4: Classe
-            if (configElezioni.rappresentantiAttivi) {
+            if (configElezioni.rappresentantiClasseAttivo && currentUserData.tipo === 'STUDENTE') {
                 if (cartVotes.classe) {
                     html += `
                         <div class="p-4 bg-purple-50 border border-purple-200 rounded-xl">
@@ -756,6 +854,28 @@
                     `;
                 }
             }
+
+            // Schede Custom
+            Object.entries(cartVotes.custom).forEach(([customId, data]) => {
+                const currentCustom = (configElezioni.customElections || []).find(e => e.id === customId);
+                if (currentCustom && data) {
+                    const customList = (currentCustom.liste || []).find(l => l.id === data.listaId);
+                    const listName = customList ? customList.nome : "Lista Custom";
+                    const prefs = data.preferenze && data.preferenze.length > 0 ? data.preferenze.join(', ') : 'Nessuna preferenza';
+                    html += `
+                        <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-xl">
+                            <div class="flex items-center space-x-2 text-yellow-900 font-bold mb-2">
+                                <i data-lucide="vote" class="w-5 h-5"></i>
+                                <span>${currentCustom.nome}</span>
+                            </div>
+                            <div class="text-sm space-y-1 text-slate-700">
+                                <p><strong>Lista votata:</strong> ${listName}</p>
+                                <p><strong>Preferenze:</strong> <span class="italic text-slate-600">${prefs}</span></p>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
 
             html += `
                     </div>
@@ -803,7 +923,7 @@
             
             window.resetSessionAndGoHome = function() {
                 currentUserData = null;
-                cartVotes = { consiglio: null, istituto: null, consulta: null, classe: null };
+                cartVotes = { consiglio: null, istituto: null, consulta: null, classe: null, custom: {} };
                 showPage('studentLogin');
             };
         }
@@ -830,6 +950,22 @@
             if (targetSel) targetSel.classList.remove('hidden');
         };
 
+        window.updatePrefCustom = function(selectedListaId) {
+            const currentCustom = (configElezioni.customElections || []).find(e => e.id === currentCustomElectionId);
+            if (!currentCustom) return;
+            
+            (currentCustom.liste || []).forEach(l => {
+                const target = document.getElementById(`pref-custom-${l.id}`);
+                if (target) {
+                    target.classList.add('hidden');
+                    document.querySelectorAll(`.pref-custom-checkbox-${l.id}`).forEach(cb => cb.checked = false);
+                }
+            });
+
+            const targetSel = document.getElementById(`pref-custom-${selectedListaId}`);
+            if (targetSel) targetSel.classList.remove('hidden');
+        };
+
         window.checkMaxPref = function(checkbox, listaId, max) {
             const checkedBoxes = document.querySelectorAll(`.pref-checkbox-${listaId}:checked`);
             if (checkedBoxes.length > max) {
@@ -843,6 +979,14 @@
             if (checkedBoxes.length > max) {
                 checkbox.checked = false;
                 showNotification("Regolamento", `Puoi esprimere un massimo di ${max} preferenze per i rappresentanti d'istituto.`, "error");
+            }
+        };
+
+        window.checkMaxPrefCustom = function(checkbox, listaId, max) {
+            const checkedBoxes = document.querySelectorAll(`.pref-custom-checkbox-${listaId}:checked`);
+            if (checkedBoxes.length > max) {
+                checkbox.checked = false;
+                showNotification("Regolamento", `Puoi esprimere un massimo di ${max} preferenze per questa lista personalizzata.`, "error");
             }
         };
 
@@ -903,7 +1047,18 @@
             showPage('dashboard');
         };
 
-        // --- AUTENTICAZIONE E LOGICA DI TRASMISSIONE ---
+        window.saveTempCustom = function() {
+            const selectedLista = document.querySelector('input[name="listaCustom"]:checked');
+            if (!selectedLista) {
+                showNotification("Avviso", "Devi selezionare una Lista per questa votazione.", "error");
+                return;
+            }
+            const listaId = selectedLista.value;
+            const preferenze = Array.from(document.querySelectorAll(`.pref-custom-checkbox-${listaId}:checked`)).map(cb => cb.value);
+            
+            cartVotes.custom[currentCustomElectionId] = { listaId: listaId, preferenze: preferenze };
+            showPage('dashboard');
+        };
 
         async function handleStudentLogin() {
             const token = document.getElementById('tokenInput').value.trim().toUpperCase();
@@ -945,8 +1100,6 @@
         }
 
         window.submitFinalVotes = async function() {
-            if(!cartVotes.consiglio && !cartVotes.istituto && !cartVotes.consulta && !cartVotes.classe) return;
-
             const submitBtn = document.getElementById('finalSubmitBtn');
             const submitBtnText = document.getElementById('finalSubmitBtnText');
             if (submitBtn) {
@@ -961,6 +1114,7 @@
             const istitutoVoteRef = doc(db, 'voti_istituto', currentUserData.id);
             const consultaVoteRef = doc(db, 'voti_consulta', currentUserData.id);
             const classeVoteRef = doc(db, 'voti_classe', currentUserData.id);
+            const customVoteRef = doc(db, 'voti_custom', currentUserData.id);
             const ricognizioneRef = doc(db, 'schede_votate', currentUserData.id);
 
             try {
@@ -976,7 +1130,8 @@
                         votedConsiglio: !!cartVotes.consiglio,
                         votedIstituto: !!cartVotes.istituto,
                         votedConsulta: !!cartVotes.consulta && configElezioni.consultaAttiva,
-                        votedClasse: !!cartVotes.classe && configElezioni.rappresentantiAttivi,
+                        votedClasse: !!cartVotes.classe && configElezioni.rappresentantiClasseAttivo,
+                        votedCustom: cartVotes.custom,
                         usedAt: new Date().toISOString() 
                     });
 
@@ -985,9 +1140,10 @@
                         transaction.set(consiglioVoteRef, {
                             listaId: cartVotes.consiglio.listaId,
                             preferenze: cartVotes.consiglio.preferenze,
-                            classe: currentUserData.classe,
-                            sezione: currentUserData.sezione,
+                            classe: currentUserData.classe || "N/A",
+                            sezione: currentUserData.sezione || "N/A",
                             indirizzo: currentUserData.indirizzo || "GENERALE",
+                            tipoElettore: currentUserData.tipo,
                             timestamp: new Date().toISOString()
                         });
                     }
@@ -997,8 +1153,8 @@
                         transaction.set(istitutoVoteRef, {
                             listaId: cartVotes.istituto.listaId,
                             preferenze: cartVotes.istituto.preferenze,
-                            classe: currentUserData.classe,
-                            sezione: currentUserData.sezione,
+                            classe: currentUserData.classe || "N/A",
+                            sezione: currentUserData.sezione || "N/A",
                             indirizzo: currentUserData.indirizzo || "GENERALE",
                             timestamp: new Date().toISOString()
                         });
@@ -1009,30 +1165,40 @@
                         transaction.set(consultaVoteRef, {
                             listaId: cartVotes.consulta.listaId,
                             preferenze: cartVotes.consulta.preferenze,
-                            classe: currentUserData.classe,
-                            sezione: currentUserData.sezione,
+                            classe: currentUserData.classe || "N/A",
+                            sezione: currentUserData.sezione || "N/A",
                             indirizzo: currentUserData.indirizzo || "GENERALE",
                             timestamp: new Date().toISOString()
                         });
                     }
 
                     // 5. Rappresentante di Classe
-                    if (cartVotes.classe && configElezioni.rappresentantiAttivi) {
+                    if (cartVotes.classe && configElezioni.rappresentantiClasseAttivo) {
                         transaction.set(classeVoteRef, {
                             candidato: cartVotes.classe.toUpperCase(),
-                            classe: currentUserData.classe,
-                            sezione: currentUserData.sezione,
+                            classe: currentUserData.classe || "N/A",
+                            sezione: currentUserData.sezione || "N/A",
                             indirizzo: currentUserData.indirizzo || "GENERALE",
                             timestamp: new Date().toISOString()
                         });
                     }
 
-                    // 6. Registro di Ricognizione Anonimo
+                    // 6. Custom Vote
+                    if (Object.keys(cartVotes.custom).length > 0) {
+                        transaction.set(customVoteRef, {
+                            voti: cartVotes.custom,
+                            tipoElettore: currentUserData.tipo,
+                            timestamp: new Date().toISOString()
+                        });
+                    }
+
+                    // 7. Registro di Ricognizione Anonimo
                     transaction.set(ricognizioneRef, {
                         token: currentUserData.id,
-                        classe: currentUserData.classe,
-                        sezione: currentUserData.sezione,
+                        classe: currentUserData.classe || "N/A",
+                        sezione: currentUserData.sezione || "N/A",
                         indirizzo: currentUserData.indirizzo || "GENERALE",
+                        tipoElettore: currentUserData.tipo,
                         votoConsiglio: cartVotes.consiglio ? {
                             listaId: cartVotes.consiglio.listaId,
                             nomeLista: configElezioni.listeConsiglio[cartVotes.consiglio.listaId]?.nome || 'N/A',
@@ -1048,13 +1214,13 @@
                             nomeLista: configElezioni.listeConsulta[cartVotes.consulta.listaId]?.nome || 'N/A',
                             preferenze: cartVotes.consulta.preferenze
                         } : null,
-                        votoClasse: (cartVotes.classe && configElezioni.rappresentantiAttivi) ? cartVotes.classe.toUpperCase() : null,
+                        votoClasse: (cartVotes.classe && configElezioni.rappresentantiClasseAttivo) ? cartVotes.classe.toUpperCase() : null,
                         timestamp: new Date().toISOString()
                     });
                 });
 
                 currentUserData = null;
-                cartVotes = { consiglio: null, istituto: null, consulta: null, classe: null };
+                cartVotes = { consiglio: null, istituto: null, consulta: null, classe: null, custom: {} };
                 showPage('success');
 
             } catch (error) {
@@ -1358,8 +1524,9 @@
                     <button onclick="window.switchAdminTab('config')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${activeAdminTab === 'config' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">1. Configurazione & Commissione</button>
                     <button onclick="window.switchAdminTab('liste')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${activeAdminTab === 'liste' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">2. Configura Liste & Candidati</button>
                     <button onclick="window.switchAdminTab('elettori')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${activeAdminTab === 'elettori' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">3. Generazione Credenziali (Studenti)</button>
-                    <button onclick="window.switchAdminTab('verbali')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${activeAdminTab === 'verbali' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">4. Scrutinio & Verbali (O.M. 215/1991)</button>
-                    <button onclick="window.switchAdminTab('charts')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${activeAdminTab === 'charts' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">5. Grafici & Statistiche</button>
+                    <button onclick="window.switchAdminTab('elettori_staff')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${activeAdminTab === 'elettori_staff' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">4. Credenziali Docenti & ATA</button>
+                    <button onclick="window.switchAdminTab('verbali')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${activeAdminTab === 'verbali' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">5. Scrutinio & Verbali (O.M. 215/1991)</button>
+                    <button onclick="window.switchAdminTab('charts')" class="py-3 px-6 font-bold text-sm border-b-2 transition-colors whitespace-nowrap ${activeAdminTab === 'charts' ? 'border-red-600 text-red-600' : 'border-transparent text-slate-600 hover:text-slate-900'}">6. Grafici & Statistiche</button>
                 </div>
 
                 <div id="admin-tab-content">
@@ -1390,6 +1557,8 @@
                 renderListeTab(content);
             } else if (activeAdminTab === 'elettori') {
                 renderElettoriTab(content);
+            } else if (activeAdminTab === 'elettori_staff') {
+                renderElettoriStaffTab(content);
             } else if (activeAdminTab === 'verbali') {
                 renderVerbaliTab(content);
             } else if (activeAdminTab === 'charts') {
@@ -1407,6 +1576,20 @@
                         <div class="space-y-4">
                             <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
                                 <div>
+                                    <span class="font-bold text-slate-800 block">Elezioni Consiglio d'Istituto</span>
+                                    <span class="text-xs text-slate-500">Se attiva, gli studenti visualizzano la scheda Consiglio.</span>
+                                </div>
+                                <input type="checkbox" id="toggleConsiglio" class="w-6 h-6 text-red-600 rounded" ${configElezioni.consiglioAttivo ? 'checked' : ''} onchange="toggleElez('consiglio')">
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                                <div>
+                                    <span class="font-bold text-slate-800 block">Elezioni Rappresentanti d'Istituto</span>
+                                    <span class="text-xs text-slate-500">Se attiva, viene richiesta la compilazione d'istituto per studenti.</span>
+                                </div>
+                                <input type="checkbox" id="toggleIstituto" class="w-6 h-6 text-red-600 rounded" ${configElezioni.rappresentantiIstitutoAttivo ? 'checked' : ''} onchange="toggleElez('istituto')">
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                                <div>
                                     <span class="font-bold text-slate-800 block">Elezioni Consulta Provinciale</span>
                                     <span class="text-xs text-slate-500">Se attiva, gli studenti visualizzano la scheda Consulta.</span>
                                 </div>
@@ -1417,7 +1600,7 @@
                                     <span class="font-bold text-slate-800 block">Elezioni Rappresentante di Classe</span>
                                     <span class="text-xs text-slate-500">Se attiva, viene richiesta la compilazione nominale per classe.</span>
                                 </div>
-                                <input type="checkbox" id="toggleRappresentanti" class="w-6 h-6 text-red-600 rounded" ${configElezioni.rappresentantiAttivi ? 'checked' : ''} onchange="toggleElez('rappresentanti')">
+                                <input type="checkbox" id="toggleRappresentanti" class="w-6 h-6 text-red-600 rounded" ${configElezioni.rappresentantiClasseAttivo ? 'checked' : ''} onchange="toggleElez('rappresentanti')">
                             </div>
                         </div>
                         <button onclick="saveConfigToDB()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-xl mt-6 transition-all text-sm flex items-center justify-center"><i data-lucide="save" class="w-4 h-4 mr-2"></i> Salva Cambiamenti</button>
@@ -1449,6 +1632,71 @@
                     </div>
                 </div>
 
+                <!-- ELEZIONI PERSONALIZZATE (CUSTOM) -->
+                <div class="mt-8 bg-white p-6 rounded-2xl shadow border border-slate-200">
+                    <h3 class="text-lg font-extrabold text-slate-800 mb-4 border-b pb-2 flex items-center"><i data-lucide="vote" class="mr-2 text-slate-600"></i> Crea Elezione Personalizzata</h3>
+                    <div class="grid md:grid-cols-2 gap-6 items-start">
+                        <div class="space-y-4 p-4 bg-slate-50 border rounded-xl">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nome Elezione</label>
+                                <input type="text" id="customElezNome" placeholder="ES: Rappresentanti Organo di Garanzia" class="w-full p-3 border rounded-xl text-xs bg-white outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Elettori Abilitati (Target)</label>
+                                <select id="customElezTarget" class="w-full p-3 border rounded-xl text-xs bg-white outline-none">
+                                    <option value="tutti">Tutti (Studenti + Docenti + ATA)</option>
+                                    <option value="studenti">Solo Studenti</option>
+                                    <option value="docenti">Solo Docenti</option>
+                                    <option value="ata">Solo ATA</option>
+                                </select>
+                            </div>
+                            <button onclick="aggiungiElezioneCustom()" class="w-full bg-blue-900 text-white font-bold py-3 rounded-xl hover:bg-blue-850 text-xs">Crea Elezione</button>
+                        </div>
+
+                        <div>
+                            <h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Elezioni Custom Attive:</h4>
+                            <div class="space-y-3" id="lista-custom-elections">
+                                ${configElezioni.customElections && configElezioni.customElections.length > 0 ? configElezioni.customElections.map((c, index) => `
+                                    <div class="p-3 bg-white border rounded-xl hover:shadow-sm transition-shadow">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <span class="font-bold text-slate-800 text-sm block">${c.nome}</span>
+                                                <span class="text-[9px] font-bold text-blue-900 bg-blue-100 rounded px-1.5 py-0.5 mt-1 block w-fit">Target: ${c.target.toUpperCase()}</span>
+                                            </div>
+                                            <button onclick="rimuoviElezioneCustom(${index})" class="text-red-500 hover:text-red-700"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                                        </div>
+                                        
+                                        <!-- Gestione Liste e candidati interni a questa elezione custom -->
+                                        <div class="mt-3 pt-3 border-t border-dashed space-y-3">
+                                            <div class="space-y-2">
+                                                ${(c.liste || []).map((l, lIdx) => `
+                                                    <div class="p-2.5 bg-slate-50 border rounded-lg">
+                                                        <div class="flex justify-between items-center mb-1">
+                                                            <span class="text-xs font-bold text-slate-800">${l.nome}</span>
+                                                            <button onclick="rimuoviListaCustom(${index}, ${lIdx})" class="text-red-500"><i data-lucide="x" class="w-3 h-3"></i></button>
+                                                        </div>
+                                                        <div class="text-[10px] text-slate-500 pl-3">
+                                                            ${(l.candidati || []).join(', ') || 'Nessun candidato'}
+                                                        </div>
+                                                        <div class="flex gap-2 mt-2">
+                                                            <input type="text" id="addCandCustom-${index}-${lIdx}" placeholder="Aggiungi Candidato" class="flex-grow p-1.5 border rounded text-[10px] bg-white outline-none">
+                                                            <button onclick="aggiungiCandidatoCustom(${index}, ${lIdx})" class="bg-blue-900 text-white px-2.5 py-1 rounded text-[9px] font-bold">Aggiungi</button>
+                                                        </div>
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                            <div class="flex gap-2">
+                                                <input type="text" id="addListaCustomInput-${index}" placeholder="Nome Nuova Lista" class="flex-grow p-2 border rounded-lg text-xs bg-white outline-none">
+                                                <button onclick="aggiungiListaCustom(${index})" class="bg-blue-900 text-white px-3 py-2 rounded-lg text-xs font-bold whitespace-nowrap">Aggiungi Lista</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('') : '<p class="text-xs text-slate-400 italic">Nessuna elezione personalizzata inserita.</p>'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Area di Pericolo: Svuotamento Database -->
                 <div class="mt-8 bg-red-50 border border-red-200 p-6 rounded-2xl shadow-md">
                     <div class="flex items-center space-x-3 text-red-900 mb-2">
@@ -1456,7 +1704,7 @@
                         <h3 class="text-lg font-extrabold">Zona di Pericolo - Ripristino Elezioni</h3>
                     </div>
                     <p class="text-sm text-red-700 mb-4">
-                        Questa operazione cancellerà permanentemente tutti i voti espressi, i token d'accesso degli studenti e tutte le ricognizioni di scrutinio. Utilizzare questa funzione solo per riavviare o azzerare l'anno scolastico.
+                        Questa operazione cancellerà permanentemente tutti i voti espressi, i token d'accesso degli studenti, docenti, ATA e tutte le ricognizioni di scrutinio. Utilizzare questa funzione solo per riavviare o azzerare l'anno scolastico.
                     </p>
                     <button onclick="window.openConfirmModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl text-sm shadow transition-all flex items-center space-x-2">
                         <i data-lucide="trash-2" class="w-4 h-4"></i>
@@ -1467,10 +1715,14 @@
         }
 
         window.toggleElez = function(type) {
-            if(type === 'consulta') {
+            if(type === 'consiglio') {
+                configElezioni.consiglioAttivo = document.getElementById('toggleConsiglio').checked;
+            } else if (type === 'consulta') {
                 configElezioni.consultaAttiva = document.getElementById('toggleConsulta').checked;
+            } else if (type === 'istituto') {
+                configElezioni.rappresentantiIstitutoAttivo = document.getElementById('toggleIstituto').checked;
             } else if (type === 'rappresentanti') {
-                configElezioni.rappresentantiAttivi = document.getElementById('toggleRappresentanti').checked;
+                configElezioni.rappresentantiClasseAttivo = document.getElementById('toggleRappresentanti').checked;
             }
         };
 
@@ -1510,7 +1762,7 @@
 
             try {
                 // Svuota collezioni di base e class codes
-                const collectionsToWipe = ['tokens', 'class_codes', 'voti_consiglio', 'voti_istituto', 'voti_consulta', 'voti_classe', 'schede_votate'];
+                const collectionsToWipe = ['tokens', 'class_codes', 'voti_consiglio', 'voti_istituto', 'voti_consulta', 'voti_classe', 'voti_custom', 'schede_votate'];
                 
                 for (const colName of collectionsToWipe) {
                     const snap = await getDocs(collection(db, colName));
@@ -1536,6 +1788,61 @@
                 showNotification("Errore Ripristino", "Impossibile completare lo svuotamento del database.", "error");
                 showPage('adminPanel');
             }
+        };
+
+        window.aggiungiElezioneCustom = function() {
+            const nome = document.getElementById('customElezNome').value.trim();
+            const target = document.getElementById('customElezTarget').value;
+            if (!nome) return;
+
+            if (!configElezioni.customElections) configElezioni.customElections = [];
+            
+            const customId = 'custom_' + Math.random().toString(36).substring(2, 7);
+            configElezioni.customElections.push({
+                id: customId,
+                nome: nome,
+                target: target,
+                liste: []
+            });
+
+            document.getElementById('customElezNome').value = '';
+            renderActiveAdminTab();
+        };
+
+        window.rimuoviElezioneCustom = function(index) {
+            configElezioni.customElections.splice(index, 1);
+            renderActiveAdminTab();
+        };
+
+        window.aggiungiListaCustom = function(customIdx) {
+            const val = document.getElementById(`addListaCustomInput-${customIdx}`).value.trim();
+            if (!val) return;
+
+            const lId = 'list_' + Math.random().toString(36).substring(2, 7);
+            if (!configElezioni.customElections[customIdx].liste) configElezioni.customElections[customIdx].liste = [];
+            configElezioni.customElections[customIdx].liste.push({
+                id: lId,
+                nome: val,
+                candidati: []
+            });
+
+            renderActiveAdminTab();
+        };
+
+        window.rimuoviListaCustom = function(customIdx, listIdx) {
+            configElezioni.customElections[customIdx].liste.splice(listIdx, 1);
+            renderActiveAdminTab();
+        };
+
+        window.aggiungiCandidatoCustom = function(customIdx, listIdx) {
+            const val = document.getElementById(`addCandCustom-${customIdx}-${listIdx}`).value.trim();
+            if (!val) return;
+
+            if (!configElezioni.customElections[customIdx].liste[listIdx].candidati) {
+                configElezioni.customElections[customIdx].liste[listIdx].candidati = [];
+            }
+            configElezioni.customElections[customIdx].liste[listIdx].candidati.push(val);
+            renderActiveAdminTab();
         };
 
         function renderListeTab(container) {
@@ -1757,14 +2064,14 @@
                                 <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Indirizzo di Studio</label>
                                 <input type="text" id="manIndirizzo" placeholder="ES: Liceo Scientifico" class="w-full p-2.5 border rounded-xl text-sm outline-none">
                             </div>
-                            <button onclick="generaManualeElettore()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow text-sm transition-colors mt-2">Crea Credenziale Singola</button>
+                            <button onclick="generaManualeElettore('STUDENTE')" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow text-sm transition-colors mt-2">Crea Credenziale Singola</button>
                         </div>
                     </div>
 
                     <!-- Generazione Massiva Excel -->
                     <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 lg:col-span-2">
-                        <h3 class="text-lg font-extrabold text-slate-800 mb-4 border-b pb-2 flex items-center"><i data-lucide="file-spreadsheet" class="mr-2 text-slate-600"></i> Importazione Massiva Excel</h3>
-                        <p class="text-xs text-slate-600 mb-4 leading-relaxed">Carica un file in formato Excel (.xlsx) contenente l'elenco della scuola per compilare il database in tempo reale. Le colonne necessarie sono: <b>Nome, Cognome, Classe, Sezione, Indirizzo</b>.</p>
+                        <h3 class="text-lg font-extrabold text-slate-800 mb-4 border-b pb-2 flex items-center"><i data-lucide="file-spreadsheet" class="mr-2 text-slate-600"></i> Importazione Massiva Excel (Studenti)</h3>
+                        <p class="text-xs text-slate-600 mb-4 leading-relaxed">Carica un file in formato Excel (.xlsx) contenente l'elenco degli studenti. Le colonne necessarie sono: <b>Nome, Cognome, Classe, Sezione, Indirizzo</b>.</p>
                         
                         <div class="border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center hover:border-red-500 transition-all mb-4 relative">
                             <input type="file" id="excelFile" accept=".xlsx, .xls" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
@@ -1774,7 +2081,7 @@
                             </div>
                         </div>
 
-                        <button onclick="processExcel()" id="btnProcess" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-extrabold py-3 rounded-xl shadow transition-colors text-sm">Elabora e Salva in Database</button>
+                        <button onclick="processExcel('STUDENTE')" id="btnProcess" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-extrabold py-3 rounded-xl shadow transition-colors text-sm">Elabora e Salva in Database</button>
                         
                         <div id="excelStatus" class="mt-4 p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-800 font-bold text-sm text-center hidden flex items-center justify-center space-x-1">
                             <i data-lucide="check-circle-2" class="w-5 h-5"></i> <span id="statusText"></span>
@@ -1804,20 +2111,101 @@
             `;
         }
 
-        window.generaManualeElettore = async function() {
-            const nome = document.getElementById('manNome').value.trim();
-            const cognome = document.getElementById('manCognome').value.trim();
-            const classe = document.getElementById('manClasse').value.trim().toUpperCase();
-            const sezione = document.getElementById('manSezione').value.trim().toUpperCase();
-            const indirizzo = document.getElementById('manIndirizzo').value.trim().toUpperCase();
+        function renderElettoriStaffTab(container) {
+            container.innerHTML = `
+                <div class="grid lg:grid-cols-3 gap-6">
+                    <!-- Generazione Manuale Singolo Docente/ATA -->
+                    <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 lg:col-span-1">
+                        <h3 class="text-lg font-extrabold text-slate-800 mb-4 border-b pb-2 flex items-center"><i data-lucide="user-cog" class="mr-2 text-slate-600"></i> Inserimento Manuale Personale</h3>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nome</label>
+                                <input type="text" id="manStaffNome" placeholder="ES: Anna" class="w-full p-2.5 border rounded-xl text-sm outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Cognome</label>
+                                <input type="text" id="manStaffCognome" placeholder="ES: Bianchi" class="w-full p-2.5 border rounded-xl text-sm outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Componente Scolastica</label>
+                                <select id="manStaffTipo" class="w-full p-2.5 border rounded-xl text-sm outline-none bg-white">
+                                    <option value="DOCENTE">Docente (DOC)</option>
+                                    <option value="ATA">Personale ATA (ATA)</option>
+                                </select>
+                            </div>
+                            <button onclick="generaManualeElettore(document.getElementById('manStaffTipo').value)" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow text-sm transition-colors mt-2">Crea Credenziale Personale</button>
+                        </div>
+                    </div>
 
-            if (!nome || !cognome || !classe || !sezione) {
-                showNotification("Dati Mancanti", "Completa i campi fondamentali: Nome, Cognome, Classe, Sezione.", "error");
-                return;
+                    <!-- Generazione Massiva Excel Docenti/ATA -->
+                    <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 lg:col-span-2">
+                        <h3 class="text-lg font-extrabold text-slate-800 mb-4 border-b pb-2 flex items-center"><i data-lucide="file-spreadsheet" class="mr-2 text-slate-600"></i> Importazione Massiva Staff</h3>
+                        <p class="text-xs text-slate-600 mb-4 leading-relaxed">Carica un file Excel (.xlsx) contenente l'elenco del personale. Le colonne necessarie sono: <b>Nome, Cognome, Tipo</b> (inserire "DOCENTE" o "ATA").</p>
+                        
+                        <div class="border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center hover:border-red-500 transition-all mb-4 relative">
+                            <input type="file" id="excelStaffFile" accept=".xlsx, .xls" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                            <div class="space-y-2">
+                                <i data-lucide="upload-cloud" class="mx-auto w-10 h-10 text-slate-400"></i>
+                                <p class="text-sm font-semibold text-slate-700">Seleziona o trascina il foglio Excel qui</p>
+                            </div>
+                        </div>
+
+                        <button onclick="processExcel('STAFF')" id="btnStaffProcess" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-extrabold py-3 rounded-xl shadow transition-colors text-sm">Elabora e Salva in Database</button>
+                        
+                        <div id="excelStaffStatus" class="mt-4 p-3 bg-emerald-50 border border-emerald-100 rounded-xl text-emerald-800 font-bold text-sm text-center hidden flex items-center justify-center space-x-1">
+                            <i data-lucide="check-circle-2" class="w-5 h-5"></i> <span id="staffStatusText"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stampa del Registro Docenti/ATA -->
+                <div class="mt-6 bg-white p-6 rounded-2xl shadow border border-slate-200">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-3 mb-4 gap-4">
+                        <div>
+                            <h3 class="text-lg font-extrabold text-slate-800">Stampa dei Registri Docenti / ATA</h3>
+                            <p class="text-xs text-slate-500">Esporta l'elenco del personale scolastico con i rispettivi Token di autenticazione monouso.</p>
+                        </div>
+                        <button onclick="generateStaffPDF()" class="bg-red-600 hover:bg-red-700 text-white font-extrabold px-6 py-3 rounded-xl shadow text-sm transition-colors flex items-center space-x-2">
+                            <i data-lucide="printer" class="w-4 h-4"></i>
+                            <span>Scarica PDF Registri Staff</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        window.generaManualeElettore = async function(tipoElettore) {
+            let nome, cognome, classe, sezione, indirizzo;
+            
+            if (tipoElettore === 'STUDENTE') {
+                nome = document.getElementById('manNome').value.trim();
+                cognome = document.getElementById('manCognome').value.trim();
+                classe = document.getElementById('manClasse').value.trim().toUpperCase();
+                sezione = document.getElementById('manSezione').value.trim().toUpperCase();
+                indirizzo = document.getElementById('manIndirizzo').value.trim().toUpperCase();
+
+                if (!nome || !cognome || !classe || !sezione) {
+                    showNotification("Dati Mancanti", "Completa i campi fondamentali: Nome, Cognome, Classe, Sezione.", "error");
+                    return;
+                }
+            } else {
+                nome = document.getElementById('manStaffNome').value.trim();
+                cognome = document.getElementById('manStaffCognome').value.trim();
+                classe = "N/A";
+                sezione = "N/A";
+                indirizzo = "STAFF";
+
+                if (!nome || !cognome) {
+                    showNotification("Dati Mancanti", "Completa i campi fondamentali: Nome, Cognome.", "error");
+                    return;
+                }
             }
 
             try {
-                const token = Math.random().toString(36).substring(2, 8).toUpperCase();
+                // Generazione prefisso deterministico per evitare conflitti o incroci
+                let tokenPrefix = tipoElettore === 'DOCENTE' ? 'DOC' : (tipoElettore === 'ATA' ? 'ATA' : 'STU');
+                const token = `${tokenPrefix}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
+                
                 const docRef = doc(db, "tokens", token);
                 await setDoc(docRef, {
                     token: token,
@@ -1825,28 +2213,34 @@
                     cognome: cognome,
                     classe: classe,
                     sezione: sezione,
-                    indirizzo: indirizzo || "GENERALE",
+                    indirizzo: indirizzo,
+                    tipo: tipoElettore,
                     hasVoted: false,
                     createdAt: new Date().toISOString()
                 });
 
-                // Generiamo o raccordiamo anche il Master Referente per questa sezione
-                const classCodeId = `REF-${classe}${sezione}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
-                const classCodeRef = doc(db, "class_codes", classCodeId);
-                await setDoc(classCodeRef, {
-                    code: classCodeId,
-                    classe: classe,
-                    sezione: sezione,
-                    indirizzo: indirizzo || "GENERALE"
-                }, { merge: true });
+                if (tipoElettore === 'STUDENTE') {
+                    // Generiamo o raccordiamo anche il Master Referente per questa sezione
+                    const classCodeId = `REF-${classe}${sezione}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
+                    const classCodeRef = doc(db, "class_codes", classCodeId);
+                    await setDoc(classCodeRef, {
+                        code: classCodeId,
+                        classe: classe,
+                        sezione: sezione,
+                        indirizzo: indirizzo || "GENERALE"
+                    }, { merge: true });
+
+                    document.getElementById('manNome').value = '';
+                    document.getElementById('manCognome').value = '';
+                    document.getElementById('manClasse').value = '';
+                    document.getElementById('manSezione').value = '';
+                    document.getElementById('manIndirizzo').value = '';
+                } else {
+                    document.getElementById('manStaffNome').value = '';
+                    document.getElementById('manStaffCognome').value = '';
+                }
                 
                 showNotification("Generazione Completata", `Elettore generato con successo!\nNome: ${nome} ${cognome}\nToken: ${token}`, "success");
-                
-                document.getElementById('manNome').value = '';
-                document.getElementById('manCognome').value = '';
-                document.getElementById('manClasse').value = '';
-                document.getElementById('manSezione').value = '';
-                document.getElementById('manIndirizzo').value = '';
 
             } catch (err) {
                 console.error(err);
@@ -1880,17 +2274,17 @@
             }
         }
 
-        window.processExcel = function() {
-            const fileInput = document.getElementById('excelFile');
-            const statusEl = document.getElementById('excelStatus');
-            const statusText = document.getElementById('statusText');
+        window.processExcel = function(tipoTarget) {
+            const fileInput = document.getElementById(tipoTarget === 'STUDENTE' ? 'excelFile' : 'excelStaffFile');
+            const statusEl = document.getElementById(tipoTarget === 'STUDENTE' ? 'excelStatus' : 'excelStaffStatus');
+            const statusText = document.getElementById(tipoTarget === 'STUDENTE' ? 'statusText' : 'staffStatusText');
 
             if (!fileInput.files[0]) { 
                 showNotification("File Mancante", "Seleziona prima il file Excel compilato.", "error"); 
                 return; 
             }
 
-            const btn = document.getElementById('btnProcess');
+            const btn = document.getElementById(tipoTarget === 'STUDENTE' ? 'btnProcess' : 'btnStaffProcess');
             btn.disabled = true;
             btn.innerText = "Salvataggio ed elaborazione in corso...";
 
@@ -1911,34 +2305,62 @@
                     for (let row of json) {
                         let nome = row["Nome"] || row["nome"] || row["NOME"];
                         let cognome = row["Cognome"] || row["cognome"] || row["COGNOME"];
-                        let classe = row["Classe"] || row["classe"] || row["CLASSE"];
-                        let sezione = row["Sezione"] || row["sezione"] || row["SEZIONE"];
-                        let indirizzo = row["Indirizzo"] || row["indirizzo"] || row["INDIRIZZO"];
+                        
+                        if (tipoTarget === 'STUDENTE') {
+                            let classe = row["Classe"] || row["classe"] || row["CLASSE"];
+                            let sezione = row["Sezione"] || row["sezione"] || row["SEZIONE"];
+                            let indirizzo = row["Indirizzo"] || row["indirizzo"] || row["INDIRIZZO"];
 
-                        if (nome && cognome && classe && sezione) {
-                            const token = Math.random().toString(36).substring(2, 8).toUpperCase();
-                            const docRef = doc(db, "tokens", token);
-                            
-                            batch.set(docRef, {
-                                token: token,
-                                nome: String(nome).trim(),
-                                cognome: String(cognome).trim(),
-                                classe: String(classe).trim().toUpperCase(),
-                                sezione: String(sezione).trim().toUpperCase(),
-                                indirizzo: String(indirizzo || "GENERALE").trim().toUpperCase(),
-                                hasVoted: false,
-                                createdAt: new Date().toISOString()
-                            });
+                            if (nome && cognome && classe && sezione) {
+                                const token = `STU-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
+                                const docRef = doc(db, "tokens", token);
+                                
+                                batch.set(docRef, {
+                                    token: token,
+                                    nome: String(nome).trim(),
+                                    cognome: String(cognome).trim(),
+                                    classe: String(classe).trim().toUpperCase(),
+                                    sezione: String(sezione).trim().toUpperCase(),
+                                    indirizzo: String(indirizzo || "GENERALE").trim().toUpperCase(),
+                                    tipo: 'STUDENTE',
+                                    hasVoted: false,
+                                    createdAt: new Date().toISOString()
+                                });
 
-                            uniqueClasses.add(`${String(classe).trim().toUpperCase()}_${String(sezione).trim().toUpperCase()}_${String(indirizzo || "GENERALE").trim().toUpperCase()}`);
-                            count++;
-                            batchCount++;
-
-                            if (batchCount === 450) {
-                                await batch.commit();
-                                batch = writeBatch(db);
-                                batchCount = 0;
+                                uniqueClasses.add(`${String(classe).trim().toUpperCase()}_${String(sezione).trim().toUpperCase()}_${String(indirizzo || "GENERALE").trim().toUpperCase()}`);
+                                count++;
+                                batchCount++;
                             }
+                        } else {
+                            let tipo = row["Tipo"] || row["tipo"] || row["TIPO"] || "DOCENTE";
+                            tipo = String(tipo).trim().toUpperCase();
+                            if (tipo !== 'DOCENTE' && tipo !== 'ATA') tipo = 'DOCENTE';
+
+                            if (nome && cognome) {
+                                let prefix = tipo === 'DOCENTE' ? 'DOC' : 'ATA';
+                                const token = `${prefix}-${Math.random().toString(36).substring(2, 6).toUpperCase()}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
+                                const docRef = doc(db, "tokens", token);
+                                
+                                batch.set(docRef, {
+                                    token: token,
+                                    nome: String(nome).trim(),
+                                    cognome: String(cognome).trim(),
+                                    classe: "N/A",
+                                    sezione: "N/A",
+                                    indirizzo: "STAFF",
+                                    tipo: tipo,
+                                    hasVoted: false,
+                                    createdAt: new Date().toISOString()
+                                });
+                                count++;
+                                batchCount++;
+                            }
+                        }
+
+                        if (batchCount === 450) {
+                            await batch.commit();
+                            batch = writeBatch(db);
+                            batchCount = 0;
                         }
                     }
 
@@ -1946,27 +2368,29 @@
                         await batch.commit();
                     }
 
-                    // Creazione massiva deterministica dei Master Codes per Referenti
-                    let refBatch = writeBatch(db);
-                    let refCount = 0;
-                    for (const rawClass of uniqueClasses) {
-                        const [cl, sez, ind] = rawClass.split('_');
-                        const classCodeId = `REF-${cl}${sez}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
-                        const classCodeRef = doc(db, "class_codes", classCodeId);
-                        
-                        refBatch.set(classCodeRef, {
-                            code: classCodeId,
-                            classe: cl,
-                            sezione: sez,
-                            indirizzo: ind
-                        });
-                        refCount++;
+                    if (tipoTarget === 'STUDENTE') {
+                        // Creazione massiva deterministica dei Master Codes per Referenti
+                        let refBatch = writeBatch(db);
+                        let refCount = 0;
+                        for (const rawClass of uniqueClasses) {
+                            const [cl, sez, ind] = rawClass.split('_');
+                            const classCodeId = `REF-${cl}${sez}-${Math.random().toString(36).substring(2, 5).toUpperCase()}`;
+                            const classCodeRef = doc(db, "class_codes", classCodeId);
+                            
+                            refBatch.set(classCodeRef, {
+                                code: classCodeId,
+                                classe: cl,
+                                sezione: sez,
+                                indirizzo: ind
+                            });
+                            refCount++;
+                        }
+                        await refBatch.commit();
                     }
-                    await refBatch.commit();
 
-                    statusText.innerText = `Protocollo concluso. Caricati con successo ${count} Elettori e generati ${refCount} Master Referenti.`;
+                    statusText.innerText = `Protocollo concluso. Caricati con successo ${count} Elettori.`;
                     statusEl.classList.remove('hidden');
-                    showNotification("Completato", `Elaborati e registrati con successo ${count} studenti.`, "success");
+                    showNotification("Completato", `Elaborati e registrati con successo ${count} profili.`, "success");
 
                 } catch (err) {
                     console.error(err);
@@ -2032,7 +2456,8 @@
                 
                 let students = [];
                 querySnapshot.forEach((doc) => {
-                    students.push(doc.data());
+                    const d = doc.data();
+                    if (d.tipo === 'STUDENTE') students.push(d);
                 });
 
                 if (students.length === 0) {
@@ -2122,6 +2547,65 @@
             }
         };
 
+        window.generateStaffPDF = async function() {
+            try {
+                const tokensRef = collection(db, "tokens");
+                const querySnapshot = await getDocs(tokensRef);
+                
+                let staff = [];
+                querySnapshot.forEach((doc) => {
+                    const d = doc.data();
+                    if (d.tipo === 'DOCENTE' || d.tipo === 'ATA') staff.push(d);
+                });
+
+                if (staff.length === 0) {
+                    showNotification("Errore di Stampa", "Nessun componente dello Staff (Docenti/ATA) registrato in database.", "error");
+                    return;
+                }
+
+                const { jsPDF } = window.jspdf;
+                const docPDF = new jsPDF();
+
+                docPDF.setFontSize(11);
+                docPDF.setFont("Helvetica", "bold");
+                docPDF.text("ISTITUTO D'ISTRUZIONE SUPERIORE - VIA BRIANTINA 68 SEREGNO", 14, 15);
+                
+                docPDF.setFontSize(9);
+                docPDF.setFont("Helvetica", "normal");
+                docPDF.text("Elezioni Organi Collegiali - Consegna Tagliandini Voto Personale (Docenti & ATA)", 14, 20);
+
+                const tableRows = staff.sort((a, b) => a.tipo.localeCompare(b.tipo) || a.cognome.localeCompare(b.cognome)).map((s, idx) => [
+                    idx + 1,
+                    s.cognome + " " + s.nome,
+                    s.tipo,
+                    s.token,
+                    "", // Firma Ricevuta
+                    ""  // Ora Cons.
+                ]);
+
+                docPDF.autoTable({
+                    startY: 28,
+                    head: [['N.', 'Nominativo', 'Componente', 'Token Segreto', 'Firma per Ricevuta', 'Ora Consegna']],
+                    body: tableRows,
+                    theme: 'grid',
+                    headStyles: { fillColor: [15, 23, 42] },
+                    styles: { fontSize: 8.5, cellPadding: 2.5 },
+                    columnStyles: {
+                        3: { fontStyle: 'bold', textColor: [185, 28, 28], halign: 'center' },
+                        4: { cellWidth: 40 },
+                        5: { cellWidth: 25 }
+                    }
+                });
+
+                docPDF.save("Registri_Consegna_Personale_Scolastico.pdf");
+                showNotification("Esportazione Completata", "Registro dei codici Docenti & ATA scaricato con successo.", "success");
+
+            } catch (err) {
+                console.error(err);
+                showNotification("Errore", "Impossibile generare il PDF del personale.", "error");
+            }
+        };
+
         let globalScrutinioData = null; // Memorizza i dati aggregati in locale
 
         // --- RISOLUZIONE EX-AEQUO CON SORTEGGIO DETERMINISTICO COERENTE ---
@@ -2192,6 +2676,8 @@
                 const tokSnap = await getDocs(collection(db, "tokens"));
                 let totalTokensCount = 0;
                 let usedTokensCount = 0;
+                
+                let staffTokens = { DOCENTE: { total: 0, voted: 0 }, ATA: { total: 0, voted: 0 } };
                 let statTurnout = {};
 
                 tokSnap.forEach(d => {
@@ -2199,72 +2685,82 @@
                     totalTokensCount++;
                     if(data.hasVoted) usedTokensCount++;
 
-                    const key = `${data.classe}_${data.sezione}`.toUpperCase();
-                    if(!statTurnout[key]) {
-                        statTurnout[key] = { 
-                            total: 0, 
-                            voted: 0,
-                            votedConsiglio: 0,
-                            votedIstituto: 0,
-                            votedConsulta: 0,
-                            votedClasse: 0
-                        };
+                    if (data.tipo === 'DOCENTE' || data.tipo === 'ATA') {
+                        staffTokens[data.tipo].total++;
+                        if (data.hasVoted) staffTokens[data.tipo].voted++;
+                    } else {
+                        const key = `${data.classe}_${data.sezione}`.toUpperCase();
+                        if(!statTurnout[key]) {
+                            statTurnout[key] = { 
+                                total: 0, 
+                                voted: 0,
+                                votedConsiglio: 0,
+                                votedIstituto: 0,
+                                votedConsulta: 0,
+                                votedClasse: 0
+                            };
+                        }
+                        statTurnout[key].total++;
+                        if(data.hasVoted) statTurnout[key].voted++;
+                        if(data.votedConsiglio) statTurnout[key].votedConsiglio++;
+                        if(data.votedIstituto) statTurnout[key].votedIstituto++;
+                        if(data.votedConsulta) statTurnout[key].votedConsulta++;
+                        if(data.votedClasse) statTurnout[key].votedClasse++;
                     }
-                    statTurnout[key].total++;
-                    if(data.hasVoted) statTurnout[key].voted++;
-                    if(data.votedConsiglio) statTurnout[key].votedConsiglio++;
-                    if(data.votedIstituto) statTurnout[key].votedIstituto++;
-                    if(data.votedConsulta) statTurnout[key].votedConsulta++;
-                    if(data.votedClasse) statTurnout[key].votedClasse++;
                 });
 
-                // Aggreghiamo voti Consiglio
+                // Aggreghiamo voti Consiglio divisi per componente (STUDENTI vs DOCENTI vs ATA)
                 const consiglioVotiSnap = await getDocs(collection(db, "voti_consiglio"));
-                let votiConsiglio = {};
-                let votiValidiConsiglio = 0;
-                let votiPerClasseELista = {};
+                let votiConsiglio = { STUDENTE: {}, DOCENTE: {}, ATA: {} };
+                let votiValidiConsiglio = { STUDENTE: 0, DOCENTE: 0, ATA: 0 };
+                
+                let votiPerClasseELista = {}; // Solo per studenti
 
                 consiglioVotiSnap.forEach(docObj => {
                     const vData = docObj.data();
                     const listId = vData.listaId;
-                    const classKey = `${vData.classe}_${vData.sezione}`.toUpperCase();
+                    const comp = vData.tipoElettore || "STUDENTE";
 
-                    if (!votiConsiglio[listId]) {
-                        votiConsiglio[listId] = { count: 0, preferenze: {} };
+                    if (!votiConsiglio[comp]) votiConsiglio[comp] = {};
+                    if (!votiConsiglio[comp][listId]) {
+                        votiConsiglio[comp][listId] = { count: 0, preferenze: {} };
                     }
-                    votiConsiglio[listId].count++;
-                    votiValidiConsiglio++;
+                    votiConsiglio[comp][listId].count++;
+                    votiValidiConsiglio[comp]++;
 
                     if (vData.preferenze && Array.isArray(vData.preferenze)) {
                         vData.preferenze.forEach(pref => {
-                            votiConsiglio[listId].preferenze[pref] = (votiConsiglio[listId].preferenze[pref] || 0) + 1;
+                            votiConsiglio[comp][listId].preferenze[pref] = (votiConsiglio[comp][listId].preferenze[pref] || 0) + 1;
                         });
                     }
 
-                    if (!votiPerClasseELista[classKey]) {
-                        votiPerClasseELista[classKey] = { total: 0, liste: {} };
-                    }
-
-                    Object.entries(configElezioni.listeConsiglio).forEach(([lId, lData]) => {
-                        if (!votiPerClasseELista[classKey].liste[lId]) {
-                            votiPerClasseELista[classKey].liste[lId] = { count: 0, preferenze: {} };
+                    if (comp === 'STUDENTE') {
+                        const classKey = `${vData.classe}_${vData.sezione}`.toUpperCase();
+                        if (!votiPerClasseELista[classKey]) {
+                            votiPerClasseELista[classKey] = { total: 0, liste: {} };
                         }
-                    });
 
-                    if (listId) {
-                        if (!votiPerClasseELista[classKey].liste[listId]) {
-                            votiPerClasseELista[classKey].liste[listId] = { count: 0, preferenze: {} };
-                        }
-                        votiPerClasseELista[classKey].liste[listId].count++;
-                        votiPerClasseELista[classKey].total++;
+                        Object.entries(configElezioni.listeConsiglio).forEach(([lId, lData]) => {
+                            if (!votiPerClasseELista[classKey].liste[lId]) {
+                                votiPerClasseELista[classKey].liste[lId] = { count: 0, preferenze: {} };
+                            }
+                        });
 
-                        if (vData.preferenze && Array.isArray(vData.preferenze)) {
-                            vData.preferenze.forEach(pref => {
-                                if (pref) {
-                                    votiPerClasseELista[classKey].liste[listId].preferenze[pref] = 
-                                        (votiPerClasseELista[classKey].liste[listId].preferenze[pref] || 0) + 1;
-                                }
-                            });
+                        if (listId) {
+                            if (!votiPerClasseELista[classKey].liste[listId]) {
+                                votiPerClasseELista[classKey].liste[listId] = { count: 0, preferenze: {} };
+                            }
+                            votiPerClasseELista[classKey].liste[listId].count++;
+                            votiPerClasseELista[classKey].total++;
+
+                            if (vData.preferenze && Array.isArray(vData.preferenze)) {
+                                vData.preferenze.forEach(pref => {
+                                    if (pref) {
+                                        votiPerClasseELista[classKey].liste[listId].preferenze[pref] = 
+                                            (votiPerClasseELista[classKey].liste[listId].preferenze[pref] || 0) + 1;
+                                    }
+                                });
+                            }
                         }
                     }
                 });
@@ -2350,6 +2846,26 @@
                     votiClasse[classKey][cand] = (votiClasse[classKey][cand] || 0) + 1;
                 });
 
+                // Aggreghiamo Voti Elezioni Custom
+                const customVotiSnap = await getDocs(collection(db, "voti_custom"));
+                let votiCustom = {}; // mappa customId -> listId -> { count: 0, preferenze: {} }
+                customVotiSnap.forEach(docObj => {
+                    const vData = docObj.data().voti || {};
+                    Object.entries(vData).forEach(([customId, selection]) => {
+                        if (!votiCustom[customId]) votiCustom[customId] = {};
+                        const listId = selection.listaId;
+                        if (!votiCustom[customId][listId]) {
+                            votiCustom[customId][listId] = { count: 0, preferenze: {} };
+                        }
+                        votiCustom[customId][listId].count++;
+                        if (selection.preferenze && Array.isArray(selection.preferenze)) {
+                            selection.preferenze.forEach(pref => {
+                                votiCustom[customId][listId].preferenze[pref] = (votiCustom[customId][listId].preferenze[pref] || 0) + 1;
+                            });
+                        }
+                    });
+                });
+
                 // Ricognizione generale delle schede
                 const schedeSnap = await getDocs(collection(db, "schede_votate"));
                 let schedeVotateList = [];
@@ -2357,17 +2873,17 @@
                     schedeVotateList.push(d.data());
                 });
 
-                // Calcolo Seggi Consiglio d'Istituto (4 seggi)
+                // Calcolo Seggi Consiglio d'Istituto per la componente studenti (4 seggi)
                 const SEGGI_CONSIGLIO = 4;
                 let seggiAssegnatiConsiglio = {};
                 let restiConsiglio = [];
 
-                if (votiValidiConsiglio > 0) {
-                    const quoziente = votiValidiConsiglio / SEGGI_CONSIGLIO;
+                if (votiValidiConsiglio.STUDENTE > 0) {
+                    const quoziente = votiValidiConsiglio.STUDENTE / SEGGI_CONSIGLIO;
                     let seggiRimasti = SEGGI_CONSIGLIO;
 
                     for (const idLista of Object.keys(configElezioni.listeConsiglio)) {
-                        const voti = votiConsiglio[idLista] ? votiConsiglio[idLista].count : 0;
+                        const voti = votiConsiglio.STUDENTE[idLista] ? votiConsiglio.STUDENTE[idLista].count : 0;
                         const seggiInteri = Math.floor(voti / quoziente);
                         seggiAssegnatiConsiglio[idLista] = seggiInteri;
                         seggiRimasti -= seggiInteri;
@@ -2386,7 +2902,7 @@
                     }
                 }
 
-                // Calcolo Seggi Rappresentanti d'Istituto (4 seggi)
+                // Calcolo Seggi Rappresentanti d'Istituto per gli studenti (4 seggi)
                 const SEGGI_ISTITUTO = 4;
                 let seggiAssegnatiIstituto = {};
                 let restiIstituto = [];
@@ -2418,6 +2934,7 @@
                 globalScrutinioData = {
                     totalTokens: totalTokensCount,
                     usedTokens: usedTokensCount,
+                    staffTokens: staffTokens,
                     turnoutConsiglio: consiglioVotiSnap.size,
                     turnoutIstituto: istitutoVotiSnap.size,
                     turnoutConsulta: consultaVotiSnap.size,
@@ -2427,6 +2944,7 @@
                     votiIstituto: votiIstituto,
                     votiConsulta: votiConsulta,
                     votiClasse: votiClasse,
+                    votiCustom: votiCustom,
                     seggiAssegnatiConsiglio: seggiAssegnatiConsiglio,
                     seggiAssegnatiIstituto: seggiAssegnatiIstituto,
                     schedeVotate: schedeVotateList,
@@ -2450,6 +2968,7 @@
 
             const totalTokensCount = globalScrutinioData.totalTokens;
             const usedTokensCount = globalScrutinioData.usedTokens;
+            const staffTokens = globalScrutinioData.staffTokens;
             const statTurnout = globalScrutinioData.statTurnout;
             const votiConsiglio = globalScrutinioData.votiConsiglio;
             const votiIstituto = globalScrutinioData.votiIstituto;
@@ -2474,34 +2993,42 @@
                                     <span class="font-extrabold text-blue-900">${usedTokensCount}</span>
                                 </div>
                                 <div class="flex justify-between items-center border-b pb-1">
-                                    <span class="text-xs font-semibold text-slate-700">Affluenza Consiglio:</span>
+                                    <span class="text-xs font-semibold text-slate-700">Affluenza Docenti:</span>
+                                    <span class="font-extrabold text-slate-900">${staffTokens.DOCENTE.voted} / ${staffTokens.DOCENTE.total}</span>
+                                </div>
+                                <div class="flex justify-between items-center border-b pb-1">
+                                    <span class="text-xs font-semibold text-slate-700">Affluenza ATA:</span>
+                                    <span class="font-extrabold text-slate-900">${staffTokens.ATA.voted} / ${staffTokens.ATA.total}</span>
+                                </div>
+                                <div class="flex justify-between items-center border-b pb-1">
+                                    <span class="text-xs font-semibold text-slate-700">Affluenza Studenti Consiglio:</span>
                                     <span class="font-extrabold text-slate-900">${globalScrutinioData.turnoutConsiglio}</span>
                                 </div>
                                 <div class="flex justify-between items-center border-b pb-1">
-                                    <span class="text-xs font-semibold text-slate-700">Affluenza Istituto:</span>
+                                    <span class="text-xs font-semibold text-slate-700">Affluenza Studenti Istituto:</span>
                                     <span class="font-extrabold text-teal-900">${globalScrutinioData.turnoutIstituto}</span>
                                 </div>
                                 <div class="flex justify-between items-center border-b pb-1">
-                                    <span class="text-xs font-semibold text-slate-700">Affluenza Consulta:</span>
+                                    <span class="text-xs font-semibold text-slate-700">Affluenza Studenti Consulta:</span>
                                     <span class="font-extrabold text-indigo-900">${globalScrutinioData.turnoutConsulta}</span>
                                 </div>
                                 <div class="flex justify-between items-center">
-                                    <span class="text-xs font-semibold text-slate-700">Affluenza Classe:</span>
+                                    <span class="text-xs font-semibold text-slate-700">Affluenza Studenti Classe:</span>
                                     <span class="font-extrabold text-purple-900">${globalScrutinioData.turnoutClasse}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Scrutinio e attribuzione seggi Consiglio -->
+                    <!-- Scrutinio e attribuzione seggi Consiglio (Componente Studenti) -->
                     <div class="bg-white p-5 rounded-2xl border shadow-sm md:col-span-1">
                         <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2 flex justify-between">
-                            <span>Consiglio d'Istituto</span>
+                            <span>Consiglio (Studenti)</span>
                             <span class="text-blue-900 font-extrabold text-xs">4 Seggi</span>
                         </h4>
                         <div class="space-y-4 max-h-[300px] overflow-y-auto">
                             ${Object.entries(configElezioni.listeConsiglio).map(([idLista, data]) => {
-                                const dbData = votiConsiglio[idLista] || { count: 0, preferenze: {} };
+                                const dbData = votiConsiglio.STUDENTE[idLista] || { count: 0, preferenze: {} };
                                 const seggi = seggiAssegnatiConsiglio[idLista] || 0;
                                 const candOrdinati = data.candidati.map(c => ({
                                     nome: c,
@@ -2529,7 +3056,7 @@
                         </div>
                     </div>
 
-                    <!-- Scrutinio e attribuzione seggi Istituto -->
+                    <!-- Scrutinio e attribuzione seggi Istituto (Componente Studenti) -->
                     <div class="bg-white p-5 rounded-2xl border shadow-sm md:col-span-1">
                         <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2 flex justify-between">
                             <span>Rappresentanti d'Istituto</span>
@@ -2565,6 +3092,92 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- SEZIONE SCRUTINIO DOCENTI ED ATA (CONSIGLIO D'ISTITUTO) -->
+                <div class="grid md:grid-cols-2 gap-6 mt-6">
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm">
+                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2 flex justify-between">
+                            <span>Consiglio d'Istituto (Componente Docenti)</span>
+                        </h4>
+                        <div class="space-y-4 max-h-[250px] overflow-y-auto">
+                            ${Object.entries(configElezioni.listeConsiglio).map(([idLista, data]) => {
+                                const dbData = votiConsiglio.DOCENTE[idLista] || { count: 0, preferenze: {} };
+                                return `
+                                    <div class="p-2.5 bg-slate-50 rounded-xl border">
+                                        <div class="flex justify-between mb-1.5 text-xs font-bold text-slate-800">
+                                            <span>${data.nome}</span>
+                                            <span>Voti Lista: ${dbData.count}</span>
+                                        </div>
+                                        <ul class="text-[10px] space-y-1 pl-3 border-l">
+                                            ${data.candidati.map(c => `
+                                                <li class="flex justify-between text-slate-600"><span>${c}</span> <span>${dbData.preferenze[c] || 0} pref.</span></li>
+                                            `).join('')}
+                                        </ul>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border shadow-sm">
+                        <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2 flex justify-between">
+                            <span>Consiglio d'Istituto (Componente ATA)</span>
+                        </h4>
+                        <div class="space-y-4 max-h-[250px] overflow-y-auto">
+                            ${Object.entries(configElezioni.listeConsiglio).map(([idLista, data]) => {
+                                const dbData = votiConsiglio.ATA[idLista] || { count: 0, preferenze: {} };
+                                return `
+                                    <div class="p-2.5 bg-slate-50 rounded-xl border">
+                                        <div class="flex justify-between mb-1.5 text-xs font-bold text-slate-800">
+                                            <span>${data.nome}</span>
+                                            <span>Voti Lista: ${dbData.count}</span>
+                                        </div>
+                                        <ul class="text-[10px] space-y-1 pl-3 border-l">
+                                            ${data.candidati.map(c => `
+                                                <li class="flex justify-between text-slate-600"><span>${c}</span> <span>${dbData.preferenze[c] || 0} pref.</span></li>
+                                            `).join('')}
+                                        </ul>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SCRUTINIO ELEZIONI PERSONALIZZATE (CUSTOM) -->
+                ${configElezioni.customElections && configElezioni.customElections.length > 0 ? `
+                <div class="bg-white p-5 rounded-2xl border shadow-sm mt-6">
+                    <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-3 border-b pb-2">Elezioni Personalizzate (Risultati)</h4>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        ${configElezioni.customElections.map(c => {
+                            const results = globalScrutinioData.votiCustom[c.id] || {};
+                            return `
+                                <div class="p-3 border rounded-xl bg-slate-50">
+                                    <h5 class="text-sm font-bold text-slate-900 mb-2">${c.nome}</h5>
+                                    <div class="space-y-3">
+                                        ${(c.liste || []).map(l => {
+                                            const dbData = results[l.id] || { count: 0, preferenze: {} };
+                                            return `
+                                                <div class="bg-white p-2.5 rounded-lg border">
+                                                    <div class="flex justify-between text-xs font-bold text-slate-800 mb-1">
+                                                        <span>${l.nome}</span>
+                                                        <span>Voti Lista: ${dbData.count}</span>
+                                                    </div>
+                                                    <ul class="text-[9px] text-slate-600 space-y-1 pl-3 border-l">
+                                                        ${(l.candidati || []).map(cand => `
+                                                            <li class="flex justify-between"><span>${cand}</span><span>${dbData.preferenze[cand] || 0} pref.</span></li>
+                                                        `).join('')}
+                                                    </ul>
+                                                </div>
+                                            `;
+                                        }).join('')}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+                ` : ''}
 
                 <!-- MATRICE DI CALCOLO PIVOT / CLASSE -->
                 <div class="bg-white p-5 rounded-2xl border shadow-sm mt-6">
@@ -2674,10 +3287,12 @@
                     [],
                     ["Elettori Iscritti", globalScrutinioData.totalTokens],
                     ["Elettori Votanti Totali (Token Bruciati)", globalScrutinioData.usedTokens],
-                    ["Affluenza Consiglio", globalScrutinioData.turnoutConsiglio],
-                    ["Affluenza Istituto", globalScrutinioData.turnoutIstituto],
-                    ["Affluenza Consulta", globalScrutinioData.turnoutConsulta],
-                    ["Affluenza Classe", globalScrutinioData.turnoutClasse],
+                    ["Affluenza Docenti", `${globalScrutinioData.staffTokens.DOCENTE.voted} / ${globalScrutinioData.staffTokens.DOCENTE.total}`],
+                    ["Affluenza ATA", `${globalScrutinioData.staffTokens.ATA.voted} / ${globalScrutinioData.staffTokens.ATA.total}`],
+                    ["Affluenza Consiglio (Studenti)", globalScrutinioData.turnoutConsiglio],
+                    ["Affluenza Istituto (Studenti)", globalScrutinioData.turnoutIstituto],
+                    ["Affluenza Consulta (Studenti)", globalScrutinioData.turnoutConsulta],
+                    ["Affluenza Classe (Studenti)", globalScrutinioData.turnoutClasse],
                     [],
                     ["Classe", "Iscritti", "Consiglio", "Istituto", "Consulta", "Classe"]
                 ];
@@ -2689,15 +3304,15 @@
                 const wsAffluenza = XLSX.utils.aoa_to_sheet(rowsAffluenza);
                 XLSX.utils.book_append_sheet(wb, wsAffluenza, "Affluenza Generale");
 
-                // Foglio 2: Scrutinio Consiglio d'Istituto
+                // Foglio 2: Scrutinio Consiglio d'Istituto (Studenti + Docenti + ATA)
                 const rowsConsiglio = [
-                    ["RISULTATI SCRUTINIO ED ELEZIONE CONSIGLIO D'ISTITUTO"],
+                    ["RISULTATI SCRUTINIO ED ELEZIONE CONSIGLIO D'ISTITUTO - COMPONENTE STUDENTI"],
                     [],
                     ["Lista", "Candidato", "Voti di Lista", "Preferenze", "Esito Proclamazione"]
                 ];
 
                 for (const [idLista, data] of Object.entries(configElezioni.listeConsiglio)) {
-                    const dbData = globalScrutinioData.votiConsiglio[idLista] || { count: 0, preferenze: {} };
+                    const dbData = globalScrutinioData.votiConsiglio.STUDENTE[idLista] || { count: 0, preferenze: {} };
                     const seggi = globalScrutinioData.seggiAssegnatiConsiglio[idLista] || 0;
                     
                     const candOrdinati = data.candidati.map(c => ({
@@ -2711,7 +3326,7 @@
                     });
                 }
                 const wsConsiglio = XLSX.utils.aoa_to_sheet(rowsConsiglio);
-                XLSX.utils.book_append_sheet(wb, wsConsiglio, "Scrutinio Consiglio");
+                XLSX.utils.book_append_sheet(wb, wsConsiglio, "Scrutinio Consiglio Studenti");
 
                 // Foglio 3: Scrutinio Rappresentanti d'Istituto
                 const rowsIstituto = [
@@ -2812,11 +3427,11 @@
 
                 let y = docPDF.lastAutoTable.finalY + 12;
                 docPDF.setFont("Helvetica", "bold");
-                docPDF.text("Dati d'Affluenza e Partecipazione Complessivi:", 14, y);
+                docPDF.text("Dati d'Affluenza e Partecipazione Complessivi (Componente Studentesca):", 14, y);
                 docPDF.setFont("Helvetica", "normal");
                 
                 docPDF.text(`- Totale Elettori aventi diritto iscritti: ${globalScrutinioData.totalTokens}`, 14, y + 6);
-                docPDF.text(`- Totale Votanti effettivi: ${globalScrutinioData.usedTokens}`, 14, y + 11);
+                docPDF.text(`- Totale Votanti effettivi (Token Bruciati): ${globalScrutinioData.usedTokens}`, 14, y + 11);
                 docPDF.text(`- Affluenza Consiglio d'Istituto: ${globalScrutinioData.turnoutConsiglio}`, 14, y + 16);
                 docPDF.text(`- Affluenza Rappresentanti d'Istituto: ${globalScrutinioData.turnoutIstituto}`, 14, y + 21);
                 docPDF.text(`- Affluenza Consulta Provinciale: ${globalScrutinioData.turnoutConsulta}`, 14, y + 26);
@@ -2846,8 +3461,8 @@
 
                 const dataConsiglioRows = [];
                 for (const [idLista, data] of Object.entries(configElezioni.listeConsiglio)) {
-                    const dbData = globalScrutinioData.votiConsiglio[idLista] || { count: 0, preferenze: {} };
-                    const seggi = globalScrutinioData.seggiAssegnatiConsiglio[idLista] || 0;
+                    const dbData = globalScrutinioData.votiConsiglio.STUDENTE[idLista] || { count: 0, preferenze: {} };
+                    const seggi = seggiAssegnatiConsiglio[idLista] || 0;
                     const candOrdinati = data.candidati.map(c => ({
                         nome: c,
                         voti: dbData.preferenze[c] || 0
@@ -2888,7 +3503,7 @@
                 const dataIstitutoRows = [];
                 for (const [idLista, data] of Object.entries(configElezioni.listeIstituto || {})) {
                     const dbData = globalScrutinioData.votiIstituto[idLista] || { count: 0, preferenze: {} };
-                    const seggi = globalScrutinioData.seggiAssegnatiIstituto[idLista] || 0;
+                    const seggi = seggiAssegnatiIstituto[idLista] || 0;
                     const candOrdinati = data.candidati.map(c => ({
                         nome: c,
                         voti: dbData.preferenze[c] || 0
@@ -2965,7 +3580,7 @@
 
                     <div class="grid md:grid-cols-2 gap-6">
                         <div class="bg-white p-5 rounded-2xl shadow border border-slate-200 text-center">
-                            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2">Consiglio d'Istituto (Voti per Lista)</h4>
+                            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 border-b pb-2">Consiglio d'Istituto (Voti per Lista - Studenti)</h4>
                             <div id="chart-consiglio-pie" class="mb-4"></div>
                             <div id="chart-consiglio-container" class="flex flex-col space-y-2 text-left"></div>
                         </div>
@@ -3043,7 +3658,7 @@
         function renderSVGConsiglioChart() {
             const container = document.getElementById('chart-consiglio-container');
             const pieContainer = document.getElementById('chart-consiglio-pie');
-            const data = globalScrutinioData.votiConsiglio;
+            const data = globalScrutinioData.votiConsiglio.STUDENTE;
             
             let slices = [];
             const colors = ['#1e3a8a', '#0284c7', '#3b82f6', '#10b981'];
@@ -3222,7 +3837,7 @@
         function startAdminRealtimeListeners() {
             stopAdminRealtimeListeners();
 
-            const collectionsToListen = ['tokens', 'class_codes', 'voti_consiglio', 'voti_istituto', 'voti_consulta', 'voti_classe', 'schede_votate'];
+            const collectionsToListen = ['tokens', 'class_codes', 'voti_consiglio', 'voti_istituto', 'voti_consulta', 'voti_classe', 'voti_custom', 'schede_votate'];
             let debounceTimer = null;
 
             collectionsToListen.forEach(colName => {
