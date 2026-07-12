@@ -2239,6 +2239,24 @@
             });
         }
 
+        window.toggleSpecificVote = async function(tokenId, fieldName, currentStatus, isCustom = false) {
+            try {
+                const docRef = getDocumentRef('tokens', tokenId);
+                const nextStatus = !currentStatus;
+                let updates = {};
+                if (isCustom) {
+                    updates[`voted_custom.${fieldName}`] = nextStatus;
+                } else {
+                    updates[fieldName] = nextStatus;
+                }
+                await updateDoc(docRef, updates);
+                // Non attiviamo notifiche toast qui per evitare fastidio visivo durante la configurazione massiva.
+                // Firebase aggiornerà l'interfaccia istantaneamente tramite onSnapshot.
+            } catch (err) {
+                showNotification("Errore", "Impossibile aggiornare lo stato della scheda: " + err.message, "error");
+            }
+        };
+
         function renderTokenRows(tokens, tbody, componentFilter) {
             tbody.innerHTML = '';
             if (tokens.length === 0) {
@@ -2248,49 +2266,36 @@
 
             tokens.forEach(t => {
                 const statusBadge = t.hasVoted 
-                    ? `<button onclick="window.toggleTokenVotedState('${t.id}', ${t.hasVoted})" class="px-2 py-0.5 rounded-full text-[9px] font-black bg-red-100 text-red-800 inline-block hover:bg-red-200 transition-all cursor-pointer font-semibold" title="Clicca per riabilitare il Token">Completato</button>`
-                    : `<button onclick="window.toggleTokenVotedState('${t.id}', ${t.hasVoted})" class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-850 inline-block hover:bg-emerald-200 transition-all cursor-pointer font-semibold" title="Clicca per forzare Token su Votato">Inutilizzato</button>`;
+                    ? `<button onclick="window.toggleTokenVotedState('${t.id}', ${t.hasVoted})" class="px-2 py-0.5 rounded-full text-[9px] font-black bg-red-100 text-red-800 inline-block hover:bg-red-200 transition-all cursor-pointer font-semibold shadow-sm" title="Clicca per riabilitare il Token">Completato</button>`
+                    : `<button onclick="window.toggleTokenVotedState('${t.id}', ${t.hasVoted})" class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-850 inline-block hover:bg-emerald-200 transition-all cursor-pointer font-semibold shadow-sm" title="Clicca per forzare Token su Votato">Inutilizzato</button>`;
 
-                let checklistHTML = '<div class="flex flex-wrap gap-1 items-center">';
+                // LOGICA PULSANTI PER SPUNTE SCHEDE
+                const makeBtn = (field, currentVal, label, tooltip, isCustom = false) => {
+                    const bg = currentVal ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-red-50 text-red-500 border-red-100';
+                    const icon = currentVal ? 'check' : 'x';
+                    return `<button onclick="window.toggleSpecificVote('${t.id}', '${field}', ${!!currentVal}, ${isCustom})" class="inline-flex items-center px-1.5 py-0.5 rounded border text-[9px] font-bold ${bg} hover:brightness-95 transition-all shadow-sm" title="Clicca per invertire stato: ${tooltip}">
+                        <i data-lucide="${icon}" class="w-2.5 h-2.5 mr-0.5"></i> ${label}
+                    </button>`;
+                };
+
+                let checklistHTML = '<div class="flex flex-wrap gap-1.5 items-center">';
                 
                 if (componentFilter === 'STUDENTE') {
-                    checklistHTML += `
-                        <span class="inline-flex items-center px-1 py-0.5 rounded text-[8px] font-bold ${t.voted_istituto ? 'bg-emerald-100 text-emerald-800' : 'bg-red-50 text-red-500'}" title="Rappresentanti d'Istituto">
-                            <i data-lucide="${t.voted_istituto ? 'check' : 'x'}" class="w-2.5 h-2.5 mr-0.5"></i> IST
-                        </span>
-                        <span class="inline-flex items-center px-1 py-0.5 rounded text-[8px] font-bold ${t.voted_consulta ? 'bg-emerald-100 text-emerald-800' : 'bg-red-50 text-red-500'}" title="Consulta Provinciale">
-                            <i data-lucide="${t.voted_consulta ? 'check' : 'x'}" class="w-2.5 h-2.5 mr-0.5"></i> CON
-                        </span>
-                        <span class="inline-flex items-center px-1 py-0.5 rounded text-[8px] font-bold ${t.voted_classe_studente ? 'bg-emerald-100 text-emerald-800' : 'bg-red-50 text-red-500'}" title="Rappresentanti di Classe">
-                            <i data-lucide="${t.voted_classe_studente ? 'check' : 'x'}" class="w-2.5 h-2.5 mr-0.5"></i> CLA
-                        </span>
-                    `;
+                    checklistHTML += makeBtn('voted_istituto', t.voted_istituto, 'IST', 'Rappresentanti d\'Istituto');
+                    checklistHTML += makeBtn('voted_consulta', t.voted_consulta, 'CON', 'Consulta Provinciale');
+                    checklistHTML += makeBtn('voted_classe_studente', t.voted_classe_studente, 'CLA', 'Rappresentanti di Classe');
                 } else if (componentFilter === 'GENITORE') {
-                    checklistHTML += `
-                        <span class="inline-flex items-center px-1 py-0.5 rounded text-[8px] font-bold ${t.voted_consiglio ? 'bg-emerald-100 text-emerald-800' : 'bg-red-50 text-red-500'}" title="Consiglio d'Istituto">
-                            <i data-lucide="${t.voted_consiglio ? 'check' : 'x'}" class="w-2.5 h-2.5 mr-0.5"></i> C.I.
-                        </span>
-                        <span class="inline-flex items-center px-1 py-0.5 rounded text-[8px] font-bold ${t.voted_classe_genitore ? 'bg-emerald-100 text-emerald-800' : 'bg-red-50 text-red-500'}" title="Rappresentanti di Classe">
-                            <i data-lucide="${t.voted_classe_genitore ? 'check' : 'x'}" class="w-2.5 h-2.5 mr-0.5"></i> CLA
-                        </span>
-                    `;
+                    checklistHTML += makeBtn('voted_consiglio', t.voted_consiglio, 'C.I.', 'Consiglio d\'Istituto');
+                    checklistHTML += makeBtn('voted_classe_genitore', t.voted_classe_genitore, 'CLA', 'Rappresentanti di Classe');
                 } else if (componentFilter === 'DOCENTE' || componentFilter === 'ATA') {
-                    checklistHTML += `
-                        <span class="inline-flex items-center px-1 py-0.5 rounded text-[8px] font-bold ${t.voted_consiglio ? 'bg-emerald-100 text-emerald-800' : 'bg-red-50 text-red-500'}" title="Consiglio d'Istituto">
-                            <i data-lucide="${t.voted_consiglio ? 'check' : 'x'}" class="w-2.5 h-2.5 mr-0.5"></i> C.I.
-                        </span>
-                    `;
+                    checklistHTML += makeBtn('voted_consiglio', t.voted_consiglio, 'C.I.', 'Consiglio d\'Istituto');
                 }
 
                 if (configElezioni.customElections && configElezioni.customElections.length > 0) {
                     configElezioni.customElections.forEach(ele => {
                         if (ele.voterTypes.includes(componentFilter)) {
                             const isVoted = t.voted_custom && t.voted_custom[ele.id];
-                            checklistHTML += `
-                                <span class="inline-flex items-center px-1 py-0.5 rounded text-[8px] font-bold ${isVoted ? 'bg-purple-100 text-purple-800' : 'bg-red-50 text-red-500'}" title="${ele.titolo}">
-                                    <i data-lucide="${isVoted ? 'check' : 'x'}" class="w-2.5 h-2.5 mr-0.5"></i> CST
-                                </span>
-                            `;
+                            checklistHTML += makeBtn(ele.id, isVoted, 'CST', ele.titolo, true);
                         }
                     });
                 }
@@ -2306,10 +2311,7 @@
                             <td class="py-3 text-xs">${statusBadge}</td>
                             <td class="py-3 text-right">
                                 <div class="flex justify-end gap-1.5 font-semibold">
-                                    <button onclick="window.toggleTokenVotedState('${t.id}', ${t.hasVoted})" class="p-1 hover:bg-blue-50 text-blue-800 rounded transition-colors" title="Inverti Stato Voto">
-                                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-                                    </button>
-                                    <button onclick="window.requestDeleteToken('${t.id}')" class="p-1 hover:bg-red-50 text-red-655 rounded transition-colors" title="Elimina Token">
+                                    <button onclick="window.requestDeleteToken('${t.id}')" class="p-1.5 hover:bg-red-50 text-red-655 rounded transition-colors shadow-sm border border-transparent hover:border-red-100" title="Elimina Token">
                                         <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                     </button>
                                 </div>
@@ -2326,10 +2328,7 @@
                             <td class="py-3 text-xs">${statusBadge}</td>
                             <td class="py-3 text-right">
                                 <div class="flex justify-end gap-1.5 font-semibold">
-                                    <button onclick="window.toggleTokenVotedState('${t.id}', ${t.hasVoted})" class="p-1 hover:bg-blue-50 text-blue-800 rounded transition-colors" title="Inverti Stato Voto">
-                                        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-                                    </button>
-                                    <button onclick="window.requestDeleteToken('${t.id}')" class="p-1 hover:bg-red-50 text-red-655 rounded transition-colors" title="Elimina Token">
+                                    <button onclick="window.requestDeleteToken('${t.id}')" class="p-1.5 hover:bg-red-50 text-red-655 rounded transition-colors shadow-sm border border-transparent hover:border-red-100" title="Elimina Token">
                                         <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                                     </button>
                                 </div>
@@ -2354,7 +2353,7 @@
                     voted_classe_studente: nextStatus,
                     voted_classe_genitore: nextStatus
                 });
-                showNotification("Stato Modificato", `Token ${tokenId} impostato su ${nextStatus ? 'Completato' : 'Inutilizzato'}.`, "success");
+                showNotification("Stato Modificato", `Token ${tokenId} impostato su ${nextStatus ? 'Completato' : 'Inutilizzato'}. Tutte le sue schede associate sono state conformate.`, "success");
             } catch (err) {
                 showNotification("Errore", "Impossibile aggiornare lo stato del token: " + err.message, "error");
             }
@@ -2411,11 +2410,11 @@
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr class="text-[9px] uppercase text-slate-400 font-bold border-b pb-2">
-                                        <th class="py-2">Token</th>
+                                        <th class="py-2 min-w-[80px]">Token</th>
                                         <th class="py-2">Classe</th>
-                                        <th class="py-2">Indirizzo</th>
-                                        <th class="py-2">Spunte Schede</th>
-                                        <th class="py-2">Stato</th>
+                                        <th class="py-2 min-w-[80px]">Indirizzo</th>
+                                        <th class="py-2 min-w-[120px]">Spunte Schede</th>
+                                        <th class="py-2">Stato Globale</th>
                                         <th class="py-2 text-right">Azioni</th>
                                     </tr>
                                 </thead>
@@ -2463,11 +2462,11 @@
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr class="text-[9px] uppercase text-slate-400 font-bold border-b pb-2">
-                                        <th class="py-2">Token</th>
+                                        <th class="py-2 min-w-[80px]">Token</th>
                                         <th class="py-2">Classe</th>
-                                        <th class="py-2">Indirizzo</th>
-                                        <th class="py-2">Spunte Schede</th>
-                                        <th class="py-2">Stato</th>
+                                        <th class="py-2 min-w-[80px]">Indirizzo</th>
+                                        <th class="py-2 min-w-[120px]">Spunte Schede</th>
+                                        <th class="py-2">Stato Globale</th>
                                         <th class="py-2 text-right">Azioni</th>
                                     </tr>
                                 </thead>
@@ -2508,10 +2507,10 @@
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr class="text-[9px] uppercase text-slate-400 font-bold border-b pb-2">
-                                        <th class="py-2">Token</th>
+                                        <th class="py-2 min-w-[80px]">Token</th>
                                         <th class="py-2">Componente</th>
-                                        <th class="py-2">Spunte Schede</th>
-                                        <th class="py-2">Stato</th>
+                                        <th class="py-2 min-w-[120px]">Spunte Schede</th>
+                                        <th class="py-2">Stato Globale</th>
                                         <th class="py-2 text-right">Azioni</th>
                                     </tr>
                                 </thead>
@@ -2552,10 +2551,10 @@
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr class="text-[9px] uppercase text-slate-400 font-bold border-b pb-2">
-                                        <th class="py-2">Token</th>
+                                        <th class="py-2 min-w-[80px]">Token</th>
                                         <th class="py-2">Componente</th>
-                                        <th class="py-2">Spunte Schede</th>
-                                        <th class="py-2">Stato</th>
+                                        <th class="py-2 min-w-[120px]">Spunte Schede</th>
+                                        <th class="py-2">Stato Globale</th>
                                         <th class="py-2 text-right">Azioni</th>
                                     </tr>
                                 </thead>
@@ -2568,7 +2567,7 @@
             bindTokensRealTimeListener('ATA', 'table-ata-tokens');
         }
 
-        // ESCLUSIVA GESTIONE DEI PDF CON FIRME, NOMI E SEPARATI PER CLASSE COME RICHIESTO
+        // ESCLUSIVA GESTIONE DEI PDF CON FIRME, NOMI E SEPARATI PER CLASSE COME RICHIESTO E CORREZIONE ERRORI LARGHEZZA AUTOTABLE
 
         window.downloadRegisterPDF = async function(tipo) {
             try {
@@ -2646,6 +2645,7 @@
                         ];
                     });
 
+                    // Calibratura larghezza colonne ottimizzata per non far sforare AutoTable in pagina A4.
                     doc.autoTable({
                         startY: 57,
                         head: headers,
@@ -2654,14 +2654,14 @@
                         headStyles: { fillColor: [30, 58, 138], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' },
                         bodyStyles: { fontSize: 9, minCellHeight: 12, valign: 'middle' },
                         columnStyles: {
-                            0: { cellWidth: 12, halign: 'center' },
-                            1: { cellWidth: 70, fontStyle: 'bold' },
+                            0: { cellWidth: 10, halign: 'center' },
+                            1: { cellWidth: 'auto', fontStyle: 'bold' },
                             2: { cellWidth: 45, fontStyle: 'bold', halign: 'center' },
-                            3: { cellWidth: 55 }
+                            3: { cellWidth: 50 } 
                         },
                         margin: { left: 15, right: 15 },
                         didDrawCell: function(data) {
-                            // Disegna la linea puntata per la firma Elettore nella colonna 3
+                            // Disegna la linea puntata per la firma Elettore nella colonna dinamica
                             if (data.section === 'body' && data.column.index === 3) {
                                 doc.setDrawColor(150, 150, 150);
                                 doc.setLineDash([1, 1], 0);
@@ -2775,10 +2775,10 @@
                         bodyStyles: { fontSize: 8.5, minCellHeight: 12, valign: 'middle' },
                         columnStyles: {
                             0: { cellWidth: 10, halign: 'center' },
-                            1: { cellWidth: 20, halign: 'center' },
-                            2: { cellWidth: 55, fontStyle: 'bold', halign: 'center' },
-                            3: { cellWidth: 40 },
-                            4: { cellWidth: 55 }
+                            1: { cellWidth: 18, halign: 'center' },
+                            2: { cellWidth: 50, fontStyle: 'bold', halign: 'center' },
+                            3: { cellWidth: 'auto' },
+                            4: { cellWidth: 50 }
                         },
                         margin: { left: 15, right: 15 },
                         didDrawCell: function(data) {
