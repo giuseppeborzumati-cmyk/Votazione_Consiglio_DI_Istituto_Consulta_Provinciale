@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -1737,7 +1737,7 @@
                 <div class="flex items-center gap-2 mb-2 font-semibold">
                     <input type="text" value="${c.nome}" onchange="updateCommissioneMember(${idx}, 'nome', this.value)" class="p-2 border rounded-xl text-xs flex-grow font-bold">
                     <input type="text" value="${c.ruolo}" onchange="updateCommissioneMember(${idx}, 'ruolo', this.value)" class="p-2 border rounded-xl text-xs font-bold w-40 bg-slate-50">
-                    <button onclick="deleteCommissioneMember(${idx})" class="p-2 text-red-650 hover:bg-red-50 rounded-xl"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    <button onclick="deleteCommissioneMember(${idx})" class="p-2 text-red-655 hover:bg-red-50 rounded-xl"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                 </div>
             `).join('');
 
@@ -2568,6 +2568,8 @@
             bindTokensRealTimeListener('ATA', 'table-ata-tokens');
         }
 
+        // ESCLUSIVA GESTIONE DEI PDF CON FIRME, NOMI E SEPARATI PER CLASSE COME RICHIESTO
+
         window.downloadRegisterPDF = async function(tipo) {
             try {
                 const snap = await getDocs(getCollectionRef('tokens'));
@@ -2580,7 +2582,7 @@
                     return;
                 }
 
-                // Raggruppamento dei token per classe scolastica
+                // Raggruppamento dei token per classe scolastica per generare una pagina separata per classe
                 const grouped = {};
                 filt.forEach(t => {
                     const cl = t.classe || 'Generale';
@@ -2611,44 +2613,62 @@
                     
                     doc.setFont("helvetica", "normal");
                     doc.setFontSize(9);
-                    doc.text("Registro Consegna Credenziali di Voto (Token) per Coordinatori", 15, 22);
+                    doc.text(`Registro Ufficiale Consegna Credenziali - Componente ${tipo}`, 15, 22);
                     doc.text("Sede Unica: Via Briantina 68 - Cod. Mecc: MBTD430001", 15, 28);
 
                     // Metadati Sezione / Classe
                     doc.setTextColor(30, 41, 59);
                     doc.setFont("helvetica", "bold");
                     doc.setFontSize(11);
-                    doc.text(`FOGLIO DI CONSEGNA - CLASSE: ${cl} (${tipo})`, 15, 46);
+                    doc.text(`FOGLIO DI CONSEGNA - SEZIONE/CLASSE: ${cl}`, 15, 46);
 
                     doc.setFont("helvetica", "normal");
                     doc.setFontSize(8.5);
-                    doc.text(`Data Elezioni: 12 Luglio 2026 | Stampato da Piattaforma Elettorale Unificata`, 15, 52);
+                    doc.text(`Da far firmare obbligatoriamente all'elettore al momento della consegna del token cartaceo.`, 15, 52);
 
-                    const classTokens = grouped[cl].sort((a, b) => a.id.localeCompare(b.id));
-                    const headers = [["N.", "Token Personale Univoco", "Indirizzo Scolastico", "Stato Voto", "Firma dello Studente / Elettore"]];
-                    const rows = classTokens.map((t, idx) => [
-                        idx + 1,
-                        t.id,
-                        t.indirizzo || 'Generale',
-                        t.hasVoted ? 'COMPLETATO' : 'INUTILIZZATO',
-                        "........................................................................"
-                    ]);
+                    const classTokens = grouped[cl].sort((a, b) => {
+                        let nameA = (a.nome || a.cognome_nome || a.nominativo || a.alunno || '').toLowerCase();
+                        let nameB = (b.nome || b.cognome_nome || b.nominativo || b.alunno || '').toLowerCase();
+                        if (nameA && nameB) return nameA.localeCompare(nameB);
+                        return a.id.localeCompare(b.id);
+                    });
+                    
+                    // NOME E COGNOME, CODICE TOKEN, FIRMA
+                    const headers = [["N.", "Nome e Cognome", "Codice (Token Univoco)", "Firma Elettore"]];
+                    const rows = classTokens.map((t, idx) => {
+                        // Recupero del nominativo caricato dal file Excel o inserimento di una linea vuota per compilazione a mano
+                        let nominativo = t.nome || t.cognome_nome || t.nominativo || t.alunno || t.matricola || '___________________________';
+                        return [
+                            idx + 1,
+                            nominativo,
+                            t.id,
+                            "" // Lasciato appositamente vuoto, la linea tratteggiata viene disegnata da jsPDF AutoTable
+                        ];
+                    });
 
                     doc.autoTable({
                         startY: 57,
                         head: headers,
                         body: rows,
-                        theme: 'striped',
-                        headStyles: { fillColor: [30, 58, 138], textColor: [255, 255, 255], fontStyle: 'bold' },
-                        bodyStyles: { fontSize: 8 },
+                        theme: 'grid',
+                        headStyles: { fillColor: [30, 58, 138], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' },
+                        bodyStyles: { fontSize: 9, minCellHeight: 12, valign: 'middle' },
                         columnStyles: {
-                            0: { cellWidth: 10 },
-                            1: { cellWidth: 42, fontStyle: 'bold' },
-                            2: { cellWidth: 38 },
-                            3: { cellWidth: 25 },
-                            4: { cellWidth: 80 }
+                            0: { cellWidth: 12, halign: 'center' },
+                            1: { cellWidth: 70, fontStyle: 'bold' },
+                            2: { cellWidth: 45, fontStyle: 'bold', halign: 'center' },
+                            3: { cellWidth: 55 }
                         },
-                        margin: { left: 15, right: 15 }
+                        margin: { left: 15, right: 15 },
+                        didDrawCell: function(data) {
+                            // Disegna la linea puntata per la firma Elettore nella colonna 3
+                            if (data.section === 'body' && data.column.index === 3) {
+                                doc.setDrawColor(150, 150, 150);
+                                doc.setLineDash([1, 1], 0);
+                                doc.line(data.cell.x + 2, data.cell.y + 9, data.cell.x + data.cell.width - 2, data.cell.y + 9);
+                                doc.setLineDash([], 0); // reset back to solid
+                            }
+                        }
                     });
 
                     let finalY = doc.lastAutoTable.finalY + 12;
@@ -2659,13 +2679,13 @@
 
                     doc.setFont("helvetica", "bold");
                     doc.setFontSize(9);
-                    doc.text("Firma del Coordinatore per Avvenuta Consegna Plica:", 15, finalY);
+                    doc.text(`Firma del Responsabile/Coordinatore per l'Avvenuta Consegna Plica:`, 15, finalY);
                     doc.setFont("helvetica", "normal");
-                    doc.text(".....................................................................................", 92, finalY);
+                    doc.text(".....................................................................................", 118, finalY);
                 }
 
                 doc.save(`Registro_Token_${tipo}_Primo_Levi.pdf`);
-                showNotification("PDF Generato", `Registri divisi per classe generati con successo.`, "success");
+                showNotification("PDF Generato", `Registro formattato con nome, cognome e firma, suddiviso in pagine per classe, generato con successo.`, "success");
             } catch (err) {
                 console.error(err);
                 showNotification("Errore", "Impossibile generare il PDF: " + err.message, "error");
@@ -2721,14 +2741,14 @@
                     
                     doc.setFont("helvetica", "normal");
                     doc.setFontSize(9);
-                    doc.text("Credenziali di Scrutinio in Tempo Reale per i Coordinatori di Sezione", 15, 22);
+                    doc.text(`Credenziali di Scrutinio in Tempo Reale - Referenti ${tipo}`, 15, 22);
                     doc.text("Sede Unica: Via Briantina 68 - Seregno (MB)", 15, 28);
 
                     // Metadati Referente Classe
                     doc.setTextColor(30, 41, 59);
                     doc.setFont("helvetica", "bold");
                     doc.setFontSize(11);
-                    doc.text(`CONSEGNA CHIAVE REFERENTE DI CLASSE: ${cl} (${tipo})`, 15, 46);
+                    doc.text(`CHIAVE REFERENTE DI SEZIONE/CLASSE: ${cl}`, 15, 46);
 
                     doc.setFont("helvetica", "normal");
                     doc.setFontSize(9);
@@ -2736,30 +2756,39 @@
                     doc.text(`Si prega di custodirla con la massima riservatezza scolastica.`, 15, 57);
 
                     const classKeys = grouped[cl];
-                    const headers = [["N.", "Sezione", "Chiave Segreta Referente", "Livello di Abilitazione", "Firma Consegna"]];
+                    // CODICE CHIAVE, E FIRMA DI CHI LA RICEVE (IL REFERENTE/COORDINATORE)
+                    const headers = [["N.", "Sezione", "Chiave Segreta Referente", "Livello di Abilitazione", "Firma Consegna Referente"]];
                     const rows = classKeys.map((item, idx) => [
                         idx + 1,
                         item.classe,
                         item.key,
-                        `Scrutinio di Classe - Componente ${tipo}`,
-                        "...................................................................."
+                        `Scrutinio di Classe ${tipo}`,
+                        ""
                     ]);
 
                     doc.autoTable({
                         startY: 64,
                         head: headers,
                         body: rows,
-                        theme: 'striped',
-                        headStyles: { fillColor: [30, 58, 138], textColor: [255, 255, 255], fontStyle: 'bold' },
-                        bodyStyles: { fontSize: 8.5 },
+                        theme: 'grid',
+                        headStyles: { fillColor: [30, 58, 138], textColor: [255, 255, 255], fontStyle: 'bold', halign: 'center' },
+                        bodyStyles: { fontSize: 8.5, minCellHeight: 12, valign: 'middle' },
                         columnStyles: {
-                            0: { cellWidth: 10 },
-                            1: { cellWidth: 20 },
-                            2: { cellWidth: 55, fontStyle: 'bold' },
-                            3: { cellWidth: 45 },
-                            4: { cellWidth: 65 }
+                            0: { cellWidth: 10, halign: 'center' },
+                            1: { cellWidth: 20, halign: 'center' },
+                            2: { cellWidth: 55, fontStyle: 'bold', halign: 'center' },
+                            3: { cellWidth: 40 },
+                            4: { cellWidth: 55 }
                         },
-                        margin: { left: 15, right: 15 }
+                        margin: { left: 15, right: 15 },
+                        didDrawCell: function(data) {
+                            if (data.section === 'body' && data.column.index === 4) {
+                                doc.setDrawColor(150, 150, 150);
+                                doc.setLineDash([1, 1], 0);
+                                doc.line(data.cell.x + 2, data.cell.y + 9, data.cell.x + data.cell.width - 2, data.cell.y + 9);
+                                doc.setLineDash([], 0);
+                            }
+                        }
                     });
 
                     // Pannello d'istruzioni referenti ad alta visibilità
@@ -2777,7 +2806,7 @@
                     doc.setTextColor(146, 64, 14);
                     doc.setFont("helvetica", "bold");
                     doc.setFontSize(9);
-                    doc.text("PROCEDURA DI CONSULTAZIONE:", 20, finalY + 7);
+                    doc.text("PROCEDURA DI CONSULTAZIONE RISULTATI:", 20, finalY + 7);
                     
                     doc.setFont("helvetica", "normal");
                     doc.setFontSize(8);
