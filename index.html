@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+
 <html lang="it">
 <head>
     <meta charset="UTF-8">
@@ -34,37 +34,48 @@
             background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
         }
         
-        /* Bolle fluttuanti ripristinate con un look moderno e vetroso */
+        /* Bolle fluttuanti con l'immagine levi.png integrata */
         .delicate-bubble {
             position: absolute;
-            background: radial-gradient(circle, rgba(30, 58, 138, 0.03) 0%, rgba(30, 58, 138, 0.07) 70%, rgba(30, 58, 138, 0.1) 100%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(241, 245, 249, 0.5) 70%, rgba(226, 232, 240, 0.3) 100%);
             border: 1px solid rgba(30, 58, 138, 0.08);
             border-radius: 50%;
             pointer-events: none;
             backdrop-filter: blur(1px);
             animation: casualDrift 24s infinite ease-in-out;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: rgba(30, 58, 138, 0.2);
-            font-size: 10px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            box-shadow: inset 0 0 12px rgba(255,255,255,0.6);
+            box-shadow: inset 0 0 12px rgba(255,255,255,0.8), 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .delicate-bubble img {
+            width: 45%;
+            height: 45%;
+            object-fit: contain;
+            opacity: 0.15;
+            filter: grayscale(100%);
+        }
+
+        .delicate-bubble span {
+            color: rgba(30, 58, 138, 0.15);
+            font-size: 9px;
+            font-weight: 800;
+            margin-top: 4px;
+            letter-spacing: 0.05em;
         }
         
         @keyframes casualDrift {
             0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            33% { transform: translate(30px, -45px) scale(1.08) rotate(120deg); }
-            66% { transform: translate(-25px, 30px) scale(0.92) rotate(240deg); }
+            33% { transform: translate(30px, -45px) scale(1.05) rotate(120deg); }
+            66% { transform: translate(-25px, 30px) scale(0.95) rotate(240deg); }
             100% { transform: translate(0, 0) scale(1) rotate(360deg); }
         }
         
         .hidden { display: none !important; }
         .bg-gradient-header { background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%); }
         
-        /* Scrollbar personalizzata ultra-sottile ed elegante */
         .custom-scrollbar::-webkit-scrollbar {
             width: 4px;
             height: 4px;
@@ -98,44 +109,54 @@
 <body class="flex flex-col justify-between relative min-h-screen">
 
     <div class="bubble-bg">
-        <div class="delicate-bubble w-28 h-28" style="top: 10%; left: 5%; animation-delay: 0s; animation-duration: 22s;">LEVI</div>
-        <div class="delicate-bubble w-20 h-20" style="top: 65%; left: 10%; animation-delay: 3s; animation-duration: 28s;">ITSCG</div>
-        <div class="delicate-bubble w-32 h-32" style="top: 25%; left: 80%; animation-delay: 1s; animation-duration: 25s;">MBTD430001</div>
-        <div class="delicate-bubble w-16 h-16" style="top: 80%; left: 85%; animation-delay: 6s; animation-duration: 30s;">BYOD</div>
-        <div class="delicate-bubble w-24 h-24" style="top: 50%; left: 48%; animation-delay: 4s; animation-duration: 26s;">SEREGNO</div>
+        <div class="delicate-bubble w-28 h-28" style="top: 10%; left: 5%; animation-delay: 0s; animation-duration: 22s;">
+            <img src="levi.png" alt="Levi Logo" onerror="this.style.display='none'">
+            <span>LEVI</span>
+        </div>
+        <div class="delicate-bubble w-20 h-20" style="top: 65%; left: 10%; animation-delay: 3s; animation-duration: 28s;">
+            <img src="levi.png" alt="Levi Logo" onerror="this.style.display='none'">
+            <span>ITSCG</span>
+        </div>
+        <div class="delicate-bubble w-32 h-32" style="top: 25%; left: 80%; animation-delay: 1s; animation-duration: 25s;">
+            <img src="levi.png" alt="Levi Logo" onerror="this.style.display='none'">
+            <span>MBTD430001</span>
+        </div>
+        <div class="delicate-bubble w-24 h-24" style="top: 50%; left: 48%; animation-delay: 4s; animation-duration: 26s;">
+            <img src="levi.png" alt="Levi Logo" onerror="this.style.display='none'">
+            <span>SEREGNO</span>
+        </div>
     </div>
 
     <header class="bg-gradient-header text-white shadow-xl relative border-b-4 border-yellow-500 z-20">
         <div class="container mx-auto p-4 flex flex-col lg:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-4">
-                <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" 
+                <img src="levi.png" 
                      id="school-logo" 
                      alt="Logo ITSCG Primo Levi" 
-                     class="h-14 w-14 rounded-xl shadow-md border border-yellow-400 object-contain p-1 bg-white transition-all hover:scale-105"
+                     class="h-14 w-14 rounded-xl shadow-md border border-yellow-450 object-contain p-1 bg-white transition-all hover:scale-105"
                      onerror="this.src='https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI'"/>
                 <div>
                     <h1 class="text-lg md:text-xl font-black tracking-tight uppercase leading-tight">Piattaforma Elettorale Unificata</h1>
                     <p class="text-yellow-400 font-extrabold tracking-wider text-[11px] uppercase">ITSCG PRIMO LEVI DI SEREGNO</p>
                     <div class="text-slate-300 text-[10px] space-y-0.5">
-                        <p><span class="font-semibold text-white">Sede:</span> Via Briantina 68, 20831 Seregno (MB) — Cod. Meccanografico: <span class="font-semibold text-yellow-300">MBTD430001</span></p>
+                        <p><span class="font-semibold text-white">Sede Unica:</span> Via Briantina 68, 20831 Seregno (MB) — Cod. Meccanografico: <span class="font-semibold text-yellow-300">MBTD430001</span></p>
                         <p><span class="font-semibold text-white">Email Istituzionale:</span> MBTD430001@istruzione.it</p>
                     </div>
                 </div>
             </div>
             
-            <!-- Pulsanti ad accesso rapido posizionati nell'header per l'ottimizzazione BYOD -->
-            <div class="flex flex-wrap items-center justify-center gap-1.5 bg-slate-900/40 p-2 rounded-xl border border-white/10 w-full lg:w-auto">
-                <button onclick="window.openInformativaModal()" class="bg-blue-800/80 hover:bg-blue-750 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5 text-[10px]">
+            <div class="flex flex-wrap items-center justify-center gap-1.5 bg-slate-900/40 p-2 rounded-xl border border-white/10 w-full lg:w-auto text-[10px]">
+                <button onclick="window.openInformativaModal()" class="bg-blue-800/80 hover:bg-blue-750 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5">
                     <i data-lucide="scale" class="w-3.5 h-3.5 text-yellow-400"></i> Norme & Commissione
                 </button>
-                <button onclick="window.showClassMasterLogin('STUDENTE')" class="bg-slate-800 hover:bg-slate-750 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5 text-[10px]">
-                    <i data-lucide="users" class="w-3.5 h-3.5 text-sky-450"></i> Referenti Studenti
+                <button onclick="window.showClassMasterLogin('STUDENTE')" class="bg-slate-800 hover:bg-slate-750 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5">
+                    <i data-lucide="users" class="w-3.5 h-3.5 text-sky-455"></i> Referenti Studenti
                 </button>
-                <button onclick="window.showClassMasterLogin('GENITORE')" class="bg-slate-800 hover:bg-slate-750 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5 text-[10px]">
-                    <i data-lucide="heart" class="w-3.5 h-3.5 text-rose-450"></i> Referenti Genitori
+                <button onclick="window.showClassMasterLogin('GENITORE')" class="bg-slate-800 hover:bg-slate-750 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5">
+                    <i data-lucide="heart" class="w-3.5 h-3.5 text-rose-455"></i> Referenti Genitori
                 </button>
-                <button onclick="window.showPage('adminLogin')" class="bg-red-950/60 hover:bg-red-900 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5 text-[10px] border border-red-900/50">
-                    <i data-lucide="shield" class="w-3.5 h-3.5 text-red-400"></i> Commissione
+                <button onclick="window.showPage('adminLogin')" class="bg-red-950/60 hover:bg-red-900 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5 border border-red-900/50">
+                    <i data-lucide="shield" class="w-3.5 h-3.5 text-red-450"></i> Commissione
                 </button>
             </div>
             
@@ -147,6 +168,7 @@
         <!-- Contenuto dinamico iniettato via Javascript -->
     </main>
 
+    <!-- Modale Informativa Ministeriale -->
     <div id="informativa-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-2xl w-full mx-4 border border-slate-150 transform scale-95 transition-all flex flex-col max-h-[90vh]">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
@@ -161,16 +183,16 @@
             
             <div class="overflow-y-auto pr-2 custom-scrollbar space-y-4 text-xs text-slate-700 leading-relaxed">
                 <p class="font-bold text-slate-900 border-l-4 border-blue-900 pl-3">D.Lgs. 16 aprile 1994, n. 297 & O.M. 215/1991</p>
-                <p>Le consultazioni elettorali della componente studentesca e della componente genitori sono normate dal Testo Unico della Scuola e dalle ordinanze ministeriali vigenti. Il presente sistema digitale garantisce l'assoluto anonimato, l'unicità e la segretezza del voto.</p>
+                <p>Le consultazioni elettorali scolastiche per il rinnovo delle componenti d'Istituto (della durata di 3 anni per Docenti, Genitori e ATA; annuali per gli Studenti) e dei Consigli di Classe avvengono in conformità con le direttive ministeriali. Il sistema digitale garantisce l'assoluto anonimato, l'unicità e la segretezza del voto.</p>
                 
                 <div class="bg-emerald-50/70 p-3 rounded-xl border border-emerald-100 space-y-1">
-                    <h4 class="font-bold text-emerald-900 flex items-center"><i data-lucide="zap" class="w-4 h-4 mr-1.5"></i> Dissociazione ed Anonimato:</h4>
-                    <p class="text-[11px]">La convalida del Token e il deposito del voto anonimo avvengono tramite transazioni asincrone separate. Non vi è alcun log o record relazionale che possa ricollegare il voto all'identità dell'elettore.</p>
+                    <h4 class="font-bold text-emerald-900 flex items-center"><i data-lucide="zap" class="w-4 h-4 mr-1.5"></i> Dissociazione e Sicurezza:</h4>
+                    <p class="text-[11px]">La convalida del token e il deposito della scheda di voto avvengono in modo asincrono e indipendente. È tecnicamente impossibile risalire all'elettore che ha espresso una preferenza.</p>
                 </div>
 
                 <div class="bg-amber-50/70 p-3 rounded-xl border border-amber-100 space-y-1">
                     <h4 class="font-bold text-amber-900 flex items-center"><i data-lucide="heart" class="w-4 h-4 mr-1.5"></i> Votazione Componente Genitori:</h4>
-                    <p class="text-[11px]">I genitori sono chiamati ad esprimere il loro voto per i Rappresentanti nei Consigli di Classe e d'Istituto. In conformità alle direttive, l'atto finale prevede la compilazione del verbale congiunto e la convalida dei dati.</p>
+                    <p class="text-[11px]">Ciascun genitore esprime una sola preferenza sia per i rappresentanti dei Consigli di Classe sia per i candidati di lista del Consiglio d'Istituto. Non sono ammesse preferenze plurime o opzioni secondarie.</p>
                 </div>
 
                 <div class="pt-2 border-t border-slate-100">
@@ -189,6 +211,7 @@
         </div>
     </div>
 
+    <!-- Alert Custom -->
     <div id="custom-alert-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full mx-4 border border-slate-100 transform scale-95 transition-all">
             <div class="flex items-center space-x-3 mb-4">
@@ -249,11 +272,11 @@
     </footer>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, query, getDocs, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc, collection, query, getDocs, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const appId = 'iis-levi-electoral-v2';
+        const appId = 'iis-levi-electoral-v3';
         
         const firebaseConfig = {
             apiKey: "AIzaSyBDXldnedqfjaihDFXvFixO5KZZNP5SkdE",
@@ -261,15 +284,14 @@
             projectId: "mio-sistema-voto",
             storageBucket: "mio-sistema-voto.firebasestorage.app",
             messagingSenderId: "188743609131",
-            appId: "1:188743609131:web:da7666758444a40be3336e",
-            measurementId: "G-PT9V4V0B3E"
+            appId: "1:188743609131:web:da7666758444a40be3336e"
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Password istituzionale per l'accesso amministrativo
+        // Password istituzionale stabilita per l'accesso amministrativo
         const ADMIN_PWD = "docenti2026levi";
 
         function getCollectionRef(colName) { return collection(db, 'artifacts', appId, 'public', 'data', colName); }
@@ -283,17 +305,18 @@
         
         let activeAdminTab = 'config';
         let currentAccordionSection = 'consiglio';
-        let currentScrutinioSection = 'esito'; // 'esito' | 'calcoli'
+        let currentScrutinioSection = 'esito'; 
+        let currentScrutinioSubComponent = 'GENITORE'; // Consiglio d'Istituto esclude STUDENTE (parte solo da GENITORE, DOCENTE, ATA)
         let firebaseStateConnected = false;
 
-        // Configurazione delle elezioni e candidati predefiniti
+        // Configurazione delle elezioni e candidati predefiniti divisi per ruolo
         let configElezioni = {
             consiglioAttivo: true,
             consultaAttiva: true,
             rappresentantiIstitutoAttivo: true,
             rappresentantiClasseStudentiAttivo: true,
             rappresentantiClasseGenitoriAttivo: true,
-            customElections: [],
+            customElections: [], // Elezioni personalizzate configurabili
             commissione: [
                 { nome: "Laura Iavarone", ruolo: "Presidente" },
                 { nome: "Giuseppe Borzumati", ruolo: "Segretario" },
@@ -301,9 +324,18 @@
                 { nome: "Rosaria Del Vecchio", ruolo: "Componente Commissione" },
                 { nome: "Angela Terrana", ruolo: "Componente Commissione" }
             ],
+            // Liste per il Consiglio d'Istituto escludendo gli studenti
             listeConsiglio: {
-                "lista1": { nome: "Levi ed Oltre", candidati: ["Pellicano Alfredo", "Colanero Michele", "Diano Alex", "Scanziani Cardoso Pereira Bruna Edoarda"] },
-                "lista2": { nome: "Forever Young - Secondo Capitolo", candidati: ["Boscolo Riccardo", "Forte Alice Anna", "Giacomet Niccolò", "Cervone Giacomo"] }
+                "GENITORE": {
+                    "lista_gen_1": { nome: "Famiglia & Scuola Unita", candidati: ["Rossi Mario", "Bianchi Elena", "Verdi Giuseppe"] },
+                    "lista_gen_2": { nome: "Insieme per i Nostri Figli", candidati: ["Neri Anna", "Gialli Roberto"] }
+                },
+                "DOCENTE": {
+                    "lista_doc_1": { nome: "Partecipazione Docenti", candidati: ["Terrana Angela", "Iavarone Laura", "Borzumati Giuseppe"] }
+                },
+                "ATA": {
+                    "lista_ata_1": { nome: "Personale ATA in Azione", candidati: ["Del Vecchio Rosaria", "De Ponti Chiara"] }
+                }
             },
             listeIstituto: {
                 "listai1": { nome: "Studenti per il Futuro", candidati: ["Diano Alex", "Boscolo Riccardo", "Forte Alice Anna"] },
@@ -314,11 +346,16 @@
             }
         };
 
-        // Esposizione globale per i moduli dinamici
         window.configElezioni = configElezioni;
 
         let activeTokensList = [];
         let unsubscribeTokens = null;
+
+        // Funzione helper per uniformare e capitalizzare i nomi scritti a mano (prevenendo conteggi duplicati per maiuscole/minuscole/spazi)
+        function normalizeName(name) {
+            if (!name) return "";
+            return name.trim().toUpperCase().replace(/\s+/g, ' ');
+        }
 
         window.showNotification = function(title, message, type = 'info') {
             const modal = document.getElementById('custom-alert-modal');
@@ -364,12 +401,13 @@
 
         async function syncConfigFromDB() {
             try {
-                const snap = await getDoc(getDocumentRef('config', 'settings_v2'));
+                const snap = await getDoc(getDocumentRef('config', 'settings_v3'));
                 if (snap.exists()) {
                     configElezioni = snap.data();
+                    if (!configElezioni.customElections) configElezioni.customElections = [];
                     window.configElezioni = configElezioni;
                 } else {
-                    await setDoc(getDocumentRef('config', 'settings_v2'), configElezioni);
+                    await setDoc(getDocumentRef('config', 'settings_v3'), configElezioni);
                 }
                 firebaseStateConnected = true;
             } catch (err) {
@@ -379,7 +417,7 @@
 
         window.saveConfigToDB = async function() {
             try {
-                await setDoc(getDocumentRef('config', 'settings_v2'), configElezioni);
+                await setDoc(getDocumentRef('config', 'settings_v3'), configElezioni);
                 showNotification("Sincronizzazione Riuscita", "Configurazione elettorale salvata nel Cloud.", "success");
             } catch (err) {
                 showNotification("Errore di Sincronizzazione", "Impossibile salvare nel cloud: " + err.message, "error");
@@ -452,12 +490,10 @@
         function renderStudentLogin(container) {
             container.innerHTML = `
                 <div class="w-full max-w-md mx-auto bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-slate-200 text-center animate-fade-in mt-4">
-                    <div class="mb-6">
-                        <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-900">
-                            <i data-lucide="door-closed" class="w-7 h-7"></i>
-                        </div>
+                    <div class="mb-6 flex flex-col items-center">
+                        <img src="levi.png" alt="Primo Levi Logo" class="w-16 h-16 object-contain mb-4" onerror="this.style.display='none'">
                         <h2 class="text-xl font-black text-slate-800">Entra in Cabina</h2>
-                        <p class="text-slate-500 text-xs mt-1">Digita il codice segreto (Token) ricevuto dal docente della tua classe per votare dal tuo smartphone.</p>
+                        <p class="text-slate-500 text-xs mt-1">Digita il codice segreto (Token) per votare dal tuo dispositivo.</p>
                     </div>
                     <div class="space-y-4">
                         <input type="text" id="tokenInput" placeholder="ES: STU-4A-X2Y9" class="w-full p-4 text-center text-2xl font-mono border-2 border-slate-200 rounded-xl uppercase tracking-wider focus:border-blue-600 outline-none font-bold">
@@ -469,7 +505,7 @@
                     
                     <div class="mt-6 pt-4 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-400 font-medium">
                         <span><i data-lucide="shield-check" class="w-3.5 h-3.5 inline mr-1"></i> Voto Anonimo Garantito</span>
-                        <button onclick="window.openInformativaModal()" class="text-blue-900 hover:underline font-bold">Leggi Regolamento</button>
+                        <button onclick="window.openInformativaModal()" class="text-blue-900 hover:underline font-bold">Informativa Leggi</button>
                     </div>
                 </div>
             `;
@@ -496,7 +532,7 @@
                 currentUserData = {
                     id: token,
                     classe: tokenSnap.data().classe,
-                    tipo: tokenSnap.data().tipo,
+                    tipo: tokenSnap.data().tipo, // STU, GEN, DOC, ATA
                     indirizzo: tokenSnap.data().indirizzo || 'Generale',
                     hasVoted: false
                 };
@@ -514,16 +550,17 @@
         function renderDashboard(container) {
             let activeCardsHTML = '';
             
-            if (configElezioni.consiglioAttivo) {
+            // Consiglio d'Istituto esclude STUDENTE (solo GENITORE, DOCENTE, ATA)
+            if (configElezioni.consiglioAttivo && currentUserData.tipo !== 'STUDENTE') {
                 let status = cartVotes.consiglio ? 'Compilata' : 'Da compilare';
                 let btnText = cartVotes.consiglio ? 'Modifica Scelta' : 'Seleziona';
                 let statusColor = cartVotes.consiglio ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-amber-50 border-amber-200 text-amber-800';
                 activeCardsHTML += `
                     <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between">
                         <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-blue-800">Scheda 1</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-blue-800">Scheda Consiglio</span>
                             <h3 class="text-base font-black text-slate-800 mt-1">Consiglio d'Istituto</h3>
-                            <p class="text-slate-500 text-xs mt-1">Rappresentanza generale componente ${currentUserData.tipo.toLowerCase()} nel consiglio d'Istituto.</p>
+                            <p class="text-slate-500 text-xs mt-1">Sezione riservata alla componente elettrice: <strong>${currentUserData.tipo}</strong>.</p>
                             <div class="mt-3 inline-block px-3 py-1 rounded-full text-[10px] font-extrabold border ${statusColor}">${status}</div>
                         </div>
                         <button onclick="showPage('votoConsiglio')" class="mt-5 w-full bg-blue-900 text-white font-extrabold py-2.5 rounded-xl hover:bg-blue-850 transition-colors text-xs">${btnText}</button>
@@ -531,6 +568,7 @@
                 `;
             }
 
+            // Rappresentanti d'Istituto: Solo STUDENTI
             if (configElezioni.rappresentantiIstitutoAttivo && currentUserData.tipo === 'STUDENTE') {
                 let status = cartVotes.istituto ? 'Compilata' : 'Da compilare';
                 let btnText = cartVotes.istituto ? 'Modifica Scelta' : 'Seleziona';
@@ -538,7 +576,7 @@
                 activeCardsHTML += `
                     <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between">
                         <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-blue-800">Scheda 2</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-blue-800">Scheda Rappresentanti</span>
                             <h3 class="text-base font-black text-slate-800 mt-1">Rappresentanti d'Istituto</h3>
                             <p class="text-slate-500 text-xs mt-1">Rappresentanza degli studenti per l'ITSCG Primo Levi.</p>
                             <div class="mt-3 inline-block px-3 py-1 rounded-full text-[10px] font-extrabold border ${statusColor}">${status}</div>
@@ -548,6 +586,7 @@
                 `;
             }
 
+            // Consulta Provinciale: Solo STUDENTI
             if (configElezioni.consultaAttiva && currentUserData.tipo === 'STUDENTE') {
                 let status = cartVotes.consulta ? 'Compilata' : 'Da compilare';
                 let btnText = cartVotes.consulta ? 'Modifica Scelta' : 'Seleziona';
@@ -555,9 +594,9 @@
                 activeCardsHTML += `
                     <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between">
                         <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-blue-800">Scheda 3</span>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-blue-800">Scheda Consulta</span>
                             <h3 class="text-base font-black text-slate-800 mt-1">Consulta Provinciale</h3>
-                            <p class="text-slate-500 text-xs mt-1">Due rappresentanti per la Consulta di Monza e Brianza.</p>
+                            <p class="text-slate-500 text-xs mt-1">Rappresentanza per la Consulta di Monza e Brianza.</p>
                             <div class="mt-3 inline-block px-3 py-1 rounded-full text-[10px] font-extrabold border ${statusColor}">${status}</div>
                         </div>
                         <button onclick="showPage('votoConsulta')" class="mt-5 w-full bg-blue-900 text-white font-extrabold py-2.5 rounded-xl hover:bg-blue-850 transition-colors text-xs">${btnText}</button>
@@ -565,6 +604,7 @@
                 `;
             }
 
+            // Rappresentanti di Classe Studenti: Solo STUDENTI
             if (configElezioni.rappresentantiClasseStudentiAttivo && currentUserData.tipo === 'STUDENTE') {
                 let status = cartVotes.classeStudente ? 'Compilata' : 'Da compilare';
                 let btnText = cartVotes.classeStudente ? 'Modifica Scelta' : 'Seleziona';
@@ -573,8 +613,8 @@
                     <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between">
                         <div>
                             <span class="text-[10px] font-bold uppercase tracking-wider text-blue-800">Scheda Classe</span>
-                            <h3 class="text-base font-black text-slate-800 mt-1">Rappresentanti di Classe (Studenti)</h3>
-                            <p class="text-slate-500 text-xs mt-1">Elezioni dei rappresentanti studenti per la classe ${currentUserData.classe}.</p>
+                            <h3 class="text-base font-black text-slate-800 mt-1">Rappresentanti di Classe</h3>
+                            <p class="text-slate-500 text-xs mt-1">Elezione del rappresentante studenti per la classe ${currentUserData.classe}.</p>
                             <div class="mt-3 inline-block px-3 py-1 rounded-full text-[10px] font-extrabold border ${statusColor}">${status}</div>
                         </div>
                         <button onclick="showPage('votoClasseStudenti')" class="mt-5 w-full bg-blue-900 text-white font-extrabold py-2.5 rounded-xl hover:bg-blue-850 transition-colors text-xs">${btnText}</button>
@@ -582,6 +622,7 @@
                 `;
             }
 
+            // Rappresentanti di Classe Genitori: Solo GENITORI
             if (configElezioni.rappresentantiClasseGenitoriAttivo && currentUserData.tipo === 'GENITORE') {
                 let status = cartVotes.classeGenitore ? 'Compilata' : 'Da compilare';
                 let btnText = cartVotes.classeGenitore ? 'Modifica Scelta' : 'Seleziona';
@@ -590,8 +631,8 @@
                     <div class="bg-white rounded-2xl p-5 shadow-sm border border-rose-200 flex flex-col justify-between">
                         <div>
                             <span class="text-[10px] font-bold uppercase tracking-wider text-rose-800">Scheda Classe</span>
-                            <h3 class="text-base font-black text-slate-800 mt-1">Rappresentanti di Classe (Genitori)</h3>
-                            <p class="text-slate-500 text-xs mt-1">Elezioni dei rappresentanti genitori per la classe ${currentUserData.classe}.</p>
+                            <h3 class="text-base font-black text-slate-800 mt-1">Rappresentanti di Classe</h3>
+                            <p class="text-slate-500 text-xs mt-1">Elezione del rappresentante genitori per la classe ${currentUserData.classe}.</p>
                             <div class="mt-3 inline-block px-3 py-1 rounded-full text-[10px] font-extrabold border ${statusColor}">${status}</div>
                         </div>
                         <button onclick="showPage('votoClasseGenitori')" class="mt-5 w-full bg-rose-900 text-white font-extrabold py-2.5 rounded-xl hover:bg-rose-850 transition-colors text-xs">${btnText}</button>
@@ -599,24 +640,28 @@
                 `;
             }
 
-            (configElezioni.customElections || []).forEach(ce => {
-                if (ce.componente === 'TUTTI' || ce.componente === currentUserData.tipo) {
-                    let status = cartVotes.custom[ce.id] ? 'Compilata' : 'Da compilare';
-                    let btnText = cartVotes.custom[ce.id] ? 'Modifica Scelta' : 'Seleziona';
-                    let statusColor = cartVotes.custom[ce.id] ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-amber-50 border-amber-200 text-amber-800';
-                    activeCardsHTML += `
-                        <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between">
-                            <div>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-rose-800">Scheda Speciale</span>
-                                <h3 class="text-base font-black text-slate-800 mt-1">${ce.titolo}</h3>
-                                <p class="text-slate-500 text-xs mt-1">${ce.descrizione}</p>
-                                <div class="mt-3 inline-block px-3 py-1 rounded-full text-[10px] font-extrabold border ${statusColor}">${status}</div>
+            // Elezioni Custom dinamiche
+            if (configElezioni.customElections && configElezioni.customElections.length > 0) {
+                configElezioni.customElections.forEach(ele => {
+                    if (ele.voterTypes.includes(currentUserData.tipo)) {
+                        let userChoice = cartVotes.custom[ele.id];
+                        let status = userChoice ? 'Compilata' : 'Da compilare';
+                        let btnText = userChoice ? 'Modifica Scelta' : 'Seleziona';
+                        let statusColor = userChoice ? 'bg-emerald-50 border-emerald-200 text-emerald-800' : 'bg-amber-50 border-amber-200 text-amber-800';
+                        activeCardsHTML += `
+                            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between">
+                                <div>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-purple-800">Votazione Straordinaria</span>
+                                    <h3 class="text-base font-black text-slate-800 mt-1">${ele.titolo}</h3>
+                                    <p class="text-slate-500 text-xs mt-1">${ele.descrizione}</p>
+                                    <div class="mt-3 inline-block px-3 py-1 rounded-full text-[10px] font-extrabold border ${statusColor}">${status}</div>
+                                </div>
+                                <button onclick="window.showVotoCustomPage('${ele.id}')" class="mt-5 w-full bg-purple-900 text-white font-extrabold py-2.5 rounded-xl hover:bg-purple-850 transition-colors text-xs">${btnText}</button>
                             </div>
-                            <button onclick="window.showVotoCustom('${ce.id}')" class="mt-5 w-full bg-rose-950 text-white font-extrabold py-2.5 rounded-xl hover:bg-rose-900 transition-colors text-xs">${btnText}</button>
-                        </div>
-                    `;
-                }
-            });
+                        `;
+                    }
+                });
+            }
 
             container.innerHTML = `
                 <div class="w-full animate-fade-in">
@@ -650,7 +695,7 @@
         function getCardHeaderHTML(title) {
             return `
                 <div class="flex flex-col items-center mb-6 text-center border-b border-slate-100 pb-4">
-                    <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" onerror="this.src='https://placehold.co/80x80/1e3a8a/ffffff?text=LEVI'" class="h-12 w-auto mb-2 object-contain" />
+                    <img src="levi.png" onerror="this.src='https://placehold.co/80x80/1e3a8a/ffffff?text=LEVI'" class="h-12 w-auto mb-2 object-contain" />
                     <span class="text-[10px] uppercase tracking-widest text-slate-400 font-extrabold">ITSCG PRIMO LEVI DI SEREGNO</span>
                     <h2 class="text-lg font-black text-slate-800 mt-1 uppercase">${title}</h2>
                 </div>
@@ -658,15 +703,17 @@
         }
 
         function renderVotoConsiglio(container) {
-            let headerHTML = getCardHeaderHTML("Consiglio d'Istituto");
-            let listeHTML = Object.entries(configElezioni.listeConsiglio).map(([key, value]) => `
+            let headerHTML = getCardHeaderHTML("Consiglio d'Istituto (" + currentUserData.tipo + ")");
+            const subListe = configElezioni.listeConsiglio[currentUserData.tipo] || {};
+
+            let listeHTML = Object.entries(subListe).map(([key, value]) => `
                 <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 hover:bg-slate-100/50 transition-colors">
                     <label class="flex items-center space-x-3 cursor-pointer">
                         <input type="radio" name="listaConsiglio" value="${key}" ${cartVotes.consiglio?.lista === key ? 'checked' : ''} onchange="updateConsiglioPreferenzeOptions('${key}')" class="w-5 h-5 text-blue-900 border-slate-300 focus:ring-blue-900">
                         <span class="font-extrabold text-slate-800 text-xs uppercase">Lista: ${value.nome}</span>
                     </label>
                     <div class="mt-3 pl-8 space-y-2" id="pref-options-${key}">
-                        <p class="text-[10px] text-slate-400 italic">Seleziona la lista per abilitare le preferenze nominali.</p>
+                        <p class="text-[10px] text-slate-400 italic">Seleziona la lista per abilitare la preferenza nominale.</p>
                     </div>
                 </div>
             `).join('');
@@ -674,7 +721,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4">Puoi esprimere il voto per una lista e al massimo due preferenze nominali per i candidati di quella lista.</p>
+                    <p class="text-xs text-slate-500 mb-4">La tua componente (${currentUserData.tipo}) può esprimere il voto per una lista e al massimo **una sola preferenza nominale** per i candidati della lista scelta.</p>
                     
                     <div class="space-y-4">
                         ${listeHTML}
@@ -697,7 +744,9 @@
         }
 
         window.updateConsiglioPreferenzeOptions = function(listaKey) {
-            Object.keys(configElezioni.listeConsiglio).forEach(key => {
+            const subListe = configElezioni.listeConsiglio[currentUserData.tipo] || {};
+            
+            Object.keys(subListe).forEach(key => {
                 const el = document.getElementById(`pref-options-${key}`);
                 if (el) el.innerHTML = '';
             });
@@ -707,27 +756,17 @@
             const el = document.getElementById(`pref-options-${listaKey}`);
             if (!el) return;
 
-            const candidati = configElezioni.listeConsiglio[listaKey].candidati;
+            const candidati = subListe[listaKey].candidati;
             let p1_val = cartVotes.consiglio?.p1 || '';
-            let p2_val = cartVotes.consiglio?.p2 || '';
 
             el.innerHTML = `
-                <p class="text-[10px] text-slate-600 font-bold mb-2">Esprimi fino a 2 preferenze:</p>
-                <div class="grid sm:grid-cols-2 gap-2">
-                    <div>
-                        <label class="text-[9px] text-slate-500 font-semibold uppercase">Preferenza 1</label>
-                        <select id="cons-p1" class="w-full p-2 border rounded-xl text-xs bg-white font-medium">
-                            <option value="">Nessuna preferenza</option>
-                            ${candidati.map(c => `<option value="${c}" ${p1_val === c ? 'selected' : ''}>${c}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-[9px] text-slate-500 font-semibold uppercase">Preferenza 2</label>
-                        <select id="cons-p2" class="w-full p-2 border rounded-xl text-xs bg-white font-medium">
-                            <option value="">Nessuna preferenza</option>
-                            ${candidati.map(c => `<option value="${c}" ${p2_val === c ? 'selected' : ''}>${c}</option>`).join('')}
-                        </select>
-                    </div>
+                <p class="text-[10px] text-slate-600 font-bold mb-2">Esprimi la tua preferenza singola:</p>
+                <div class="w-full">
+                    <label class="text-[9px] text-slate-500 font-semibold uppercase">Preferenza Unica</label>
+                    <select id="cons-p1" class="w-full p-2 border rounded-xl text-xs bg-white font-medium">
+                        <option value="">Nessuna preferenza</option>
+                        ${candidati.map(c => `<option value="${c}" ${p1_val === c ? 'selected' : ''}>${c}</option>`).join('')}
+                    </select>
                 </div>
             `;
         }
@@ -740,15 +779,12 @@
             if (!selectedLista) { showNotification("Attenzione", "Seleziona una lista o scheda bianca.", "error"); return; }
 
             if (selectedLista === 'BIANCA') {
-                cartVotes.consiglio = { lista: 'BIANCA', p1: '', p2: '' };
+                cartVotes.consiglio = { lista: 'BIANCA', p1: '' };
             } else {
                 const p1 = document.getElementById('cons-p1').value;
-                const p2 = document.getElementById('cons-p2').value;
-                if (p1 && p2 && p1 === p2) { showNotification("Attenzione", "Le due preferenze devono essere diverse.", "error"); return; }
-                cartVotes.consiglio = { lista: selectedLista, p1, p2 };
+                cartVotes.consiglio = { lista: selectedLista, p1 };
             }
-            showNotification("Salvato", "Scheda compilata correttamente.", "success");
-            showPage('dashboard');
+            showPage('dashboard'); // Redirect automatico immediato
         };
 
         function renderVotoIstituto(container) {
@@ -760,7 +796,7 @@
                         <span class="font-extrabold text-slate-800 text-xs uppercase">Lista: ${value.nome}</span>
                     </label>
                     <div class="mt-3 pl-8 space-y-2" id="ist-pref-options-${key}">
-                        <p class="text-[10px] text-slate-400 italic">Seleziona la lista per abilitare le preferenze nominali.</p>
+                        <p class="text-[10px] text-slate-400 italic">Seleziona la lista per abilitare la preferenza nominale.</p>
                     </div>
                 </div>
             `).join('');
@@ -768,7 +804,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4">Scegli una lista ed esprimi fino a due preferenze nominali.</p>
+                    <p class="text-xs text-slate-500 mb-4">Scegli una lista ed esprimi **una sola preferenza nominale**.</p>
                     
                     <div class="space-y-4">
                         ${listelst}
@@ -803,25 +839,15 @@
 
             const candidati = configElezioni.listeIstituto[listaKey].candidati;
             let p1_val = cartVotes.istituto?.p1 || '';
-            let p2_val = cartVotes.istituto?.p2 || '';
 
             el.innerHTML = `
-                <p class="text-[10px] text-slate-600 font-bold mb-2">Esprimi fino a 2 preferenze:</p>
-                <div class="grid sm:grid-cols-2 gap-2">
-                    <div>
-                        <label class="text-[9px] text-slate-500 font-semibold uppercase">Preferenza 1</label>
-                        <select id="ist-p1" class="w-full p-2 border rounded-xl text-xs bg-white font-medium">
-                            <option value="">Nessuna preferenza</option>
-                            ${candidati.map(c => `<option value="${c}" ${p1_val === c ? 'selected' : ''}>${c}</option>`).join('')}
-                        </select>
-                    </div>
-                    <div>
-                        <label class="text-[9px] text-slate-500 font-semibold uppercase">Preferenza 2</label>
-                        <select id="ist-p2" class="w-full p-2 border rounded-xl text-xs bg-white font-medium">
-                            <option value="">Nessuna preferenza</option>
-                            ${candidati.map(c => `<option value="${c}" ${p2_val === c ? 'selected' : ''}>${c}</option>`).join('')}
-                        </select>
-                    </div>
+                <p class="text-[10px] text-slate-600 font-bold mb-2">Preferenza unica:</p>
+                <div class="w-full">
+                    <label class="text-[9px] text-slate-500 font-semibold uppercase">Preferenza</label>
+                    <select id="ist-p1" class="w-full p-2 border rounded-xl text-xs bg-white font-medium">
+                        <option value="">Nessuna preferenza</option>
+                        ${candidati.map(c => `<option value="${c}" ${p1_val === c ? 'selected' : ''}>${c}</option>`).join('')}
+                    </select>
                 </div>
             `;
         }
@@ -834,15 +860,12 @@
             if (!selectedLista) { showNotification("Attenzione", "Seleziona una lista o scheda bianca.", "error"); return; }
 
             if (selectedLista === 'BIANCA') {
-                cartVotes.istituto = { lista: 'BIANCA', p1: '', p2: '' };
+                cartVotes.istituto = { lista: 'BIANCA', p1: '' };
             } else {
                 const p1 = document.getElementById('ist-p1').value;
-                const p2 = document.getElementById('ist-p2').value;
-                if (p1 && p2 && p1 === p2) { showNotification("Attenzione", "Le preferenze devono essere diverse.", "error"); return; }
-                cartVotes.istituto = { lista: selectedLista, p1, p2 };
+                cartVotes.istituto = { lista: selectedLista, p1 };
             }
-            showNotification("Salvato", "Scheda compilata correttamente.", "success");
-            showPage('dashboard');
+            showPage('dashboard'); // Redirect automatico immediato
         }
 
         function renderVotoConsulta(container) {
@@ -862,7 +885,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4">Scegli la lista ed esprimi al massimo una preferenza nominale.</p>
+                    <p class="text-xs text-slate-500 mb-4">Scegli la lista ed esprimi al massimo **una sola preferenza nominale**.</p>
                     
                     <div class="space-y-4">
                         ${listacon}
@@ -923,8 +946,7 @@
                 const p1 = document.getElementById('consul-p1').value;
                 cartVotes.consulta = { lista: selectedLista, p1 };
             }
-            showNotification("Salvato", "Scheda compilata correttamente.", "success");
-            showPage('dashboard');
+            showPage('dashboard'); // Redirect automatico immediato
         }
 
         function renderVotoClasseStudenti(container) {
@@ -932,16 +954,12 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-xl mx-auto animate-fade-in w-full">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-6">Digita i cognomi e nomi dei candidati studenti per la classe <strong>${currentUserData.classe}</strong>.</p>
+                    <p class="text-xs text-slate-500 mb-6">Digita il cognome e il nome del candidato studente per la classe <strong>${currentUserData.classe}</strong>. È consentita **una sola preferenza nominale**.</p>
 
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Candidato Studente 1</label>
+                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Candidato Unico</label>
                             <input type="text" id="stuCandidate1" value="${cartVotes.classeStudente?.candidate1 || ''}" placeholder="COGNOME NOME" class="w-full p-3 border rounded-xl font-bold uppercase tracking-wider text-slate-800 text-xs outline-none focus:border-blue-900 bg-slate-50">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Candidato Studente 2 (Opzionale)</label>
-                            <input type="text" id="stuCandidate2" value="${cartVotes.classeStudente?.candidate2 || ''}" placeholder="COGNOME NOME" class="w-full p-3 border rounded-xl font-bold uppercase tracking-wider text-slate-800 text-xs outline-none focus:border-blue-900 bg-slate-50">
                         </div>
                     </div>
 
@@ -955,17 +973,14 @@
         }
 
         window.saveVotoClasseStudenti = function() {
-            let c1 = document.getElementById('stuCandidate1').value.trim().toUpperCase();
-            let c2 = document.getElementById('stuCandidate2').value.trim().toUpperCase();
+            let c1 = normalizeName(document.getElementById('stuCandidate1').value);
 
-            if (!c1 && !c2) {
+            if (!c1) {
                 cartVotes.classeStudente = { isBianca: true };
             } else {
-                if (c1 && c2 && c1 === c2) { showNotification("Attenzione", "I due nominativi devono essere diversi.", "error"); return; }
-                cartVotes.classeStudente = { isBianca: false, candidate1: c1, candidate2: c2 };
+                cartVotes.classeStudente = { isBianca: false, candidate1: c1 };
             }
-            showNotification("Salvato", "Scelte memorizzate.", "success");
-            showPage('dashboard');
+            showPage('dashboard'); // Redirect automatico immediato
         };
 
         function renderVotoClasseGenitori(container) {
@@ -973,16 +988,12 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-rose-200 max-w-xl mx-auto animate-fade-in w-full">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-6">Digita i cognomi e nomi dei candidati genitori per la classe <strong>${currentUserData.classe}</strong>.</p>
+                    <p class="text-xs text-slate-500 mb-6">Digita il cognome e il nome del candidato genitore per la classe <strong>${currentUserData.classe}</strong>. È consentita **una sola preferenza nominale**.</p>
 
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-[10px] font-bold text-rose-900 uppercase mb-1">Candidato Genitore 1</label>
+                            <label class="block text-[10px] font-bold text-rose-900 uppercase mb-1">Candidato Unico</label>
                             <input type="text" id="genCandidate1" value="${cartVotes.classeGenitore?.candidate1 || ''}" placeholder="COGNOME NOME" class="w-full p-3 border rounded-xl font-bold uppercase tracking-wider text-slate-800 text-xs outline-none focus:border-rose-900 bg-slate-50">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-bold text-rose-900 uppercase mb-1">Candidato Genitore 2 (Opzionale)</label>
-                            <input type="text" id="genCandidate2" value="${cartVotes.classeGenitore?.candidate2 || ''}" placeholder="COGNOME NOME" class="w-full p-3 border rounded-xl font-bold uppercase tracking-wider text-slate-800 text-xs outline-none focus:border-rose-900 bg-slate-50">
                         </div>
                     </div>
 
@@ -996,85 +1007,75 @@
         }
 
         window.saveVotoClasseGenitori = function() {
-            let c1 = document.getElementById('genCandidate1').value.trim().toUpperCase();
-            let c2 = document.getElementById('genCandidate2').value.trim().toUpperCase();
+            let c1 = normalizeName(document.getElementById('genCandidate1').value);
 
-            if (!c1 && !c2) {
+            if (!c1) {
                 cartVotes.classeGenitore = { isBianca: true };
             } else {
-                if (c1 && c2 && c1 === c2) { showNotification("Attenzione", "I due nominativi devono essere diversi.", "error"); return; }
-                cartVotes.classeGenitore = { isBianca: false, candidate1: c1, candidate2: c2 };
+                cartVotes.classeGenitore = { isBianca: false, candidate1: c1 };
             }
-            showNotification("Salvato", "Scelte memorizzate.", "success");
-            showPage('dashboard');
+            showPage('dashboard'); // Redirect automatico immediato
         };
 
-        window.showVotoCustom = function(electionId) {
-            const ce = (configElezioni.customElections || []).find(e => e.id === electionId);
-            if (!ce) return;
-
-            const container = document.getElementById('app-container');
-            let headerHTML = getCardHeaderHTML(ce.titolo);
-
-            let opHTML = ce.opzioni.map(op => `
+        // Gestione Elezioni Custom
+        window.showVotoCustomPage = function(eleId) {
+            const ele = configElezioni.customElections.find(e => e.id === eleId);
+            if(!ele) return;
+            
+            let headerHTML = getCardHeaderHTML(ele.titolo);
+            let optionsHTML = ele.opzioni.map(opt => `
                 <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 hover:bg-slate-100/50 transition-colors">
                     <label class="flex items-center space-x-3 cursor-pointer">
-                        <input type="radio" name="customElectionOp" value="${op}" ${cartVotes.custom[electionId] === op ? 'checked' : ''} class="w-5 h-5 text-rose-900 border-slate-300 focus:ring-rose-900">
-                        <span class="font-bold text-slate-800 text-xs uppercase">${op}</span>
+                        <input type="radio" name="customOption" value="${opt}" ${cartVotes.custom[ele.id] === opt ? 'checked' : ''} class="w-5 h-5 text-purple-900 border-slate-300 focus:ring-purple-900">
+                        <span class="font-bold text-slate-800 text-xs uppercase">${opt}</span>
                     </label>
                 </div>
             `).join('');
 
+            const container = document.getElementById('app-container');
             container.innerHTML = `
-                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-xl mx-auto animate-fade-in w-full">
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-purple-200 max-w-xl mx-auto animate-fade-in w-full">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-6">${ce.descrizione}</p>
+                    <p class="text-xs text-slate-500 mb-6">${ele.descrizione}</p>
 
-                    <div class="space-y-3">
-                        ${opHTML}
-                        <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 hover:bg-slate-100/50 transition-colors">
-                            <label class="flex items-center space-x-3 cursor-pointer">
-                                <input type="radio" name="customElectionOp" value="BIANCA" ${cartVotes.custom[electionId] === 'BIANCA' ? 'checked' : ''} class="w-5 h-5 text-rose-900 border-slate-300 focus:ring-rose-900">
-                                <span class="font-bold text-slate-800 text-xs uppercase">Scheda Bianca</span>
-                            </label>
-                        </div>
+                    <div class="space-y-4">
+                        ${optionsHTML}
                     </div>
 
                     <div class="mt-8 flex justify-between">
                         <button onclick="showPage('dashboard')" class="bg-slate-100 text-slate-700 px-5 py-2.5 rounded-xl hover:bg-slate-200 font-bold text-xs">Annulla</button>
-                        <button onclick="saveVotoCustom('${electionId}')" class="bg-rose-900 text-white px-6 py-2.5 rounded-xl hover:bg-rose-850 font-bold text-xs">Salva Scheda</button>
+                        <button onclick="window.saveVotoCustom('${ele.id}')" class="bg-purple-900 text-white px-6 py-2.5 rounded-xl hover:bg-purple-850 font-bold text-xs">Salva Scheda</button>
                     </div>
                 </div>
             `;
             lucide.createIcons();
-        }
+        };
 
-        window.saveVotoCustom = function(electionId) {
-            const rads = document.getElementsByName('customElectionOp');
-            let selectedOp = null;
-            for(let r of rads) { if(r.checked) selectedOp = r.value; }
+        window.saveVotoCustom = function(eleId) {
+            const rads = document.getElementsByName('customOption');
+            let selected = null;
+            for(let r of rads) { if(r.checked) selected = r.value; }
 
-            if (!selectedOp) { showNotification("Attenzione", "Seleziona un'opzione o scheda bianca.", "error"); return; }
+            if (!selected) { showNotification("Attenzione", "Seleziona un'opzione.", "error"); return; }
 
-            cartVotes.custom[electionId] = selectedOp;
-            showNotification("Salvato", "La scelta personalizzata è stata registrata.", "success");
-            showPage('dashboard');
-        }
+            cartVotes.custom[eleId] = selected;
+            showPage('dashboard'); // Redirect automatico immediato
+        };
 
         function renderRiepilogo(container) {
             let rowsHTML = '';
             
-            if (configElezioni.consiglioAttivo) {
+            if (configElezioni.consiglioAttivo && currentUserData.tipo !== 'STUDENTE') {
                 let text = "Non compilata (Astenuto)";
                 if (cartVotes.consiglio) {
-                    text = cartVotes.consiglio.lista === 'BIANCA' ? "Scheda Bianca" : `Voto Lista: ${configElezioni.listeConsiglio[cartVotes.consiglio.lista]?.nome || cartVotes.consiglio.lista}`;
-                    if (cartVotes.consiglio.p1) text += ` • Pref 1: ${cartVotes.consiglio.p1}`;
-                    if (cartVotes.consiglio.p2) text += ` • Pref 2: ${cartVotes.consiglio.p2}`;
+                    const subListe = configElezioni.listeConsiglio[currentUserData.tipo] || {};
+                    text = cartVotes.consiglio.lista === 'BIANCA' ? "Scheda Bianca" : `Voto Lista: ${subListe[cartVotes.consiglio.lista]?.nome || cartVotes.consiglio.lista}`;
+                    if (cartVotes.consiglio.p1) text += ` • Preferenza: ${cartVotes.consiglio.p1}`;
                 }
                 rowsHTML += `
                     <div class="p-4 border-b border-slate-100 flex justify-between items-center">
                         <div>
-                            <h4 class="font-bold text-slate-800 text-xs">Consiglio d'Istituto</h4>
+                            <h4 class="font-bold text-slate-800 text-xs">Consiglio d'Istituto (${currentUserData.tipo})</h4>
                             <p class="text-[10px] text-slate-500 mt-0.5">${text}</p>
                         </div>
                         <button onclick="showPage('votoConsiglio')" class="text-blue-900 hover:underline font-bold text-[10px]">Modifica</button>
@@ -1086,8 +1087,7 @@
                 let text = "Non compilata (Astenuto)";
                 if (cartVotes.istituto) {
                     text = cartVotes.istituto.lista === 'BIANCA' ? "Scheda Bianca" : `Voto Lista: ${configElezioni.listeIstituto[cartVotes.istituto.lista]?.nome || cartVotes.istituto.lista}`;
-                    if (cartVotes.istituto.p1) text += ` • Pref 1: ${cartVotes.istituto.p1}`;
-                    if (cartVotes.istituto.p2) text += ` • Pref 2: ${cartVotes.istituto.p2}`;
+                    if (cartVotes.istituto.p1) text += ` • Preferenza: ${cartVotes.istituto.p1}`;
                 }
                 rowsHTML += `
                     <div class="p-4 border-b border-slate-100 flex justify-between items-center">
@@ -1104,7 +1104,7 @@
                 let text = "Non compilata (Astenuto)";
                 if (cartVotes.consulta) {
                     text = cartVotes.consulta.lista === 'BIANCA' ? "Scheda Bianca" : `Voto Lista: ${configElezioni.listeConsulta[cartVotes.consulta.lista]?.nome || cartVotes.consulta.lista}`;
-                    if (cartVotes.consulta.p1) text += ` • Pref 1: ${cartVotes.consulta.p1}`;
+                    if (cartVotes.consulta.p1) text += ` • Preferenza: ${cartVotes.consulta.p1}`;
                 }
                 rowsHTML += `
                     <div class="p-4 border-b border-slate-100 flex justify-between items-center">
@@ -1120,7 +1120,7 @@
             if (configElezioni.rappresentantiClasseStudentiAttivo && currentUserData.tipo === 'STUDENTE') {
                 let text = "Non compilata (Astenuto)";
                 if (cartVotes.classeStudente) {
-                    text = cartVotes.classeStudente.isBianca ? "Scheda Bianca" : `Nomi Alunni: ${cartVotes.classeStudente.candidate1 || ''} ${cartVotes.classeStudente.candidate2 ? ', ' + cartVotes.classeStudente.candidate2 : ''}`;
+                    text = cartVotes.classeStudente.isBianca ? "Scheda Bianca" : `Nome Alunno: ${cartVotes.classeStudente.candidate1 || ''}`;
                 }
                 rowsHTML += `
                     <div class="p-4 border-b border-slate-100 flex justify-between items-center">
@@ -1136,7 +1136,7 @@
             if (configElezioni.rappresentantiClasseGenitoriAttivo && currentUserData.tipo === 'GENITORE') {
                 let text = "Non compilata (Astenuto)";
                 if (cartVotes.classeGenitore) {
-                    text = cartVotes.classeGenitore.isBianca ? "Scheda Bianca" : `Nomi Genitori: ${cartVotes.classeGenitore.candidate1 || ''} ${cartVotes.classeGenitore.candidate2 ? ', ' + cartVotes.classeGenitore.candidate2 : ''}`;
+                    text = cartVotes.classeGenitore.isBianca ? "Scheda Bianca" : `Nome Genitore: ${cartVotes.classeGenitore.candidate1 || ''}`;
                 }
                 rowsHTML += `
                     <div class="p-4 border-b border-slate-100 flex justify-between items-center">
@@ -1149,27 +1149,30 @@
                 `;
             }
 
-            (configElezioni.customElections || []).forEach(ce => {
-                if (ce.componente === 'TUTTI' || ce.componente === currentUserData.tipo) {
-                    let op = cartVotes.custom[ce.id] || 'Non compilata (Astenuto)';
-                    rowsHTML += `
-                        <div class="p-4 border-b border-slate-100 flex justify-between items-center">
-                            <div>
-                                <h4 class="font-bold text-rose-900 text-xs">${ce.titolo}</h4>
-                                <p class="text-[10px] text-slate-500 mt-0.5">Scelta: ${op}</p>
+            // Custom Elections nel riepilogo
+            if (configElezioni.customElections && configElezioni.customElections.length > 0) {
+                configElezioni.customElections.forEach(ele => {
+                    if (ele.voterTypes.includes(currentUserData.tipo)) {
+                        let text = cartVotes.custom[ele.id] || "Non compilata (Astenuto)";
+                        rowsHTML += `
+                            <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+                                <div>
+                                    <h4 class="font-bold text-slate-800 text-xs">${ele.titolo}</h4>
+                                    <p class="text-[10px] text-slate-500 mt-0.5">${text}</p>
+                                </div>
+                                <button onclick="window.showVotoCustomPage('${ele.id}')" class="text-blue-900 hover:underline font-bold text-[10px]">Modifica</button>
                             </div>
-                            <button onclick="window.showVotoCustom('${ce.id}')" class="text-rose-950 hover:underline font-bold text-[10px]">Modifica</button>
-                        </div>
-                    `;
-                }
-            });
+                        `;
+                    }
+                });
+            }
 
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full">
                     <div class="border-b border-slate-100 pb-4 mb-6 text-center">
                         <i data-lucide="shield-check" class="w-10 h-10 text-emerald-600 mx-auto mb-2"></i>
                         <h2 class="text-xl font-black text-slate-800">Verifica le tue scelte</h2>
-                        <p class="text-xs text-slate-500 mt-1">Nessuna modifica sarà possibile dopo aver confermato il deposito asincrono nell'urna d'istituto.</p>
+                        <p class="text-xs text-slate-500 mt-1">Nessuna modifica sarà possibile dopo aver confermato l'invio asincrono all'urna dell'istituto.</p>
                     </div>
 
                     <div class="divide-y divide-slate-100 mb-8 font-medium">
@@ -1203,7 +1206,7 @@
                 batch.update(tokenRef, { hasVoted: true });
 
                 // Registra le singole schede elettorali in percorsi isolati per salvaguardare l'anonimato
-                if (configElezioni.consiglioAttivo && cartVotes.consiglio) {
+                if (configElezioni.consiglioAttivo && cartVotes.consiglio && currentUserData.tipo !== 'STUDENTE') {
                     const voteRef = doc(getCollectionRef('voti_consiglio'), uuid);
                     batch.set(voteRef, { ...cartVotes.consiglio, classe: currentUserData.classe, tipo: currentUserData.tipo, dataVoto: "12 Luglio 2026" });
                 }
@@ -1224,10 +1227,13 @@
                     batch.set(voteRef, { ...cartVotes.classeGenitore, classe: currentUserData.classe, tipo: currentUserData.tipo, dataVoto: "12 Luglio 2026" });
                 }
 
-                Object.entries(cartVotes.custom).forEach(([eid, op]) => {
-                    const voteRef = doc(getCollectionRef('voti_custom'), `${uuid}_${eid}`);
-                    batch.set(voteRef, { electionId: eid, opzione: op, classe: currentUserData.classe, tipo: currentUserData.tipo, dataVoto: "12 Luglio 2026" });
-                });
+                // Carica voti delle elezioni Custom
+                for (let [eleId, opt] of Object.entries(cartVotes.custom)) {
+                    if (opt) {
+                        const voteRef = doc(getCollectionRef(`voti_custom_${eleId}`), uuid);
+                        batch.set(voteRef, { scelta: opt, tipo: currentUserData.tipo, classe: currentUserData.classe, dataVoto: "12 Luglio 2026" });
+                    }
+                }
 
                 await batch.commit();
 
@@ -1330,12 +1336,11 @@
             let nameCounts = {};
             votiClasseFiltrati.forEach(v => {
                 if (v.isBianca) return;
-                [v.candidate1, v.candidate2].forEach(name => {
-                    if (name) {
-                        let norm = name.trim().toUpperCase().replace(/\s+/g, ' ');
-                        nameCounts[norm] = (nameCounts[norm] || 0) + 1;
-                    }
-                });
+                let name = v.candidate1;
+                if (name) {
+                    let norm = normalizeName(name);
+                    nameCounts[norm] = (nameCounts[norm] || 0) + 1;
+                }
             });
 
             let sortedCandidates = Object.entries(nameCounts)
@@ -1402,6 +1407,9 @@
                             <h2 class="text-xl font-black text-slate-800 mt-1">Sezione: ${currentClassMasterData.classe} (${currentClassMasterData.tipo})</h2>
                             <p class="text-xs text-slate-500">ITSCG Primo Levi • Componente: ${currentClassMasterData.tipo}</p>
                         </div>
+                        <button onclick="logoutClassMaster()" class="bg-red-650 hover:bg-red-700 text-white font-black py-2 px-4 rounded-xl text-xs flex items-center gap-1.5 shadow">
+                            <i data-lucide="log-out" class="w-4 h-4"></i> Esci Referente
+                        </button>
                     </div>
 
                     <div class="grid lg:grid-cols-12 gap-6">
@@ -1455,7 +1463,7 @@
                     <div class="text-center mb-6">
                         <i data-lucide="shield-alert" class="mx-auto w-12 h-12 text-red-600 mb-2"></i>
                         <h2 class="text-xl font-black text-slate-800">Area Commissione</h2>
-                        <p class="text-slate-500 text-xs mt-1">Accesso protetto per i componenti elettorali.</p>
+                        <p class="text-slate-500 text-xs mt-1">Accesso protetto per i componenti elettorali scolastici.</p>
                     </div>
                     <div class="space-y-4">
                         <input type="password" id="adminPwd" placeholder="Password della Commissione" class="w-full p-4 border rounded-xl text-center text-lg outline-none focus:ring-4 focus:ring-red-100 focus:border-red-600 font-bold">
@@ -1482,12 +1490,13 @@
             const tabs = [
                 { id: 'config', label: '1. Configurazione & Presidio' },
                 { id: 'liste', label: '2. Liste & Candidati' },
-                { id: 'cred_stu', label: '3. Credenziali Studenti' },
-                { id: 'cred_gen', label: '4. Credenziali Genitori' },
-                { id: 'cred_doc', label: '5. Credenziali Docenti' },
-                { id: 'cred_ata', label: '6. Credenziali ATA' },
-                { id: 'scrutinio', label: '7. Scrutinio & Verbali Integrati' },
-                { id: 'grafici', label: '8. Grafici & Affluenza' }
+                { id: 'custom_elections', label: '3. Elezioni Custom' },
+                { id: 'cred_stu', label: '4. Registri Studenti' },
+                { id: 'cred_gen', label: '5. Registri Genitori' },
+                { id: 'cred_doc', label: '6. Registri Docenti' },
+                { id: 'cred_ata', label: '7. Registri ATA' },
+                { id: 'scrutinio', label: '8. Scrutinio & Verbali Proporzionali' },
+                { id: 'grafici', label: '9. Grafici & Affluenza' }
             ];
 
             let navTabsHTML = tabs.map(tab => `
@@ -1500,8 +1509,8 @@
                 <div class="w-full animate-fade-in">
                     <div class="bg-white/95 backdrop-blur-md p-5 rounded-2xl shadow border border-slate-200 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
                         <div>
-                            <h2 class="text-lg font-black text-slate-800">Cruscotto Tecnico di Controllo</h2>
-                            <p class="text-slate-500 text-xs">Gestione in tempo reale • Sincronizzazione cloud asincrona</p>
+                            <h2 class="text-lg font-black text-slate-800">Cruscotto Tecnico di Controllo (Commissione)</h2>
+                            <p class="text-slate-500 text-xs">Gestione in tempo reale delle elezioni d'Istituto dell'ITSCG Primo Levi</p>
                         </div>
                     </div>
 
@@ -1536,6 +1545,7 @@
             
             if(activeAdminTab === 'config') renderConfigTab(content);
             if(activeAdminTab === 'liste') renderListeTab(content);
+            if(activeAdminTab === 'custom_elections') renderCustomElectionsTab(content);
             if(activeAdminTab === 'cred_stu') renderCredStuTab(content);
             if(activeAdminTab === 'cred_gen') renderCredGenTab(content);
             if(activeAdminTab === 'cred_doc') renderCredDocTab(content);
@@ -1562,7 +1572,7 @@
                             <label class="flex items-center justify-between p-3 border rounded-xl hover:bg-slate-50 cursor-pointer font-semibold">
                                 <div>
                                     <span class="font-extrabold text-xs text-slate-800">Consiglio d'Istituto</span>
-                                    <p class="text-[9px] text-slate-500">Abilita per tutte le componenti.</p>
+                                    <p class="text-[9px] text-slate-500">Esclude gli studenti. Solo Genitori, Docenti e ATA.</p>
                                 </div>
                                 <input type="checkbox" ${configElezioni.consiglioAttivo ? 'checked' : ''} onchange="configElezioni.consiglioAttivo = this.checked; saveConfigToDB();" class="w-4 h-4 rounded text-blue-900">
                             </label>
@@ -1595,25 +1605,6 @@
                                 <input type="checkbox" ${configElezioni.rappresentantiClasseGenitoriAttivo ? 'checked' : ''} onchange="configElezioni.rappresentantiClasseGenitoriAttivo = this.checked; saveConfigToDB();" class="w-4 h-4 rounded text-rose-900">
                             </label>
                         </div>
-
-                        <!-- Creazione Elezione Custom -->
-                        <div class="mt-6 pt-6 border-t border-slate-100">
-                            <h4 class="font-bold text-xs text-slate-800 mb-3 flex items-center gap-1.5"><i data-lucide="plus-circle" class="text-rose-600"></i> Crea Nuova Elezione Custom</h4>
-                            <div class="space-y-3 font-semibold">
-                                <input type="text" id="customTitle" placeholder="Titolo Elezione (es: Referendum Comitato)" class="w-full p-2.5 border rounded-xl text-xs outline-none">
-                                <textarea id="customDesc" placeholder="Descrizione o istruzioni..." class="w-full p-2.5 border rounded-xl text-xs outline-none" rows="2"></textarea>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <select id="customComponent" class="p-2.5 border rounded-xl text-xs bg-white">
-                                        <option value="TUTTI">Tutte le componenti</option>
-                                        <option value="STUDENTE">Solo Studenti</option>
-                                        <option value="GENITORE">Solo Genitori</option>
-                                        <option value="DOCENTE">Solo Docenti</option>
-                                    </select>
-                                    <input type="text" id="customOptions" placeholder="Opzione1, Opzione2, Opzione3" class="w-full p-2.5 border rounded-xl text-xs outline-none">
-                                </div>
-                                <button onclick="createCustomElection()" class="w-full bg-rose-900 hover:bg-rose-800 text-white font-extrabold py-2.5 rounded-xl text-xs shadow-md transition-colors">Crea ed Abilita</button>
-                            </div>
-                        </div>
                     </div>
 
                     <!-- Gestione Commissione Elettorale -->
@@ -1631,7 +1622,7 @@
                     </div>
                 </div>
 
-                <!-- Danger Zone - Con pulsante reset token incorporato -->
+                <!-- Danger Zone -->
                 <div class="mt-6 bg-red-50 border border-red-200 p-6 rounded-2xl animate-fade-in w-full">
                     <h4 class="text-red-850 font-black text-xs flex items-center gap-1.5 uppercase tracking-wider"><i data-lucide="shield-alert" class="w-4 h-4"></i> Danger Zone: Operazioni Amministrative Critiche</h4>
                     <p class="text-slate-600 text-[11px] mt-1">Queste operazioni cancellano in modo permanente i dati di voto o le credenziali. Procedere con estrema cautela.</p>
@@ -1651,29 +1642,6 @@
         window.updateCommissioneMember = function(idx, field, value) { configElezioni.commissione[idx][field] = value; };
         window.deleteCommissioneMember = function(idx) { configElezioni.commissione.splice(idx, 1); renderActiveAdminTab(); };
         window.addCommissioneMember = function() { configElezioni.commissione.push({ nome: "Nuovo Membro", ruolo: "Componente" }); renderActiveAdminTab(); };
-
-        window.createCustomElection = function() {
-            const tit = document.getElementById('customTitle').value.trim();
-            const desc = document.getElementById('customDesc').value.trim();
-            const comp = document.getElementById('customComponent').value;
-            const opRaw = document.getElementById('customOptions').value;
-
-            if(!tit || !opRaw) { showNotification("Attenzione", "Specifica Titolo e almeno un'opzione.", "error"); return; }
-            const opzioni = opRaw.split(',').map(o => o.trim()).filter(o => o.length > 0);
-
-            const newEl = {
-                id: 'custom_' + Date.now(),
-                titolo: tit,
-                descrizione: desc,
-                componente: comp,
-                opzioni: opzioni
-            };
-
-            configElezioni.customElections.push(newEl);
-            saveConfigToDB();
-            renderActiveAdminTab();
-            showNotification("Fatto", "Elezione personalizzata creata ed abilitata.", "success");
-        }
 
         window.openConfirmModal = function() { document.getElementById('custom-confirm-modal').classList.remove('hidden'); };
         window.closeConfirmModal = function() { document.getElementById('custom-confirm-modal').classList.add('hidden'); };
@@ -1695,7 +1663,7 @@
                     batch.update(docSnap.ref, { hasVoted: false });
                 });
                 
-                const collectionsToClean = ['voti_consiglio', 'voti_istituto', 'voti_consulta', 'voti_classe_studenti', 'voti_classe_genitori', 'voti_custom'];
+                const collectionsToClean = ['voti_consiglio', 'voti_istituto', 'voti_consulta', 'voti_classe_studenti', 'voti_classe_genitori'];
                 for(let col of collectionsToClean) {
                     const colSnap = await getDocs(getCollectionRef(col));
                     colSnap.forEach(d => batch.delete(d.ref));
@@ -1738,33 +1706,50 @@
 
             let accordionMenu = `
                 <div class="flex flex-wrap gap-1.5 mb-6">
-                    <button onclick="window.switchAccordionSection('consiglio')" class="py-1.5 px-4 rounded-lg font-bold text-[10px] uppercase tracking-wide transition-all ${currentAccordionSection === 'consiglio' ? activeAccordionClass : idleAccordionClass}">Consiglio d'Istituto</button>
-                    <button onclick="window.switchAccordionSection('istituto')" class="py-1.5 px-4 rounded-lg font-bold text-[10px] uppercase tracking-wide transition-all ${currentAccordionSection === 'istituto' ? activeAccordionClass : idleAccordionClass}">Rappresentanti d'Istituto</button>
-                    <button onclick="window.switchAccordionSection('consulta')" class="py-1.5 px-4 rounded-lg font-bold text-[10px] uppercase tracking-wide transition-all ${currentAccordionSection === 'consulta' ? activeAccordionClass : idleAccordionClass}">Consulta Provinciale</button>
+                    <button onclick="window.switchAccordionSection('consiglio')" class="py-1.5 px-4 rounded-lg font-bold text-[10px] uppercase tracking-wide transition-all ${currentAccordionSection === 'consiglio' ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">Consiglio d'Istituto</button>
+                    <button onclick="window.switchAccordionSection('istituto')" class="py-1.5 px-4 rounded-lg font-bold text-[10px] uppercase tracking-wide transition-all ${currentAccordionSection === 'istituto' ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">Rappresentanti d'Istituto</button>
+                    <button onclick="window.switchAccordionSection('consulta')" class="py-1.5 px-4 rounded-lg font-bold text-[10px] uppercase tracking-wide transition-all ${currentAccordionSection === 'consulta' ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">Consulta Provinciale</button>
                 </div>
             `;
 
             let sectionContentHTML = '';
 
             if (currentAccordionSection === 'consiglio') {
-                sectionContentHTML = Object.entries(configElezioni.listeConsiglio).map(([key, val]) => `
-                    <div class="border border-slate-200 rounded-2xl p-4 mb-4 bg-slate-50/50">
-                        <div class="flex items-center gap-3 mb-3">
-                            <input type="text" value="${val.nome}" onchange="updateListName('consiglio', '${key}', this.value)" class="p-2 border rounded-xl text-xs font-black text-slate-800 flex-grow bg-white">
-                            <button onclick="deleteList('consiglio', '${key}')" class="p-2 text-red-600 hover:bg-red-50 rounded-xl"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                // Consiglio esclude STUDENTE. Visualizziamo solo GENITORE, DOCENTE, ATA
+                sectionContentHTML = ["GENITORE", "DOCENTE", "ATA"].map(role => {
+                    const subList = configElezioni.listeConsiglio[role] || {};
+                    let listHTML = Object.entries(subList).map(([key, val]) => `
+                        <div class="border border-slate-150 rounded-xl p-3 mb-2 bg-white">
+                            <div class="flex items-center gap-3 mb-2">
+                                <input type="text" value="${val.nome}" onchange="updateConsiglioListName('${role}', '${key}', this.value)" class="p-1.5 border rounded-lg text-xs font-black text-slate-800 flex-grow">
+                                <button onclick="deleteConsiglioList('${role}', '${key}')" class="p-1.5 text-red-650 hover:bg-red-50 rounded-lg"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+                            </div>
+                            <div class="space-y-1.5 pl-3 border-l border-slate-200">
+                                ${val.candidati.map((cand, cIdx) => `
+                                    <div class="flex items-center gap-2">
+                                        <input type="text" value="${cand}" onchange="updateConsiglioCandidateName('${role}', '${key}', ${cIdx}, this.value)" class="p-1 border rounded text-xs text-slate-700 flex-grow">
+                                        <button onclick="deleteConsiglioCandidate('${role}', '${key}', ${cIdx})" class="p-1 text-slate-400 hover:text-red-600 rounded"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
+                                    </div>
+                                `).join('')}
+                                <button onclick="addConsiglioCandidate('${role}', '${key}')" class="text-[10px] text-blue-900 font-bold hover:underline flex items-center gap-1 mt-1"><i data-lucide="plus" class="w-3 h-3"></i> Aggiungi Candidato</button>
+                            </div>
                         </div>
-                        <div class="space-y-2 pl-4">
-                            ${val.candidati.map((cand, cIdx) => `
-                                <div class="flex items-center gap-2">
-                                    <input type="text" value="${cand}" onchange="updateCandidateName('consiglio', '${key}', ${cIdx}, this.value)" class="p-2 border rounded-xl text-xs font-semibold text-slate-700 flex-grow bg-white">
-                                    <button onclick="deleteCandidate('consiglio', '${key}', ${cIdx})" class="p-1.5 text-slate-400 hover:text-red-600 rounded-lg"><i data-lucide="x" class="w-4 h-4"></i></button>
-                                </div>
-                            `).join('')}
-                            <button onclick="addCandidate('consiglio', '${key}')" class="text-xs text-blue-900 font-bold hover:underline flex items-center gap-1 mt-2"><i data-lucide="plus" class="w-3.5 h-3.5"></i> Aggiungi Candidato</button>
+                    `).join('');
+
+                    return `
+                        <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 mb-4">
+                            <h4 class="font-bold text-xs text-slate-800 uppercase mb-3 flex items-center justify-between border-b pb-1.5">
+                                <span>Componente: ${role}</span>
+                                <button onclick="addConsiglioList('${role}')" class="bg-blue-900 text-white font-extrabold py-1 px-3 rounded text-[10px] flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Nuova Lista</button>
+                            </h4>
+                            <div class="space-y-2">
+                                ${listHTML}
+                                ${Object.keys(subList).length === 0 ? `<p class="text-[10px] text-slate-450 italic">Nessuna lista registrata per ${role}.</p>` : ''}
+                            </div>
                         </div>
-                    </div>
-                `).join('');
-                sectionContentHTML += `<button onclick="addList('consiglio')" class="mt-2 bg-blue-900 text-white font-extrabold py-2 px-4 rounded-xl text-xs flex items-center gap-1.5"><i data-lucide="plus"></i> Aggiungi Lista Consiglio</button>`;
+                    `;
+                }).join('');
+
             } else if (currentAccordionSection === 'istituto') {
                 sectionContentHTML = Object.entries(configElezioni.listeIstituto).map(([key, val]) => `
                     <div class="border border-slate-200 rounded-2xl p-4 mb-4 bg-slate-50/50">
@@ -1807,19 +1792,18 @@
 
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 animate-fade-in w-full">
-                    <div class="border-b border-slate-100 pb-3 mb-4">
-                        <h3 class="text-base font-extrabold text-slate-800">Modifica Candidati e Liste</h3>
-                        <p class="text-xs text-slate-500 mt-1">Gestisci i candidati associati alle liste elettorali d'istituto.</p>
+                    <div class="border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-base font-extrabold text-slate-800">Candidati e Liste d'Istituto</h3>
+                            <p class="text-xs text-slate-500 mt-1">Configurazione delle liste d'istituto per ogni singola componente.</p>
+                        </div>
+                        <button onclick="saveConfigToDB()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2 px-4 rounded-xl text-xs shadow flex items-center gap-1.5"><i data-lucide="save" class="w-4 h-4"></i> Salva Configurazione Cloud</button>
                     </div>
 
                     ${accordionMenu}
 
                     <div class="space-y-4">
                         ${sectionContentHTML}
-                    </div>
-
-                    <div class="mt-6 pt-6 border-t border-slate-100 flex justify-end">
-                        <button onclick="saveConfigToDB()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 px-6 rounded-xl text-xs shadow-md transition-all flex items-center gap-1.5"><i data-lucide="save"></i> Salva Modifiche Cloud</button>
                     </div>
                 </div>
             `;
@@ -1829,49 +1813,188 @@
         window.switchAccordionSection = function(sectionId) { currentAccordionSection = sectionId; renderListeTab(document.getElementById('admin-tab-content')); };
 
         window.updateListName = function(section, listKey, newName) {
-            let target = section === 'consiglio' ? configElezioni.listeConsiglio : (section === 'istituto' ? configElezioni.listeIstituto : configElezioni.listeConsulta);
+            let target = section === 'istituto' ? configElezioni.listeIstituto : configElezioni.listeConsulta;
             if(target[listKey]) target[listKey].nome = newName;
         };
-
         window.updateCandidateName = function(section, listKey, cIdx, newName) {
-            let target = section === 'consiglio' ? configElezioni.listeConsiglio : (section === 'istituto' ? configElezioni.listeIstituto : configElezioni.listeConsulta);
+            let target = section === 'istituto' ? configElezioni.listeIstituto : configElezioni.listeConsulta;
             if(target[listKey]) target[listKey].candidati[cIdx] = newName;
         };
-
         window.deleteCandidate = function(section, listKey, cIdx) {
-            let target = section === 'consiglio' ? configElezioni.listeConsiglio : (section === 'istituto' ? configElezioni.listeIstituto : configElezioni.listeConsulta);
-            if(target[listKey]) {
-                target[listKey].candidati.splice(cIdx, 1);
-                renderListeTab(document.getElementById('admin-tab-content'));
-            }
+            let target = section === 'istituto' ? configElezioni.listeIstituto : configElezioni.listeConsulta;
+            if(target[listKey]) { target[listKey].candidati.splice(cIdx, 1); renderListeTab(document.getElementById('admin-tab-content')); }
         };
-
         window.addCandidate = function(section, listKey) {
-            let target = section === 'consiglio' ? configElezioni.listeConsiglio : (section === 'istituto' ? configElezioni.listeIstituto : configElezioni.listeConsulta);
-            if(target[listKey]) {
-                target[listKey].candidati.push("Nuovo Candidato");
-                renderListeTab(document.getElementById('admin-tab-content'));
-            }
+            let target = section === 'istituto' ? configElezioni.listeIstituto : configElezioni.listeConsulta;
+            if(target[listKey]) { target[listKey].candidati.push("Nuovo Candidato"); renderListeTab(document.getElementById('admin-tab-content')); }
         };
-
         window.deleteList = function(section, listKey) {
-            let target = section === 'consiglio' ? configElezioni.listeConsiglio : (section === 'istituto' ? configElezioni.listeIstituto : configElezioni.listeConsulta);
+            let target = section === 'istituto' ? configElezioni.listeIstituto : configElezioni.listeConsulta;
             delete target[listKey];
             renderListeTab(document.getElementById('admin-tab-content'));
         };
-
         window.addList = function(section) {
-            let target = section === 'consiglio' ? configElezioni.listeConsiglio : (section === 'istituto' ? configElezioni.listeIstituto : configElezioni.listeConsulta);
+            let target = section === 'istituto' ? configElezioni.listeIstituto : configElezioni.listeConsulta;
             let randKey = 'lista_' + Date.now();
             target[randKey] = { nome: "Nuova Lista", candidati: [] };
             renderListeTab(document.getElementById('admin-tab-content'));
+        };
+
+        window.updateConsiglioListName = function(role, listKey, newName) {
+            if(configElezioni.listeConsiglio[role]?.[listKey]) configElezioni.listeConsiglio[role][listKey].nome = newName;
+        };
+        window.updateConsiglioCandidateName = function(role, listKey, cIdx, newName) {
+            if(configElezioni.listeConsiglio[role]?.[listKey]) configElezioni.listeConsiglio[role][listKey].candidati[cIdx] = newName;
+        };
+        window.deleteConsiglioCandidate = function(role, listKey, cIdx) {
+            if(configElezioni.listeConsiglio[role]?.[listKey]) {
+                configElezioni.listeConsiglio[role][listKey].candidati.splice(cIdx, 1);
+                renderListeTab(document.getElementById('admin-tab-content'));
+            }
+        };
+        window.addConsiglioCandidate = function(role, listKey) {
+            if(configElezioni.listeConsiglio[role]?.[listKey]) {
+                configElezioni.listeConsiglio[role][listKey].candidati.push("Nuovo Candidato");
+                renderListeTab(document.getElementById('admin-tab-content'));
+            }
+        };
+        window.deleteConsiglioList = function(role, listKey) {
+            if(configElezioni.listeConsiglio[role]) {
+                delete configElezioni.listeConsiglio[role][listKey];
+                renderListeTab(document.getElementById('admin-tab-content'));
+            }
+        };
+        window.addConsiglioList = function(role) {
+            if(!configElezioni.listeConsiglio[role]) configElezioni.listeConsiglio[role] = {};
+            let randKey = 'listac_' + Date.now();
+            configElezioni.listeConsiglio[role][randKey] = { nome: "Nuova Lista " + role, candidati: [] };
+            renderListeTab(document.getElementById('admin-tab-content'));
+        };
+
+        function renderCustomElectionsTab(container) {
+            if (!configElezioni.customElections) configElezioni.customElections = [];
+
+            let listHTML = configElezioni.customElections.map((ele, idx) => {
+                return `
+                    <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 mb-3 flex flex-col justify-between font-semibold">
+                        <div class="flex justify-between items-start border-b pb-2 mb-2">
+                            <div>
+                                <span class="text-[9px] bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-black uppercase">Custom Election</span>
+                                <h4 class="font-black text-slate-800 text-xs mt-1">${ele.titolo}</h4>
+                                <p class="text-slate-500 text-[10px] mt-0.5">${ele.descrizione}</p>
+                            </div>
+                            <button onclick="deleteCustomElection(${idx})" class="p-1.5 text-red-650 hover:bg-red-50 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </div>
+                        <div class="grid sm:grid-cols-2 gap-4 mt-2 text-xs">
+                            <div>
+                                <p class="text-[9px] text-slate-400 uppercase tracking-wider font-extrabold mb-1">Target Elettori:</p>
+                                <div class="flex flex-wrap gap-1">
+                                    ${ele.voterTypes.map(t => `<span class="bg-blue-100 text-blue-800 py-0.5 px-2 rounded font-bold text-[10px]">${t}</span>`).join('')}
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-[9px] text-slate-400 uppercase tracking-wider font-extrabold mb-1">Opzioni di Scelta:</p>
+                                <div class="flex flex-wrap gap-1">
+                                    ${ele.opzioni.map(o => `<span class="bg-purple-100 text-purple-800 py-0.5 px-2 rounded font-bold text-[10px] uppercase">${o}</span>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = `
+                <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 animate-fade-in w-full">
+                    <div class="border-b border-slate-100 pb-3 mb-6 flex justify-between items-center">
+                        <div>
+                            <h3 class="text-base font-extrabold text-slate-800">Crea Nuova Elezione / Referendum</h3>
+                            <p class="text-xs text-slate-500 mt-1">Configura elezioni personalizzate con target d'accesso dedicato.</p>
+                        </div>
+                    </div>
+
+                    <div class="grid lg:grid-cols-12 gap-6">
+                        <div class="lg:col-span-5 bg-slate-50 p-5 rounded-2xl border border-slate-150 font-semibold text-xs space-y-4">
+                            <h4 class="font-bold text-slate-800 text-xs border-b pb-2">Nuova Elezione Custom</h4>
+                            <div>
+                                <label class="block text-[10px] text-slate-500 uppercase mb-1">Titolo dell'Elezione</label>
+                                <input type="text" id="customEleTitle" placeholder="Es. Approvazione Regolamento" class="w-full p-2.5 border rounded-xl font-bold bg-white outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-500 uppercase mb-1">Descrizione / Quesito</label>
+                                <textarea id="customEleDesc" placeholder="Es. Sei favorevole all'introduzione del regolamento B.Y.O.D.?" class="w-full p-2.5 border rounded-xl font-semibold bg-white outline-none" rows="2"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-500 uppercase mb-1.5">Target Elettori Abilitati</label>
+                                <div class="flex gap-4">
+                                    <label class="flex items-center space-x-1.5 cursor-pointer"><input type="checkbox" id="chkStu" checked class="w-4 h-4 rounded text-purple-900"> <span class="font-bold">STU</span></label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer"><input type="checkbox" id="chkGen" class="w-4 h-4 rounded text-purple-900"> <span class="font-bold">GEN</span></label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer"><input type="checkbox" id="chkDoc" class="w-4 h-4 rounded text-purple-900"> <span class="font-bold">DOC</span></label>
+                                    <label class="flex items-center space-x-1.5 cursor-pointer"><input type="checkbox" id="chkAta" class="w-4 h-4 rounded text-purple-900"> <span class="font-bold">ATA</span></label>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-slate-500 uppercase mb-1">Opzioni (separate da virgola)</label>
+                                <input type="text" id="customEleOptions" placeholder="Es. Favorevole, Contrario, Astenuto" class="w-full p-2.5 border rounded-xl font-bold bg-white outline-none">
+                            </div>
+                            <button onclick="createCustomElection()" class="w-full bg-purple-900 hover:bg-purple-850 text-white font-black py-2.5 rounded-xl transition-all shadow flex justify-center items-center gap-1.5"><i data-lucide="plus"></i> Salva e Pubblica Elezione</button>
+                        </div>
+
+                        <div class="lg:col-span-7 bg-white">
+                            <h4 class="font-bold text-slate-800 text-xs border-b pb-2 mb-3">Elezioni Custom Attive</h4>
+                            <div class="space-y-3">
+                                ${listHTML}
+                                ${configElezioni.customElections.length === 0 ? `<p class="text-xs text-slate-450 italic py-8 text-center">Nessuna votazione custom creata.</p>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        window.createCustomElection = function() {
+            const title = document.getElementById('customEleTitle').value.trim();
+            const desc = document.getElementById('customEleDesc').value.trim();
+            const optionsRaw = document.getElementById('customEleOptions').value.trim();
+
+            if (!title || !optionsRaw) { showNotification("Attenzione", "Compila tutti i campi obbligatori.", "error"); return; }
+
+            let voterTypes = [];
+            if(document.getElementById('chkStu').checked) voterTypes.push('STUDENTE');
+            if(document.getElementById('chkGen').checked) voterTypes.push('GENITORE');
+            if(document.getElementById('chkDoc').checked) voterTypes.push('DOCENTE');
+            if(document.getElementById('chkAta').checked) voterTypes.push('ATA');
+
+            if(voterTypes.length === 0) { showNotification("Attenzione", "Seleziona almeno un target elettore.", "error"); return; }
+
+            let opzioni = optionsRaw.split(',').map(o => o.trim()).filter(o => o.length > 0);
+
+            let newEle = {
+                id: 'custom_' + Date.now(),
+                titolo: title,
+                descrizione: desc,
+                voterTypes,
+                opzioni
+            };
+
+            configElezioni.customElections.push(newEle);
+            saveConfigToDB().then(() => {
+                renderCustomElectionsTab(document.getElementById('admin-tab-content'));
+            });
+        };
+
+        window.deleteCustomElection = function(idx) {
+            configElezioni.customElections.splice(idx, 1);
+            saveConfigToDB().then(() => {
+                renderCustomElectionsTab(document.getElementById('admin-tab-content'));
+            });
         };
 
         function bindTokensRealTimeListener(componentFilter, containerId) {
             const table = document.getElementById(containerId);
             if (!table) return;
 
-            table.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-xs text-slate-500"><div class="spinner border-blue-900 border-t-transparent mx-auto"></div> Connessione in tempo reale...</td></tr>`;
+            table.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-xs text-slate-500"><div class="spinner border-blue-900 border-t-transparent mx-auto"></div> Connessione in corso...</td></tr>`;
 
             const q = query(getCollectionRef('tokens'));
             unsubscribeTokens = onSnapshot(q, (snapshot) => {
@@ -1880,14 +2003,7 @@
                     activeTokensList.push({ id: docSnap.id, ...docSnap.data() });
                 });
 
-                const filtered = activeTokensList.filter(t => {
-                    if (componentFilter === 'STUDENTE') return t.tipo === 'STUDENTE';
-                    if (componentFilter === 'GENITORE') return t.tipo === 'GENITORE';
-                    if (componentFilter === 'DOCENTE') return t.tipo === 'DOCENTE';
-                    if (componentFilter === 'ATA') return t.tipo === 'ATA';
-                    return false;
-                });
-
+                const filtered = activeTokensList.filter(t => t.tipo === componentFilter);
                 renderTokenRows(filtered, table, componentFilter);
             }, (error) => {
                 console.error("Errore onSnapshot:", error);
@@ -1910,6 +2026,7 @@
 
                 let rowHTML = '';
                 if (componentFilter === 'DOCENTE' || componentFilter === 'ATA') {
+                    // Rimosso colonna indirizzo
                     rowHTML = `
                         <tr class="border-b border-slate-50 last:border-0 hover:bg-slate-50/50">
                             <td class="py-3 font-mono font-bold text-slate-800 text-xs">${t.id}</td>
@@ -1976,7 +2093,7 @@
         function renderCredStuTab(container) {
             container.innerHTML = `
                 <div class="grid lg:grid-cols-12 gap-6 animate-fade-in w-full">
-                    <div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow border border-slate-200">
+                    <div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow border border-slate-200 font-semibold text-xs space-y-4">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5"><i data-lucide="upload-cloud"></i> Importa Elenco Studenti</h3>
                         <p class="text-[11px] text-slate-500 mb-4">Carica file Excel con colonne: <strong>MATRICOLA</strong>, <strong>CLASSE</strong>, <strong>INDIRIZZO</strong>.</p>
                         
@@ -1986,20 +2103,23 @@
                             <span class="text-xs font-bold text-slate-600 block">Carica file Excel (.xlsx)</span>
                         </div>
 
-                        <div class="mt-4 pt-4 border-t border-slate-100 font-semibold">
+                        <div class="mt-4 pt-4 border-t border-slate-100">
                             <span class="text-xs font-bold text-slate-800 block mb-2">Generazione Manuale Rapida (5 Token)</span>
                             <div class="flex gap-2">
                                 <input type="text" id="manualStuClasse" placeholder="4A" class="p-2 border rounded-xl text-xs w-20 text-center uppercase font-bold">
-                                <input type="text" id="manualStuInd" placeholder="Informatica" class="p-2 border rounded-xl text-xs flex-grow font-semibold">
+                                <input type="text" id="manualStuInd" placeholder="Informatica" class="p-2 border rounded-xl text-xs flex-grow font-semibold bg-white">
                                 <button onclick="generateManualTokens('STUDENTE')" class="bg-blue-900 text-white font-extrabold px-4 rounded-xl text-xs hover:bg-blue-850 transition-colors">Genera</button>
                             </div>
                         </div>
                     </div>
 
                     <div class="lg:col-span-8 bg-white p-6 rounded-2xl shadow border border-slate-200">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5"><i data-lucide="key-round"></i> Credenziali Studenti Attive</h3>
-                            <button onclick="downloadRegisterPDF('STUDENTE')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5"><i data-lucide="file-text" class="w-4 h-4"></i> Stampa Registro (PDF)</button>
+                        <div class="flex flex-wrap gap-2 justify-between items-center mb-4">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5"><i data-lucide="key-round"></i> Credenziali Studenti</h3>
+                            <div class="flex gap-1.5">
+                                <button onclick="downloadRegisterPDF('STUDENTE')" class="bg-blue-900 text-white hover:bg-blue-850 px-3 py-2 rounded-xl text-[10px] font-extrabold flex items-center gap-1.5"><i data-lucide="file-text" class="w-3.5 h-3.5"></i> Registro Alunni</button>
+                                <button onclick="downloadReferentiPDF('STUDENTE')" class="bg-slate-800 hover:bg-slate-750 text-white px-3 py-2 rounded-xl text-[10px] font-extrabold flex items-center gap-1.5"><i data-lucide="key" class="w-3.5 h-3.5"></i> Registro Chiavi Referenti</button>
+                            </div>
                         </div>
                         <div class="overflow-x-auto custom-scrollbar max-h-[400px]">
                             <table class="w-full text-left border-collapse">
@@ -2024,7 +2144,7 @@
         function renderCredGenTab(container) {
             container.innerHTML = `
                 <div class="grid lg:grid-cols-12 gap-6 animate-fade-in w-full">
-                    <div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow border border-slate-200">
+                    <div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow border border-slate-200 font-semibold text-xs space-y-4">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5"><i data-lucide="upload-cloud"></i> Importa Elenco Genitori</h3>
                         <p class="text-[11px] text-slate-500 mb-4">Colonne Excel richieste: <strong>ALUNNO</strong>, <strong>CLASSE</strong>, <strong>INDIRIZZO</strong>.</p>
                         
@@ -2034,20 +2154,23 @@
                             <span class="text-xs font-bold text-slate-600 block">Carica file Excel (.xlsx)</span>
                         </div>
 
-                        <div class="mt-4 pt-4 border-t border-slate-100 font-semibold">
+                        <div class="mt-4 pt-4 border-t border-slate-100">
                             <span class="text-xs font-bold text-slate-800 block mb-2">Generazione Manuale Rapida (5 Token)</span>
                             <div class="flex gap-2">
                                 <input type="text" id="manualGenClasse" placeholder="1A" class="p-2 border rounded-xl text-xs w-20 text-center uppercase font-bold">
-                                <input type="text" id="manualGenInd" placeholder="Liceo" class="p-2 border rounded-xl text-xs flex-grow font-semibold">
+                                <input type="text" id="manualGenInd" placeholder="Liceo" class="p-2 border rounded-xl text-xs flex-grow font-semibold bg-white">
                                 <button onclick="generateManualTokens('GENITORE')" class="bg-rose-900 text-white font-extrabold px-4 rounded-xl text-xs hover:bg-rose-850 transition-colors">Genera</button>
                             </div>
                         </div>
                     </div>
 
                     <div class="lg:col-span-8 bg-white p-6 rounded-2xl shadow border border-slate-200">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5"><i data-lucide="key-round"></i> Credenziali Genitori Attive</h3>
-                            <button onclick="downloadRegisterPDF('GENITORE')" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-xl text-xs font-extrabold flex items-center gap-1.5"><i data-lucide="file-text" class="w-4 h-4"></i> Stampa Registro (PDF)</button>
+                        <div class="flex flex-wrap gap-2 justify-between items-center mb-4">
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5"><i data-lucide="key-round"></i> Credenziali Genitori</h3>
+                            <div class="flex gap-1.5">
+                                <button onclick="downloadRegisterPDF('GENITORE')" class="bg-rose-900 hover:bg-rose-850 text-white px-3 py-2 rounded-xl text-[10px] font-extrabold flex items-center gap-1.5"><i data-lucide="file-text" class="w-3.5 h-3.5"></i> Registro Genitori</button>
+                                <button onclick="downloadReferentiPDF('GENITORE')" class="bg-slate-800 hover:bg-slate-750 text-white px-3 py-2 rounded-xl text-[10px] font-extrabold flex items-center gap-1.5"><i data-lucide="key" class="w-3.5 h-3.5"></i> Registro Chiavi Referenti</button>
+                            </div>
                         </div>
                         <div class="overflow-x-auto custom-scrollbar max-h-[400px]">
                             <table class="w-full text-left border-collapse">
@@ -2072,7 +2195,7 @@
         function renderCredDocTab(container) {
             container.innerHTML = `
                 <div class="grid lg:grid-cols-12 gap-6 animate-fade-in w-full">
-                    <div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow border border-slate-200">
+                    <div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow border border-slate-200 font-semibold text-xs space-y-4">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5"><i data-lucide="upload-cloud"></i> Importa Elenco Docenti</h3>
                         <p class="text-[11px] text-slate-500 mb-4">Carica Excel con colonna: <strong>COGNOME_NOME</strong> per abilitare il personale docente d'istituto.</p>
                         
@@ -2082,7 +2205,7 @@
                             <span class="text-xs font-bold text-slate-600 block">Carica file Excel (.xlsx)</span>
                         </div>
 
-                        <div class="mt-4 pt-4 border-t border-slate-100 font-semibold">
+                        <div class="mt-4 pt-4 border-t border-slate-100">
                             <span class="text-xs font-bold text-slate-800 block mb-2">Generazione Manuale Rapida</span>
                             <button onclick="generateManualTokens('DOCENTE')" class="w-full bg-blue-950 hover:bg-blue-900 text-white font-extrabold py-2.5 rounded-xl text-xs transition-colors">Genera 5 Token Docenti</button>
                         </div>
@@ -2115,9 +2238,9 @@
         function renderCredAtaTab(container) {
             container.innerHTML = `
                 <div class="grid lg:grid-cols-12 gap-6 animate-fade-in w-full">
-                    <div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow border border-slate-200">
+                    <div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow border border-slate-200 font-semibold text-xs space-y-4">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5"><i data-lucide="upload-cloud"></i> Importa Elenco Personale ATA</h3>
-                        <p class="text-[11px] text-slate-500 mb-4">Carica Excel con colonna: <strong>COGNOME_NOME</strong> per abilitare il personale amministrativo, tecnico ed ausiliario.</p>
+                        <p class="text-[11px] text-slate-500 mb-4">Carica Excel con colonna: <strong>COGNOME_NOME</strong> per abilitare il personale.</p>
                         
                         <div class="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center hover:border-slate-800 transition-colors cursor-pointer relative">
                             <input type="file" id="ataExcelFile" onchange="uploadElettoriExcel('ATA')" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
@@ -2125,7 +2248,7 @@
                             <span class="text-xs font-bold text-slate-600 block">Carica file Excel (.xlsx)</span>
                         </div>
 
-                        <div class="mt-4 pt-4 border-t border-slate-100 font-semibold">
+                        <div class="mt-4 pt-4 border-t border-slate-100">
                             <span class="text-xs font-bold text-slate-800 block mb-2">Generazione Manuale Rapida</span>
                             <button onclick="generateManualTokens('ATA')" class="w-full bg-slate-800 hover:bg-slate-750 text-white font-extrabold py-2.5 rounded-xl text-xs transition-colors">Genera 5 Token ATA</button>
                         </div>
@@ -2178,7 +2301,7 @@
                     rows.forEach(row => {
                         let cl = (row.CLASSE || row.Classe || 'AULA').toUpperCase();
                         let ind = row.INDIRIZZO || row.Indirizzo || 'Scolastico';
-                        let prefix = tipo === 'STUDENTE' ? 'STU' : (tipo === 'GENITORE' ? 'GEN' : (tipo === 'DOCENTE' ? 'DOC' : 'ATA'));
+                        let prefix = tipo.substring(0, 3);
 
                         let rand = Math.random().toString(36).substr(2, 4).toUpperCase();
                         let token = `${prefix}-${cl}-${rand}`;
@@ -2216,7 +2339,7 @@
 
             const batch = writeBatch(db);
             for(let i=0; i<5; i++) {
-                let prefix = tipo.substr(0, 3);
+                let prefix = tipo.substring(0, 3);
                 let rand = Math.random().toString(36).substr(2, 4).toUpperCase();
                 let token = `${prefix}-${cl}-${rand}`;
 
@@ -2237,17 +2360,24 @@
                 snap.forEach(doc => tokens.push({ id: doc.id, ...doc.data() }));
 
                 const filt = tokens.filter(t => t.tipo === tipo);
-                if(filt.length === 0) { showNotification("Attenzione", "Nessun token da stampare.", "error"); return; }
+                if(filt.length === 0) { showNotification("Attenzione", "Nessun token da stampare per questa componente.", "error"); return; }
+
+                filt.sort((a,b) => {
+                    let clA = a.classe || '';
+                    let clB = b.classe || '';
+                    if (clA !== clB) return clA.localeCompare(clB);
+                    return a.id.localeCompare(b.id);
+                });
 
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
 
-                doc.setFontSize(14);
+                doc.setFontSize(13);
                 doc.setFont("Helvetica", "bold");
-                doc.text(`REGISTRO DISTRIBUZIONE CREDENZIALI - COMPONENTE ${tipo}`, 14, 20);
+                doc.text(`REGISTRO CONSEGNA CHIAVI DI ACCESSO - ${tipo}`, 14, 20);
                 doc.setFontSize(9);
                 doc.setFont("Helvetica", "normal");
-                doc.text("ITSCG PRIMO LEVI - SEREGNO (MB)", 14, 26);
+                doc.text("ITSCG PRIMO LEVI DI SEREGNO - VIA BRIANTINA 68", 14, 26);
 
                 const tableData = filt.map((t, idx) => [
                     idx + 1,
@@ -2258,16 +2388,69 @@
                 ]);
 
                 doc.autoTable({
-                    head: [['N.', 'Token Monouso', 'Classe/Ruolo', 'Indirizzo/Ambito', 'Firma per Ricevuta']],
+                    head: [['N.', 'Token Unico Personale', 'Classe / Ruolo', 'Ambito / Indirizzo', 'Firma Autografa per Ricevuta']],
                     body: tableData,
                     startY: 32,
                     theme: 'striped',
-                    styles: { fontSize: 8 }
+                    styles: { fontSize: 8, font: "Helvetica" },
+                    headStyles: { fillColor: [30, 58, 138] }
                 });
 
-                doc.save(`Registro_Firme_${tipo}.pdf`);
+                doc.save(`Registro_Chiavi_${tipo}_Levi.pdf`);
             } catch (e) {
                 console.error(e);
+            }
+        }
+
+        window.downloadReferentiPDF = async function(tipo) {
+            try {
+                const snap = await getDocs(getCollectionRef('tokens'));
+                let classesSet = new Set();
+                snap.forEach(doc => {
+                    let d = doc.data();
+                    if (d.tipo === tipo && d.classe) classesSet.add(d.classe.toUpperCase());
+                });
+
+                let sortedClasses = Array.from(classesSet).sort();
+
+                if (sortedClasses.length === 0) {
+                    showNotification("Attenzione", "Nessun dato di classe disponibile per creare le chiavi referente.", "error");
+                    return;
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                doc.setFontSize(14);
+                doc.setFont("Helvetica", "bold");
+                doc.text(`REGISTRO CHIAVI REFERENTI DI CLASSE - ${tipo === 'STUDENTE' ? 'ALUNNI' : 'GENITORI'}`, 14, 20);
+                doc.setFontSize(9);
+                doc.text("ITSCG PRIMO LEVI DI SEREGNO — CHIAVI MASTER DELLO SCRUTINIO", 14, 26);
+
+                let rows = sortedClasses.map((cl, idx) => {
+                    let key = `REF-${tipo.substring(0,3)}-${cl}`;
+                    return [
+                        idx + 1,
+                        cl,
+                        key,
+                        "Accedi per visionare lo scrutinio nominale di sezione.",
+                        "..........................................................................."
+                    ];
+                });
+
+                doc.autoTable({
+                    head: [['N.', 'Classe', 'Chiave Referente Master', 'Finalità / Privilegi d\'Accesso', 'Firma per Consegna']],
+                    body: rows,
+                    startY: 32,
+                    theme: 'grid',
+                    styles: { fontSize: 8, font: "Helvetica" },
+                    headStyles: { fillColor: [15, 23, 42] }
+                });
+
+                doc.save(`Chiavi_Referenti_${tipo}_Levi.pdf`);
+            } catch (err) {
+                console.error(err);
+                showNotification("Errore", "Impossibile scaricare le chiavi: " + err.message, "error");
             }
         }
 
@@ -2314,10 +2497,13 @@
             if(configElezioni.consultaAttiva) html += `<button onclick="window.loadScrutinioDetail('consulta')" class="w-full text-left p-3 rounded-xl border hover:bg-slate-50 font-bold text-xs flex justify-between items-center bg-white mt-2"><span>Consulta Provinciale</span> <i data-lucide="chevron-right" class="w-4 h-4"></i></button>`;
             if(configElezioni.rappresentantiClasseStudentiAttivo) html += `<button onclick="window.loadScrutinioDetail('classe_studenti')" class="w-full text-left p-3 rounded-xl border hover:bg-slate-50 font-bold text-xs flex justify-between items-center bg-white mt-2"><span>Classe (Studenti)</span> <i data-lucide="chevron-right" class="w-4 h-4"></i></button>`;
             if(configElezioni.rappresentantiClasseGenitoriAttivo) html += `<button onclick="window.loadScrutinioDetail('classe_genitori')" class="w-full text-left p-3 rounded-xl border border-rose-100 hover:bg-rose-50/50 font-bold text-xs flex justify-between items-center bg-white mt-2 text-rose-900"><span>Classe (Genitori)</span> <i data-lucide="chevron-right" class="w-4 h-4 text-rose-800"></i></button>`;
-            
-            (configElezioni.customElections || []).forEach(ce => {
-                html += `<button onclick="window.loadScrutinioDetail('custom_${ce.id}')" class="w-full text-left p-3 rounded-xl border border-rose-100 hover:bg-rose-50/50 font-bold text-xs flex justify-between items-center bg-white mt-2 text-rose-900"><span>${ce.titolo}</span> <i data-lucide="chevron-right" class="w-4 h-4"></i></button>`;
-            });
+
+            // Dynamic Custom Elections
+            if(configElezioni.customElections && configElezioni.customElections.length > 0) {
+                configElezioni.customElections.forEach(ele => {
+                    html += `<button onclick="window.loadScrutinioDetail('${ele.id}')" class="w-full text-left p-3 rounded-xl border border-purple-100 hover:bg-purple-50/50 font-bold text-xs flex justify-between items-center bg-white mt-2 text-purple-900"><span>Custom: ${ele.titolo}</span> <i data-lucide="chevron-right" class="w-4 h-4 text-purple-800"></i></button>`;
+                });
+            }
 
             container.innerHTML = html;
             lucide.createIcons();
@@ -2332,16 +2518,60 @@
                 return;
             }
 
-            if(electionType === 'consiglio' || electionType === 'istituto') {
-                const targetCol = electionType === 'consiglio' ? 'voti_consiglio' : 'voti_istituto';
-                const labelTitle = electionType === 'consiglio' ? "Consiglio d'Istituto" : "Rappresentanti d'Istituto";
-                const voti = await getVotiUrna(targetCol);
+            // Scrutinio per Elezioni Custom
+            if(electionType.startsWith('custom_')) {
+                const eleId = electionType;
+                const ele = configElezioni.customElections.find(e => e.id === eleId);
+                if(!ele) return;
+
+                const voti = await getVotiUrna(`voti_custom_${eleId}`);
+                let counts = {};
+                ele.opzioni.forEach(o => counts[o] = 0);
+                voti.forEach(v => {
+                    if(counts[v.scelta] !== undefined) counts[v.scelta]++;
+                });
+
+                container.innerHTML = `
+                    <div class="space-y-6 animate-fade-in flex-grow">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 pb-3">
+                            <div>
+                                <h3 class="text-sm font-black text-slate-800">${ele.titolo}</h3>
+                                <p class="text-xs text-slate-500">${ele.descrizione}</p>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Risultati delle Opzioni</h4>
+                            ${ele.opzioni.map(opt => `
+                                <div class="bg-slate-50 border p-4 rounded-xl flex justify-between items-center">
+                                    <div>
+                                        <span class="font-extrabold text-xs text-slate-800 uppercase">${opt}</span>
+                                        <p class="text-[10px] text-slate-500 mt-0.5">Voti espressi: ${counts[opt]}</p>
+                                    </div>
+                                    <span class="text-sm font-black text-blue-900">${counts[opt]}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            if(electionType === 'consiglio') {
+                const votiRaw = await getVotiUrna('voti_consiglio');
                 
+                // Consiglio esclude STUDENTE (solo GENITORE, DOCENTE, ATA)
+                let subSelectorHTML = ["GENITORE", "DOCENTE", "ATA"].map(role => `
+                    <button onclick="window.switchScrutinioSubComponent('${role}')" class="py-1 px-3 text-[10px] font-bold rounded border transition-all ${currentScrutinioSubComponent === role ? 'bg-blue-900 border-blue-900 text-white shadow-sm' : 'bg-white border-slate-200 text-slate-550'}">
+                        ${role}
+                    </button>
+                `).join('');
+
+                const voti = votiRaw.filter(v => v.tipo === currentScrutinioSubComponent);
                 let listVotes = {};
                 let candidatePrefs = {};
-                let targetListMap = electionType === 'consiglio' ? configElezioni.listeConsiglio : configElezioni.listeIstituto;
+                let targetListMap = configElezioni.listeConsiglio[currentScrutinioSubComponent] || {};
 
-                // Inizializzazione chiavi
                 Object.keys(targetListMap).forEach(k => { listVotes[k] = 0; });
                 listVotes["BIANCA"] = 0;
 
@@ -2351,19 +2581,16 @@
                         listVotes["BIANCA"]++;
                     } else {
                         if (listVotes[lst] !== undefined) listVotes[lst]++;
-                        [v.p1, v.p2].forEach(p => {
-                            if (p) {
-                                let norm = p.trim().toUpperCase().replace(/\s+/g, ' ');
-                                candidatePrefs[norm] = (candidatePrefs[norm] || 0) + 1;
-                            }
-                        });
+                        if (v.p1) {
+                            let norm = normalizeName(v.p1);
+                            candidatePrefs[norm] = (candidatePrefs[norm] || 0) + 1;
+                        }
                     }
                 });
 
                 let totalValidi = 0;
                 Object.keys(targetListMap).forEach(k => { totalValidi += listVotes[k]; });
                 
-                // Calcolo Seggi Proporzionali con Regolo O.M. 215/1991 (4 seggi)
                 let quoziente = totalValidi > 0 ? (totalValidi / 4) : 0;
                 let seggiInteri = {};
                 let resti = {};
@@ -2386,15 +2613,14 @@
                         if(sortedResti[i]) {
                             let key = sortedResti[i][0];
                             seggiTotali[key] = (seggiTotali[key] || 0) + 1;
-                            residueNotes.push(`Assegnato 1 seggio residuo alla lista <strong>${targetListMap[key].nome}</strong> per resto maggiore (${sortedResti[i][1].toFixed(2)})`);
+                            residueNotes.push(`Assegnato 1 seggio residuo alla lista <strong>${targetListMap[key]?.nome || key}</strong> per resto maggiore (${sortedResti[i][1].toFixed(2)})`);
                         }
                     }
                 }
 
-                // Generazione della classifica candidati per ciascuna lista
                 let proclamazioneHTML = Object.entries(targetListMap).map(([key, value]) => {
                     let candidatiEletti = value.candidati.map(c => {
-                        let normC = c.trim().toUpperCase().replace(/\s+/g, ' ');
+                        let normC = normalizeName(c);
                         return { nome: c, pref: candidatePrefs[normC] || 0 };
                     }).sort((a, b) => b.pref - a.pref);
 
@@ -2409,7 +2635,7 @@
                             </div>
                         `).join('');
                     } else {
-                        elettiSezioneHTML = `<p class="text-[10px] text-slate-400 italic mt-1 font-bold">Nessun seggio assegnato a questa lista.</p>`;
+                        elettiSezioneHTML = `<p class="text-[10px] text-slate-400 italic mt-1 font-bold">Nessun seggio assegnato.</p>`;
                     }
 
                     return `
@@ -2426,31 +2652,30 @@
                     `;
                 }).join('');
 
-                // Rendering dell'interfaccia Scrutinio con scheda Calcoli Svolti incorporata
                 container.innerHTML = `
                     <div class="space-y-6 animate-fade-in flex-grow">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 pb-3">
                             <div>
-                                <h3 class="text-sm font-black text-slate-800">Scrutinio & Attribuzione Seggi - ${labelTitle}</h3>
-                                <p class="text-xs text-slate-500">ITSCG Primo Levi • Data: 12/07/2026</p>
+                                <h3 class="text-sm font-black text-slate-800">Scrutinio Consiglio d'Istituto</h3>
+                                <div class="flex gap-1 mt-1.5">
+                                    ${subSelectorHTML}
+                                </div>
                             </div>
                             <div class="flex gap-2">
-                                <button onclick="downloadVerbaleWord('${electionType}')" class="bg-blue-800 text-white font-bold py-1.5 px-3 rounded-lg text-[10px] flex items-center gap-1"><i data-lucide="file-text" class="w-3.5 h-3.5"></i> Word</button>
-                                <button onclick="downloadVerbalePDF('${electionType}')" class="bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg text-[10px] flex items-center gap-1"><i data-lucide="file" class="w-3.5 h-3.5"></i> PDF</button>
+                                <button onclick="downloadVerbaleWord('consiglio_${currentScrutinioSubComponent}')" class="bg-blue-800 text-white font-bold py-1.5 px-3 rounded-lg text-[10px] flex items-center gap-1"><i data-lucide="file-text" class="w-3.5 h-3.5"></i> Word</button>
+                                <button onclick="downloadVerbalePDF('consiglio_${currentScrutinioSubComponent}')" class="bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg text-[10px] flex items-center gap-1"><i data-lucide="file" class="w-3.5 h-3.5"></i> PDF</button>
                             </div>
                         </div>
 
-                        <!-- Selettore scheda Scrutinio -->
                         <div class="flex border-b border-slate-100 gap-1.5">
-                            <button onclick="window.switchScrutinioSubTab('esito', '${electionType}')" class="py-2 px-4 rounded-t-lg font-bold text-xs uppercase tracking-wider transition-all ${currentScrutinioSection === 'esito' ? 'border-b-2 border-blue-900 bg-blue-50 text-blue-900' : 'text-slate-500 hover:text-slate-800'}">Esito & Proclamazione</button>
-                            <button onclick="window.switchScrutinioSubTab('calcoli', '${electionType}')" class="py-2 px-4 rounded-t-lg font-bold text-xs uppercase tracking-wider transition-all ${currentScrutinioSection === 'calcoli' ? 'border-b-2 border-blue-900 bg-blue-50 text-blue-900' : 'text-slate-500 hover:text-slate-800'}">📐 Calcoli Matematici Svolti</button>
+                            <button onclick="window.switchScrutinioSubTab('esito', 'consiglio')" class="py-2 px-4 rounded-t-lg font-bold text-xs uppercase tracking-wider transition-all ${currentScrutinioSection === 'esito' ? 'border-b-2 border-blue-900 bg-blue-50 text-blue-900' : 'text-slate-500 hover:text-slate-800'}">Esito & Proclamazione</button>
+                            <button onclick="window.switchScrutinioSubTab('calcoli', 'consiglio')" class="py-2 px-4 rounded-t-lg font-bold text-xs uppercase tracking-wider transition-all ${currentScrutinioSection === 'calcoli' ? 'border-b-2 border-blue-900 bg-blue-50 text-blue-900' : 'text-slate-500 hover:text-slate-800'}">📐 Calcoli Matematici Svolti</button>
                         </div>
 
                         <div id="scrutinio-sub-content"></div>
                     </div>
                 `;
 
-                // Iniezione della scheda attiva
                 const subContent = document.getElementById('scrutinio-sub-content');
                 if (currentScrutinioSection === 'esito') {
                     subContent.innerHTML = `
@@ -2475,8 +2700,9 @@
                             </div>
 
                             <div class="space-y-3 mt-6">
-                                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Candidati Eletti Proclamati</h4>
+                                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Candidati Eletti Proclamati (${currentScrutinioSubComponent})</h4>
                                 ${proclamazioneHTML}
+                                ${Object.keys(targetListMap).length === 0 ? `<p class="text-xs text-slate-450 italic">Nessun dato registrato.</p>` : ''}
                             </div>
                         </div>
                     `;
@@ -2504,8 +2730,191 @@
                                 <div class="bg-white p-3 rounded-xl border border-blue-150 font-mono text-center text-sm font-black text-blue-900 my-2">
                                     Q = Voti Liste (${totalValidi}) / Seggi (4) = ${quoziente.toFixed(4)}
                                 </div>
-                                <p class="mt-3"><strong>2. Attribuzione Seggi per Quozienti Interi:</strong> Ciascuna lista ottiene tanti seggi quante volte il quoziente elettorale è contenuto nel proprio numero di voti di lista.</p>
-                                <p class="mt-2"><strong>3. Assegnazione Seggi Residui per Resti:</strong> Qualora la somma dei seggi attribuiti per quoziente intero sia inferiore a 4, i seggi rimanenti vengono attribuiti alle liste che hanno ottenuto i resti più alti.</p>
+                            </div>
+
+                            <div class="overflow-x-auto border rounded-2xl mt-4 bg-white">
+                                <table class="w-full text-left border-collapse text-xs">
+                                    <thead>
+                                        <tr class="bg-slate-50 border-b text-[9px] uppercase font-bold text-slate-400">
+                                            <th class="p-2.5">Lista Elettorale</th>
+                                            <th class="p-2.5 text-center">Voti Ottenuti (V)</th>
+                                            <th class="p-2.5 text-center">Rapporto (V / Q)</th>
+                                            <th class="p-2.5 text-center">Seggi Interi</th>
+                                            <th class="p-2.5 text-center">Resto Rimasto</th>
+                                            <th class="p-2.5 text-center">Seggi Totali</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y">
+                                        ${calcoliRigheHTML}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            ${restiListHTML(residueNotes)}
+                        </div>
+                    `;
+                }
+
+            } else if (electionType === 'istituto') {
+                const voti = await getVotiUrna('voti_istituto');
+                let listVotes = {};
+                Object.keys(configElezioni.listeIstituto).forEach(k => { listVotes[k] = 0; });
+                listVotes["BIANCA"] = 0;
+
+                let candidatePrefs = {};
+
+                voti.forEach(v => {
+                    let lst = v.lista;
+                    if (lst === 'BIANCA') {
+                        listVotes["BIANCA"]++;
+                    } else {
+                        if (listVotes[lst] !== undefined) listVotes[lst]++;
+                        if (v.p1) {
+                            let norm = normalizeName(v.p1);
+                            candidatePrefs[norm] = (candidatePrefs[norm] || 0) + 1;
+                        }
+                    }
+                });
+
+                let totalValidi = 0;
+                Object.keys(configElezioni.listeIstituto).forEach(k => { totalValidi += listVotes[k]; });
+                
+                let quoziente = totalValidi > 0 ? (totalValidi / 4) : 0;
+                let seggiInteri = {};
+                let resti = {};
+                let seggiAssegnati = 0;
+
+                Object.keys(configElezioni.listeIstituto).forEach(key => {
+                    let vList = listVotes[key] || 0;
+                    seggiInteri[key] = quoziente > 0 ? Math.floor(vList / quoziente) : 0;
+                    seggiAssegnati += seggiInteri[key];
+                    resti[key] = quoziente > 0 ? (vList - (seggiInteri[key] * quoziente)) : 0;
+                });
+
+                let seggiTotali = { ...seggiInteri };
+                let residueNotes = [];
+
+                if (seggiAssegnati < 4 && totalValidi > 0) {
+                    let sortedResti = Object.entries(resti).sort((a,b) => b[1] - a[1]);
+                    let residuo = 4 - seggiAssegnati;
+                    for(let i=0; i<residuo; i++) {
+                        if(sortedResti[i]) {
+                            let key = sortedResti[i][0];
+                            seggiTotali[key] = (seggiTotali[key] || 0) + 1;
+                            residueNotes.push(`Assegnato 1 seggio residuo alla lista <strong>${configElezioni.listeIstituto[key]?.nome || key}</strong> per resto maggiore (${sortedResti[i][1].toFixed(2)})`);
+                        }
+                    }
+                }
+
+                let proclamazioneHTML = Object.entries(configElezioni.listeIstituto).map(([key, value]) => {
+                    let candidatiEletti = value.candidati.map(c => {
+                        let normC = normalizeName(c);
+                        return { nome: c, pref: candidatePrefs[normC] || 0 };
+                    }).sort((a, b) => b.pref - a.pref);
+
+                    let numSeggiVinti = seggiTotali[key] || 0;
+                    let elettiSezioneHTML = '';
+
+                    if(numSeggiVinti > 0) {
+                        elettiSezioneHTML = candidatiEletti.slice(0, numSeggiVinti).map((el, i) => `
+                            <div class="bg-emerald-50 border border-emerald-100 p-2.5 rounded-xl flex items-center justify-between text-xs mt-1.5 font-bold">
+                                <span class="text-emerald-950 flex items-center gap-1.5 uppercase"><i data-lucide="crown" class="w-3.5 h-3.5 text-yellow-500"></i> ${el.nome}</span>
+                                <span class="text-[10px] bg-emerald-200 text-emerald-800 py-0.5 px-2 rounded-full">${el.pref} pref.</span>
+                            </div>
+                        `).join('');
+                    } else {
+                        elettiSezioneHTML = `<p class="text-[10px] text-slate-400 italic mt-1 font-bold">Nessun seggio assegnato.</p>`;
+                    }
+
+                    return `
+                        <div class="border rounded-2xl p-4 bg-slate-50/50 mb-3 font-semibold">
+                            <div class="flex justify-between items-center pb-2 border-b">
+                                <span class="text-xs font-black text-slate-800 uppercase">Lista: ${value.nome}</span>
+                                <span class="text-xs bg-blue-100 text-blue-900 px-3 py-1 rounded-full font-black">Seggi: ${numSeggiVinti}</span>
+                            </div>
+                            <div class="mt-2 space-y-1">
+                                <p class="text-[9px] text-slate-400 uppercase tracking-wider font-extrabold">Candidati Eletti per Preferenze:</p>
+                                ${elettiSezioneHTML}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                container.innerHTML = `
+                    <div class="space-y-6 animate-fade-in flex-grow">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-slate-100 pb-3">
+                            <div>
+                                <h3 class="text-sm font-black text-slate-800">Scrutinio Rappresentanti d'Istituto</h3>
+                                <p class="text-xs text-slate-500">ITSCG Primo Levi • Data: 12/07/2026</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <button onclick="downloadVerbaleWord('istituto')" class="bg-blue-800 text-white font-bold py-1.5 px-3 rounded-lg text-[10px] flex items-center gap-1"><i data-lucide="file-text" class="w-3.5 h-3.5"></i> Word</button>
+                                <button onclick="downloadVerbalePDF('istituto')" class="bg-red-600 text-white font-bold py-1.5 px-3 rounded-lg text-[10px] flex items-center gap-1"><i data-lucide="file" class="w-3.5 h-3.5"></i> PDF</button>
+                            </div>
+                        </div>
+
+                        <div class="flex border-b border-slate-100 gap-1.5">
+                            <button onclick="window.switchScrutinioSubTab('esito', 'istituto')" class="py-2 px-4 rounded-t-lg font-bold text-xs uppercase tracking-wider transition-all ${currentScrutinioSection === 'esito' ? 'border-b-2 border-blue-900 bg-blue-50 text-blue-900' : 'text-slate-500 hover:text-slate-800'}">Esito & Proclamazione</button>
+                            <button onclick="window.switchScrutinioSubTab('calcoli', 'istituto')" class="py-2 px-4 rounded-t-lg font-bold text-xs uppercase tracking-wider transition-all ${currentScrutinioSection === 'calcoli' ? 'border-b-2 border-blue-900 bg-blue-50 text-blue-900' : 'text-slate-500 hover:text-slate-800'}">📐 Calcoli Matematici Svolti</button>
+                        </div>
+
+                        <div id="scrutinio-sub-content"></div>
+                    </div>
+                `;
+
+                const subContent = document.getElementById('scrutinio-sub-content');
+                if (currentScrutinioSection === 'esito') {
+                    subContent.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <div class="bg-slate-50 p-3 rounded-xl border text-center font-bold">
+                                    <span class="text-[9px] text-slate-400 uppercase">Votanti Totali</span>
+                                    <p class="text-base text-slate-900 font-black">${voti.length}</p>
+                                </div>
+                                <div class="bg-slate-50 p-3 rounded-xl border text-center font-bold">
+                                    <span class="text-[9px] text-slate-400 uppercase">Voti Liste</span>
+                                    <p class="text-base text-slate-900 font-black">${totalValidi}</p>
+                                </div>
+                                <div class="bg-slate-50 p-3 rounded-xl border text-center font-bold">
+                                    <span class="text-[9px] text-slate-400 uppercase">Schede Bianche</span>
+                                    <p class="text-base text-slate-900 font-black">${listVotes["BIANCA"] || 0}</p>
+                                </div>
+                                <div class="bg-blue-50 p-3 rounded-xl border border-blue-150 text-center font-bold">
+                                    <span class="text-[9px] text-blue-800 uppercase">Quoziente</span>
+                                    <p class="text-base text-blue-900 font-black">${quoziente.toFixed(2)}</p>
+                                </div>
+                            </div>
+
+                            <div class="space-y-3 mt-6">
+                                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Candidati Eletti Proclamati (Istituto)</h4>
+                                ${proclamazioneHTML}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    let calcoliRigheHTML = Object.entries(configElezioni.listeIstituto).map(([key, val]) => {
+                        let vl = listVotes[key] || 0;
+                        let divResult = quoziente > 0 ? (vl / quoziente).toFixed(4) : "0.0000";
+                        return `
+                            <tr class="border-b last:border-0 hover:bg-slate-50/50">
+                                <td class="py-2.5 font-bold text-slate-700">${val.nome}</td>
+                                <td class="py-2.5 text-center font-black text-slate-800">${vl}</td>
+                                <td class="py-2.5 text-center font-semibold text-slate-500">${divResult}</td>
+                                <td class="py-2.5 text-center font-black text-blue-900">${seggiInteri[key] || 0}</td>
+                                <td class="py-2.5 text-center font-bold text-slate-600">${resti[key]?.toFixed(2) || 0}</td>
+                                <td class="py-2.5 text-center font-black text-emerald-800">${seggiTotali[key] || 0}</td>
+                            </tr>
+                        `;
+                    }).join('');
+
+                    subContent.innerHTML = `
+                        <div class="space-y-4 font-semibold text-xs text-slate-700 leading-relaxed">
+                            <div class="bg-blue-50 border border-blue-100 p-4 rounded-2xl">
+                                <p class="font-black text-blue-950 uppercase text-[10px] mb-2">Procedimento Matematico ai sensi dell'art. 44 O.M. 215/1991</p>
+                                <p class="mb-2"><strong>1. Calcolo del Quoziente Elettorale (Q):</strong> Consiste nel dividere la somma dei voti validi per il numero di seggi da assegnare (4).</p>
+                                <div class="bg-white p-3 rounded-xl border border-blue-150 font-mono text-center text-sm font-black text-blue-900 my-2">
+                                    Q = Voti Liste (${totalValidi}) / Seggi (4) = ${quoziente.toFixed(4)}
+                                </div>
                             </div>
 
                             <div class="overflow-x-auto border rounded-2xl mt-4 bg-white">
@@ -2587,12 +2996,11 @@
                     let nameCounts = {};
                     list.forEach(v => {
                         if(v.isBianca) return;
-                        [v.candidate1, v.candidate2].forEach(n => {
-                            if(n) {
-                                let norm = n.trim().toUpperCase().replace(/\s+/g, ' ');
-                                nameCounts[norm] = (nameCounts[norm] || 0) + 1;
-                            }
-                        });
+                        let n = v.candidate1;
+                        if(n) {
+                            let norm = normalizeName(n);
+                            nameCounts[norm] = (nameCounts[norm] || 0) + 1;
+                        }
                     });
 
                     let sorted = Object.entries(nameCounts).map(([name, count]) => ({ name, count })).sort((a,b) => b.count - a.count);
@@ -2601,10 +3009,9 @@
                     
                     let tieDetailsHTML = '';
                     if (sorted.length > 1 && sorted[1].count === sorted[2]?.count) {
-                        let winners = sorted.slice(1).filter(x => x.count === sorted[1].count);
                         tieDetailsHTML = `
-                            <p class="text-[9px] text-amber-800 bg-amber-50 border border-amber-100 p-2 rounded-xl mt-2 font-bold flex items-center gap-1.5 leading-relaxed">
-                                <i data-lucide="info" class="w-3.5 h-3.5"></i> Riscontrata parità di voti (${sorted[1].count} preferenze) tra candidati di classe. Eseguito sorteggio deterministico ai sensi delle normative.
+                            <p class="text-[9px] text-amber-850 bg-amber-50 border border-amber-100 p-2 rounded-xl mt-2 font-bold flex items-center gap-1.5 leading-relaxed">
+                                <i data-lucide="info" class="w-3.5 h-3.5"></i> Parità di voti riscontrata. È stato eseguito il sorteggio deterministico per individuare gli eletti a norma di legge.
                             </p>
                         `;
                     }
@@ -2639,23 +3046,20 @@
                         </div>
                     </div>
                 `;
-            } else {
-                container.innerHTML = `
-                    <div class="text-center py-12 text-slate-400 animate-fade-in flex-grow">
-                        <i data-lucide="check" class="w-10 h-10 mx-auto mb-2 text-emerald-500"></i>
-                        <p class="text-xs font-bold text-slate-800">Scrutinio Elezione Custom</p>
-                        <p class="text-[10px] text-slate-500 mt-1">I voti sono registrati nel database e scaricabili tramite report Excel o verbali Word.</p>
-                    </div>
-                `;
             }
             lucide.createIcons();
         }
+
+        window.switchScrutinioSubComponent = function(role) {
+            currentScrutinioSubComponent = role;
+            window.loadScrutinioDetail('consiglio');
+        };
 
         function restiListHTML(residueNotes) {
             if (residueNotes.length === 0) return '';
             return `
                 <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl mt-4 font-bold text-emerald-950">
-                    <p class="uppercase text-[9px] text-emerald-800 mb-1.5 tracking-wider"><i data-lucide="info" class="w-3.5 h-3.5 inline mr-1"></i> Dettaglio dei resti ed assegnazione residua:</p>
+                    <p class="uppercase text-[9px] text-emerald-800 mb-1.5 tracking-wider"><i data-lucide="info" class="w-3.5 h-3.5 inline mr-1"></i> Assegnazione seggi residui per resti maggiori:</p>
                     <ul class="list-disc pl-5 space-y-1">
                         ${residueNotes.map(n => `<li>${n}</li>`).join('')}
                     </ul>
@@ -2672,13 +3076,13 @@
             let title = "", refText = "";
             if(verbType === 'verbale_costituzione') {
                 title = "Verbale n. 1 di Costituzione del Seggio";
-                refText = `In data 12/07/2026 alle ore 07:00, si costituisce il Seggio Elettorale d'Istituto coordinato dalla Commissione preposta alla verifica della regolarità delle infrastrutture digitali e dell'urna cloud dell'ITSCG Primo Levi.`;
+                refText = `In data 12/07/2026 alle ore 07:00, si costituisce il Seggio Elettorale d'Istituto coordinato dalla Commissione preposta alla verifica della regolarità delle infrastrutture digitali e dell'urna cloud dell'ITSCG Primo Levi di Seregno.`;
             } else if(verbType === 'verbale_commissione') {
                 title = "Verbale n. 2 di Riunione della Commissione";
-                refText = `In data 12/07/2026, la Commissione Elettorale si riunisce in presenza e in modalità asincrona per coordinare l'inizio della sessione elettorale in B.Y.O.D. degli studenti e definire le pliche dei Token dell'ITSCG Primo Levi.`;
+                refText = `In data 12/07/2026, la Commissione Elettorale si riunisce in presenza e in modalità asincrona per coordinare l'inizio della sessione elettorale in B.Y.O.D. e definire le pliche dei Token cartacei distribuiti per classe all'ITSCG Primo Levi.`;
             } else {
                 title = "Verbale n. 3 di Chiusura delle Operazioni";
-                refText = `Alle ore 20:00 del 12/07/2026, si dichiarano concluse le operazioni di voto e si avvia lo scrutinio generale della componente studenti e della componente genitori.`;
+                refText = `Alle ore 20:00 del 12/07/2026, si dichiarano concluse le operazioni di voto e si avvia lo scrutinio proporzionale e nominale generale per tutte le componenti (Docenti, Genitori, Alunni, ATA).`;
             }
 
             container.innerHTML = `
@@ -2752,48 +3156,49 @@
             container.innerHTML = `<div class="text-center p-12 bg-white rounded-2xl"><div class="spinner border-blue-900 border-t-transparent mx-auto mb-3"></div> Elaborazione grafici...</div>`;
             
             const votiConsiglio = await getVotiUrna('voti_consiglio');
-            let listVotes = { "lista1": 0, "lista2": 0, "BIANCA": 0 };
-            votiConsiglio.forEach(v => { listVotes[v.lista] = (listVotes[v.lista] || 0) + 1; });
-
-            let total = (listVotes["lista1"] || 0) + (listVotes["lista2"] || 0) + (listVotes["BIANCA"] || 0);
-
-            let p1 = total > 0 ? ((listVotes["lista1"] || 0) / total * 100) : 0;
-            let p2 = total > 0 ? ((listVotes["lista2"] || 0) / total * 100) : 0;
-            let p3 = total > 0 ? ((listVotes["BIANCA"] || 0) / total * 100) : 0;
+            
+            let counts = { GENITORE: 0, DOCENTE: 0, ATA: 0 };
+            votiConsiglio.forEach(v => {
+                if(counts[v.tipo] !== undefined) counts[v.tipo]++;
+            });
 
             container.innerHTML = `
-                <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 animate-fade-in w-full">
+                <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 animate-fade-in w-full font-semibold">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4 mb-6">
-                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Affluenza e Grafici Interattivi</h3>
+                        <div>
+                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Monitor Affluenza in Tempo Reale</h3>
+                            <p class="text-xs text-slate-500">ITSCG Primo Levi • Voti totali registrati in Consiglio: ${votiConsiglio.length}</p>
+                        </div>
                         <button onclick="window.downloadScrutinioExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2 px-4 rounded-xl text-xs flex items-center gap-1.5 shadow"><i data-lucide="file-spreadsheet"></i> Esporta Excel (.xlsx)</button>
                     </div>
                     
-                    <div class="grid md:grid-cols-12 gap-6 items-center">
-                        <div class="md:col-span-5 space-y-3 font-semibold">
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Consiglio d'Istituto</span>
-                            <div class="flex items-center justify-between border-b pb-1.5 text-xs font-bold">
-                                <span>Lista 1 (Levi ed Oltre):</span>
-                                <span class="text-slate-900">${listVotes["lista1"] || 0} voti (${p1.toFixed(1)}%)</span>
+                    <div class="grid md:grid-cols-2 gap-6 items-center text-xs">
+                        <div class="space-y-4">
+                            <div>
+                                <span class="font-bold text-slate-600">Componente Genitori (Consiglio)</span>
+                                <div class="w-full bg-slate-100 h-2.5 rounded-full mt-1 overflow-hidden">
+                                    <div class="bg-rose-600 h-full" style="width: ${votiConsiglio.length > 0 ? (counts.GENITORE / votiConsiglio.length * 100) : 0}%"></div>
+                                </div>
+                                <span class="text-[10px] text-slate-450">${counts.GENITORE} voti depositati</span>
                             </div>
-                            <div class="flex items-center justify-between border-b pb-1.5 text-xs font-bold">
-                                <span>Lista 2 (Forever Young):</span>
-                                <span class="text-slate-900">${listVotes["lista2"] || 0} voti (${p2.toFixed(1)}%)</span>
+                            <div>
+                                <span class="font-bold text-slate-600">Componente Docenti (Consiglio)</span>
+                                <div class="w-full bg-slate-100 h-2.5 rounded-full mt-1 overflow-hidden">
+                                    <div class="bg-emerald-600 h-full" style="width: ${votiConsiglio.length > 0 ? (counts.DOCENTE / votiConsiglio.length * 100) : 0}%"></div>
+                                </div>
+                                <span class="text-[10px] text-slate-450">${counts.DOCENTE} voti depositati</span>
                             </div>
-                            <div class="flex items-center justify-between border-b pb-1.5 text-xs font-bold">
-                                <span>Schede Bianche:</span>
-                                <span class="text-slate-900">${listVotes["BIANCA"] || 0} voti (${p3.toFixed(1)}%)</span>
+                            <div>
+                                <span class="font-bold text-slate-600">Componente ATA (Consiglio)</span>
+                                <div class="w-full bg-slate-100 h-2.5 rounded-full mt-1 overflow-hidden">
+                                    <div class="bg-amber-600 h-full" style="width: ${votiConsiglio.length > 0 ? (counts.ATA / votiConsiglio.length * 100) : 0}%"></div>
+                                </div>
+                                <span class="text-[10px] text-slate-450">${counts.ATA} voti depositati</span>
                             </div>
                         </div>
 
-                        <!-- Visualizzazione Grafica SVG Custom -->
-                        <div class="md:col-span-7 flex justify-center">
-                            <svg width="200" height="200" viewBox="0 0 42 42" class="transform -rotate-90">
-                                <circle class="text-slate-100" stroke-width="4" stroke="currentColor" fill="transparent" r="15.915" cx="21" cy="21"></circle>
-                                
-                                <circle class="text-blue-900" stroke-width="4" stroke-dasharray="${p1} ${100 - p1}" stroke-dashoffset="0" stroke="currentColor" fill="transparent" r="15.915" cx="21" cy="21"></circle>
-                                <circle class="text-emerald-500" stroke-width="4" stroke-dasharray="${p2} ${100 - p2}" stroke-dashoffset="${-p1}" stroke="currentColor" fill="transparent" r="15.915" cx="21" cy="21"></circle>
-                                <circle class="text-amber-500" stroke-width="4" stroke-dasharray="${p3} ${100 - p3}" stroke-dashoffset="${-(p1+p2)}" stroke="currentColor" fill="transparent" r="15.915" cx="21" cy="21"></circle>
-                            </svg>
+                        <div class="flex justify-center">
+                            <i data-lucide="activity" class="w-24 h-24 text-slate-200"></i>
                         </div>
                     </div>
                 </div>
@@ -2801,16 +3206,14 @@
             lucide.createIcons();
         }
 
-        // Esportatore Excel multi-foglio per lo scrutinio
         window.downloadScrutinioExcel = async function() {
             try {
-                const [vCons, vIst, vConsul, vClassStu, vClassGen, vCust] = await Promise.all([
+                const [vCons, vIst, vConsul, vClassStu, vClassGen] = await Promise.all([
                     getVotiUrna('voti_consiglio'),
                     getVotiUrna('voti_istituto'),
                     getVotiUrna('voti_consulta'),
                     getVotiUrna('voti_classe_studenti'),
-                    getVotiUrna('voti_classe_genitori'),
-                    getVotiUrna('voti_custom')
+                    getVotiUrna('voti_classe_genitori')
                 ]);
 
                 const wb = XLSX.book_new();
@@ -2830,9 +3233,6 @@
                 const wsClassGen = XLSX.utils.json_to_sheet(vClassGen);
                 XLSX.book_append_sheet(wb, wsClassGen, "Classe Genitori");
 
-                const wsCust = XLSX.utils.json_to_sheet(vCust);
-                XLSX.book_append_sheet(wb, wsCust, "Elezioni Personalizzate");
-
                 XLSX.writeFile(wb, "Scrutinio_Elettorale_Completo_ITSCG_Levi.xlsx");
                 showNotification("Successo", "Il file Excel multi-foglio è stato generato e scaricato.", "success");
             } catch (err) {
@@ -2843,7 +3243,6 @@
         window.onload = () => {
             showPage('studentLogin'); 
             
-            // Sincronizzazione dinamica onAuthStateChanged delle informazioni e setup
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
                     try {
@@ -2854,7 +3253,6 @@
                 }
             });
 
-            // Avvia la connessione anonima immediata all'avvio
             signInAnonymously(auth).catch(() => {
                 console.warn("Accesso anonimo locale avviato.");
             });
