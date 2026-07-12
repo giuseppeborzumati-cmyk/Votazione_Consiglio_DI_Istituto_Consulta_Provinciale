@@ -153,7 +153,7 @@
                 <button onclick="window.showClassMasterLogin('GENITORE')" class="bg-slate-800 hover:bg-slate-700 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5">
                     <i data-lucide="heart" class="w-3.5 h-3.5 text-rose-400"></i> Referenti Genitori
                 </button>
-                <button onclick="window.showPage('adminLogin')" class="bg-red-950/60 hover:bg-red-900 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5 border border-red-900/50">
+                <button onclick="window.showPage('adminLogin')" class="bg-red-955/60 hover:bg-red-900 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5 border border-red-900/50">
                     <i data-lucide="shield" class="w-3.5 h-3.5 text-red-400"></i> Commissione
                 </button>
             </div>
@@ -225,7 +225,7 @@
         </div>
     </div>
 
-    <!-- Modale Conferma Generica (Sostituto di confirm() nativo) -->
+    <!-- Modale Conferma Generica -->
     <div id="generic-confirm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full mx-4 border border-slate-100 transform scale-95 transition-all">
             <div class="flex items-center space-x-3 mb-4 text-slate-800">
@@ -306,13 +306,11 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Password istituzionale stabilita per l'accesso amministrativo
         const ADMIN_PWD = "docenti2026levi";
 
         function getCollectionRef(colName) { return collection(db, 'artifacts', appId, 'public', 'data', colName); }
         function getDocumentRef(colName, docId) { return doc(db, 'artifacts', appId, 'public', 'data', colName, docId); }
 
-        // Variabili globali di stato client
         let currentUserData = null; 
         let currentClassMasterData = null; 
         let loginReferenteType = 'STUDENTE'; 
@@ -320,12 +318,11 @@
         
         let activeAdminTab = 'config';
         let currentAccordionSection = 'consiglio';
-        let currentScrutinioSection = 'esito'; 
+        let currentScrutinioSection = 'istituto'; 
         let currentScrutinioSubComponent = 'GENITORE'; 
         let firebaseStateConnected = false;
-        let adminSettingsEditEnabled = false; // Stato dell'interruttore di sblocco delle votazioni
+        let adminSettingsEditEnabled = false; 
 
-        // Generatore di stringhe alfanumeriche casuali per le chiavi referente non indovinabili e sicure
         function generateRandomSuffix(length = 6) {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
             let result = '';
@@ -371,7 +368,6 @@
             return currentKeys;
         }
 
-        // Configurazione delle elezioni e candidati predefiniti divisi per ruolo
         let configElezioni = {
             consiglioAttivo: true,
             consultaAttiva: true,
@@ -645,7 +641,6 @@
                     alreadyVotedCount++;
                 } else {
                     let status = cartVotes.consiglio ? 'Compilata nel carrello' : 'Da compilare';
-                    let btnText = cartVotes.consiglio ? 'Modifica Scelta' : 'Seleziona';
                     let statusColor = cartVotes.consiglio ? 'bg-indigo-50 border-indigo-200 text-indigo-850' : 'bg-amber-50 border-amber-200 text-amber-800';
                     activeCardsHTML += `
                         <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between font-semibold">
@@ -667,7 +662,6 @@
                     alreadyVotedCount++;
                 } else {
                     let status = cartVotes.istituto ? 'Compilata nel carrello' : 'Da compilare';
-                    let btnText = cartVotes.istituto ? 'Modifica Scelta' : 'Seleziona';
                     let statusColor = cartVotes.istituto ? 'bg-indigo-50 border-indigo-200 text-indigo-850' : 'bg-amber-50 border-amber-200 text-amber-800';
                     activeCardsHTML += `
                         <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between font-semibold">
@@ -689,7 +683,6 @@
                     alreadyVotedCount++;
                 } else {
                     let status = cartVotes.consulta ? 'Compilata nel carrello' : 'Da compilare';
-                    let btnText = cartVotes.consulta ? 'Modifica Scelta' : 'Seleziona';
                     let statusColor = cartVotes.consulta ? 'bg-indigo-50 border-indigo-200 text-indigo-850' : 'bg-amber-50 border-amber-200 text-amber-800';
                     activeCardsHTML += `
                         <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between font-semibold">
@@ -711,7 +704,6 @@
                     alreadyVotedCount++;
                 } else {
                     let status = cartVotes.classeStudente ? 'Compilata nel carrello' : 'Da compilare';
-                    let btnText = cartVotes.classeStudente ? 'Modifica Scelta' : 'Seleziona';
                     let statusColor = cartVotes.classeStudente ? 'bg-indigo-50 border-indigo-200 text-indigo-850' : 'bg-amber-50 border-amber-200 text-amber-800';
                     activeCardsHTML += `
                         <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between font-semibold">
@@ -733,7 +725,6 @@
                     alreadyVotedCount++;
                 } else {
                     let status = cartVotes.classeGenitore ? 'Compilata nel carrello' : 'Da compilare';
-                    let btnText = cartVotes.classeGenitore ? 'Modifica Scelta' : 'Seleziona';
                     let statusColor = cartVotes.classeGenitore ? 'bg-indigo-50 border-indigo-200 text-indigo-850' : 'bg-amber-50 border-amber-200 text-amber-800';
                     activeCardsHTML += `
                         <div class="bg-white rounded-2xl p-5 shadow-sm border border-rose-200 flex flex-col justify-between font-semibold">
@@ -1362,7 +1353,6 @@
                 
                 const tokenUpdates = {};
 
-                // Invia i voti espressi nell'urna cloud in modo anonimizzato e asincrono
                 if (configElezioni.consiglioAttivo && cartVotes.consiglio && currentUserData.tipo !== 'STUDENTE') {
                     const voteRef = doc(getCollectionRef('voti_consiglio'), uuid);
                     batch.set(voteRef, { ...cartVotes.consiglio, classe: currentUserData.classe, tipo: currentUserData.tipo, dataVoto: "12 Luglio 2026" });
@@ -1403,9 +1393,6 @@
                 }
                 tokenUpdates.voted_custom = customTokenMap;
 
-                // LOGICA DI SICUREZZA RICHIESTA: Se anche una sola elezione abilitata per questo utente viene registrata,
-                // il token viene istantaneamente ed inappellabilmente bruciato ('hasVoted = true')
-                // in modo che non possa mai rientrare nella cabina elettorale digitale.
                 tokenUpdates.hasVoted = true;
 
                 batch.update(tokenRef, tokenUpdates);
@@ -1448,7 +1435,7 @@
             let placeholder = loginReferenteType === 'STUDENTE' ? 'REF-STU-XXXXXXXX' : 'REF-GEN-XXXXXXXX';
             
             container.innerHTML = `
-                <div class="max-w-md mx-auto bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-slate-200 mt-10 animate-fade-in w-full font-semibold font-semibold">
+                <div class="max-w-md mx-auto bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-slate-200 mt-10 animate-fade-in w-full font-semibold">
                     <div class="text-center mb-6">
                         <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
                             <i data-lucide="key-round" class="w-5 h-5 ${colorClass}"></i>
@@ -1747,7 +1734,6 @@
                         <div class="bg-white p-6 rounded-2xl shadow border border-slate-200">
                             <h3 class="text-sm font-extrabold text-slate-800 mb-2 flex items-center gap-1.5"><i data-lucide="settings" class="text-blue-900"></i> Abilitazione Elezioni</h3>
                             
-                            <!-- INTERRUTTORE DI SBLOCCO DI SICUREZZA PER PREVENIRE ERRORI ACCIDENTALI -->
                             <div class="bg-amber-50 border border-amber-200 p-3.5 rounded-xl mb-4 font-semibold text-xs text-amber-900 flex items-center justify-between">
                                 <div class="pr-2">
                                     <span class="font-bold block">Protezione Modifiche Attiva</span>
@@ -1826,7 +1812,6 @@
                         </div>
                     </div>
 
-                    <!-- Gestione Commissione Elettorale -->
                     <div class="lg:col-span-6 bg-white p-6 rounded-2xl shadow border border-slate-200 flex flex-col justify-between">
                         <div>
                             <h3 class="text-sm font-extrabold text-slate-800 mb-4 flex items-center gap-1.5"><i data-lucide="users" class="text-blue-900"></i> Commissione Elettorale</h3>
@@ -1841,7 +1826,6 @@
                     </div>
                 </div>
 
-                <!-- Danger Zone -->
                 <div class="mt-6 bg-red-50 border border-red-200 p-6 rounded-2xl animate-fade-in w-full font-semibold">
                     <h4 class="text-red-855 font-black text-xs flex items-center gap-1.5 uppercase tracking-wider"><i data-lucide="shield-alert" class="w-4 h-4"></i> Danger Zone: Operazioni Amministrative Critiche</h4>
                     <p class="text-slate-600 text-[11px] mt-1">Queste operazioni cancellano in modo permanente i dati di voto o le credenziali. Procedere con estrema cautela.</p>
@@ -1896,6 +1880,13 @@
                 });
                 
                 const collectionsToClean = ['voti_consiglio', 'voti_istituto', 'voti_consulta', 'voti_classe_studenti', 'voti_classe_genitori'];
+                // Pulisci anche le eventuali urne custom
+                if (configElezioni.customElections) {
+                    configElezioni.customElections.forEach(ele => {
+                        collectionsToClean.push(`voti_custom_${ele.id}`);
+                    });
+                }
+
                 for(let col of collectionsToClean) {
                     const colSnap = await getDocs(getCollectionRef(col));
                     colSnap.forEach(d => batch.delete(d.ref));
@@ -1934,7 +1925,7 @@
 
         function renderListeTab(container) {
             let accordionMenu = `
-                <div class="flex flex-wrap gap-1.5 mb-6 font-semibold font-semibold">
+                <div class="flex flex-wrap gap-1.5 mb-6 font-semibold">
                     <button onclick="window.switchAccordionSection('consiglio')" class="py-1.5 px-4 rounded-lg font-bold text-[10px] uppercase tracking-wide transition-all ${currentAccordionSection === 'consiglio' ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">Consiglio d'Istituto</button>
                     <button onclick="window.switchAccordionSection('istituto')" class="py-1.5 px-4 rounded-lg font-bold text-[10px] uppercase tracking-wide transition-all ${currentAccordionSection === 'istituto' ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">Rappresentanti d'Istituto</button>
                     <button onclick="window.switchAccordionSection('consulta')" class="py-1.5 px-4 rounded-lg font-bold text-[10px] uppercase tracking-wide transition-all ${currentAccordionSection === 'consulta' ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">Consulta Provinciale</button>
@@ -1966,7 +1957,7 @@
 
                     return `
                         <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 mb-4 font-semibold">
-                            <h4 class="font-bold text-xs text-slate-800 uppercase mb-3 flex items-center justify-between border-b pb-1.5 font-semibold">
+                            <h4 class="font-bold text-xs text-slate-800 uppercase mb-3 flex items-center justify-between border-b pb-1.5">
                                 <span>Componente: ${role}</span>
                                 <button onclick="addConsiglioList('${role}')" class="bg-blue-900 text-white font-extrabold py-1 px-3 rounded text-[10px] flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Nuova Lista</button>
                             </h4>
@@ -1999,7 +1990,7 @@
                 sectionContentHTML += `<button onclick="addList('istituto')" class="mt-2 bg-blue-900 text-white font-extrabold py-2 px-4 rounded-xl text-xs flex items-center gap-1.5"><i data-lucide="plus"></i> Aggiungi Lista Istituto</button>`;
             } else if (currentAccordionSection === 'consulta') {
                 sectionContentHTML = Object.entries(configElezioni.listeConsulta).map(([key, val]) => `
-                    <div class="border border-slate-200 rounded-2xl p-4 mb-4 bg-slate-50/50 font-semibold font-semibold">
+                    <div class="border border-slate-200 rounded-2xl p-4 mb-4 bg-slate-50/50 font-semibold">
                         <div class="flex items-center gap-3 mb-3">
                             <input type="text" value="${val.nome}" onchange="updateListName('consulta', '${key}', this.value)" class="p-2 border rounded-xl text-xs font-black text-slate-800 flex-grow bg-white">
                             <button onclick="deleteList('consulta', '${key}')" class="p-2 text-red-655 hover:bg-red-50 rounded-xl"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
@@ -2104,7 +2095,7 @@
 
             let listHTML = configElezioni.customElections.map((ele, idx) => {
                 return `
-                    <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 mb-3 flex flex-col justify-between font-semibold font-semibold">
+                    <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 mb-3 flex flex-col justify-between font-semibold">
                         <div class="flex justify-between items-start border-b pb-2 mb-2">
                             <div>
                                 <span class="text-[9px] bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-black uppercase">Custom Election</span>
@@ -2250,8 +2241,6 @@
                     updates[fieldName] = nextStatus;
                 }
                 await updateDoc(docRef, updates);
-                // Non attiviamo notifiche toast qui per evitare fastidio visivo durante la configurazione massiva.
-                // Firebase aggiornerà l'interfaccia istantaneamente tramite onSnapshot.
             } catch (err) {
                 showNotification("Errore", "Impossibile aggiornare lo stato della scheda: " + err.message, "error");
             }
@@ -2269,7 +2258,6 @@
                     ? `<button onclick="window.toggleTokenVotedState('${t.id}', ${t.hasVoted})" class="px-2 py-0.5 rounded-full text-[9px] font-black bg-red-100 text-red-800 inline-block hover:bg-red-200 transition-all cursor-pointer font-semibold shadow-sm" title="Clicca per riabilitare il Token">Completato</button>`
                     : `<button onclick="window.toggleTokenVotedState('${t.id}', ${t.hasVoted})" class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-850 inline-block hover:bg-emerald-200 transition-all cursor-pointer font-semibold shadow-sm" title="Clicca per forzare Token su Votato">Inutilizzato</button>`;
 
-                // LOGICA PULSANTI PER SPUNTE SCHEDE
                 const makeBtn = (field, currentVal, label, tooltip, isCustom = false) => {
                     const bg = currentVal ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-red-50 text-red-500 border-red-100';
                     const icon = currentVal ? 'check' : 'x';
@@ -2304,7 +2292,7 @@
                 let rowHTML = '';
                 if (componentFilter === 'DOCENTE' || componentFilter === 'ATA') {
                     rowHTML = `
-                        <tr class="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 font-semibold font-semibold">
+                        <tr class="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 font-semibold">
                             <td class="py-3 font-mono font-bold text-slate-800 text-xs">${t.id}</td>
                             <td class="py-3 font-extrabold text-slate-700 text-xs">${t.classe || 'N/A'}</td>
                             <td class="py-3">${checklistHTML}</td>
@@ -2320,7 +2308,7 @@
                     `;
                 } else {
                     rowHTML = `
-                        <tr class="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 font-semibold font-semibold">
+                        <tr class="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 font-semibold">
                             <td class="py-3 font-mono font-bold text-slate-800 text-xs">${t.id}</td>
                             <td class="py-3 font-extrabold text-slate-700 text-xs">${t.classe || 'N/A'}</td>
                             <td class="py-3 text-slate-500 text-xs">${t.indirizzo || 'Generale'}</td>
@@ -2383,7 +2371,7 @@
                         <p class="text-[11px] text-slate-500 mb-4">Carica file Excel con colonne: <strong>MATRICOLA</strong>, <strong>CLASSE</strong>, <strong>INDIRIZZO</strong>.</p>
                         
                         <div class="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center hover:border-blue-900 transition-colors cursor-pointer relative">
-                            <input type="file" id="studentsExcelFile" onchange="uploadElettoriExcel('STUDENTE')" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                            <input type="file" id="studentsExcelFile" onchange="window.uploadElettoriExcel('STUDENTE')" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                             <i data-lucide="file-spreadsheet" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
                             <span class="text-xs font-bold text-slate-600 block">Carica file Excel (.xlsx)</span>
                         </div>
@@ -2393,7 +2381,7 @@
                             <div class="flex gap-2">
                                 <input type="text" id="manualStuClasse" placeholder="4A" class="p-2 border rounded-xl text-xs w-20 text-center uppercase font-bold">
                                 <input type="text" id="manualStuInd" placeholder="Informatica" class="p-2 border rounded-xl text-xs flex-grow font-semibold bg-white">
-                                <button onclick="generateManualTokens('STUDENTE')" class="bg-blue-900 text-white font-extrabold px-4 rounded-xl text-xs hover:bg-blue-850 transition-colors">Genera</button>
+                                <button onclick="window.generateManualTokens('STUDENTE')" class="bg-blue-900 text-white font-extrabold px-4 rounded-xl text-xs hover:bg-blue-850 transition-colors">Genera</button>
                             </div>
                         </div>
                     </div>
@@ -2435,7 +2423,7 @@
                         <p class="text-[11px] text-slate-500 mb-4">Colonne Excel richieste: <strong>ALUNNO</strong>, <strong>CLASSE</strong>, <strong>INDIRIZZO</strong>.</p>
                         
                         <div class="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center hover:border-rose-900 transition-colors cursor-pointer relative">
-                            <input type="file" id="parentsExcelFile" onchange="uploadElettoriExcel('GENITORE')" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                            <input type="file" id="parentsExcelFile" onchange="window.uploadElettoriExcel('GENITORE')" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                             <i data-lucide="file-spreadsheet" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
                             <span class="text-xs font-bold text-slate-600 block">Carica file Excel (.xlsx)</span>
                         </div>
@@ -2445,7 +2433,7 @@
                             <div class="flex gap-2">
                                 <input type="text" id="manualGenClasse" placeholder="1A" class="p-2 border rounded-xl text-xs w-20 text-center uppercase font-bold">
                                 <input type="text" id="manualGenInd" placeholder="Liceo" class="p-2 border rounded-xl text-xs flex-grow font-semibold bg-white">
-                                <button onclick="generateManualTokens('GENITORE')" class="bg-rose-900 text-white font-extrabold px-4 rounded-xl text-xs hover:bg-rose-850 transition-colors">Genera</button>
+                                <button onclick="window.generateManualTokens('GENITORE')" class="bg-rose-900 text-white font-extrabold px-4 rounded-xl text-xs hover:bg-rose-850 transition-colors">Genera</button>
                             </div>
                         </div>
                     </div>
@@ -2487,14 +2475,14 @@
                         <p class="text-[11px] text-slate-500 mb-4">Carica Excel con colonna: <strong>COGNOME_NOME</strong> per abilitare il personale docente d'istituto.</p>
                         
                         <div class="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center hover:border-slate-800 transition-colors cursor-pointer relative">
-                            <input type="file" id="docsExcelFile" onchange="uploadElettoriExcel('DOCENTE')" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                            <input type="file" id="docsExcelFile" onchange="window.uploadElettoriExcel('DOCENTE')" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                             <i data-lucide="file-spreadsheet" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
                             <span class="text-xs font-bold text-slate-600 block">Carica file Excel (.xlsx)</span>
                         </div>
 
                         <div class="mt-4 pt-4 border-t border-slate-100 font-semibold">
                             <span class="text-xs font-bold text-slate-800 block mb-2">Generazione Manuale Rapida</span>
-                            <button onclick="generateManualTokens('DOCENTE')" class="w-full bg-blue-950 hover:bg-blue-900 text-white font-extrabold py-2.5 rounded-xl text-xs transition-colors font-semibold">Genera 5 Token Docenti</button>
+                            <button onclick="window.generateManualTokens('DOCENTE')" class="w-full bg-blue-950 hover:bg-blue-900 text-white font-extrabold py-2.5 rounded-xl text-xs transition-colors font-semibold">Genera 5 Token Docenti</button>
                         </div>
                     </div>
 
@@ -2531,14 +2519,14 @@
                         <p class="text-[11px] text-slate-500 mb-4">Carica Excel con colonna: <strong>COGNOME_NOME</strong> per abilitare il personale.</p>
                         
                         <div class="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center hover:border-slate-800 transition-colors cursor-pointer relative">
-                            <input type="file" id="ataExcelFile" onchange="uploadElettoriExcel('ATA')" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                            <input type="file" id="ataExcelFile" onchange="window.uploadElettoriExcel('ATA')" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                             <i data-lucide="file-spreadsheet" class="w-8 h-8 text-slate-300 mx-auto mb-2"></i>
                             <span class="text-xs font-bold text-slate-600 block">Carica file Excel (.xlsx)</span>
                         </div>
 
                         <div class="mt-4 pt-4 border-t border-slate-100 font-semibold">
                             <span class="text-xs font-bold text-slate-800 block mb-2">Generazione Manuale Rapida</span>
-                            <button onclick="generateManualTokens('ATA')" class="w-full bg-slate-800 hover:bg-slate-750 text-white font-extrabold py-2.5 rounded-xl text-xs transition-colors font-semibold">Genera 5 Token ATA</button>
+                            <button onclick="window.generateManualTokens('ATA')" class="w-full bg-slate-800 hover:bg-slate-750 text-white font-extrabold py-2.5 rounded-xl text-xs transition-colors font-semibold">Genera 5 Token ATA</button>
                         </div>
                     </div>
 
@@ -2567,7 +2555,118 @@
             bindTokensRealTimeListener('ATA', 'table-ata-tokens');
         }
 
-        // ESCLUSIVA GESTIONE DEI PDF CON FIRME, NOMI E SEPARATI PER CLASSE COME RICHIESTO E CORREZIONE ERRORI LARGHEZZA AUTOTABLE
+        window.uploadElettoriExcel = async function(tipo) {
+            const inputId = tipo === 'STUDENTE' ? 'studentsExcelFile' : (tipo === 'GENITORE' ? 'parentsExcelFile' : (tipo === 'DOCENTE' ? 'docsExcelFile' : 'ataExcelFile'));
+            const fileInput = document.getElementById(inputId);
+            if (!fileInput || !fileInput.files[0]) return;
+            const file = fileInput.files[0];
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const data = e.target.result;
+                try {
+                    const workbook = XLSX.read(data, { type: 'binary' });
+                    const sheetName = workbook.SheetNames[0];
+                    const rawRows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+                    if (rawRows.length === 0) throw new Error("Il foglio Excel è vuoto.");
+
+                    const batch = writeBatch(db);
+                    const discoveredClasses = new Set();
+
+                    rawRows.forEach(row => {
+                        let nominativo = row.COGNOME_NOME || row.MATRICOLA || row.ALUNNO || row.NOMINATIVO || '';
+                        let classe = row.CLASSE ? String(row.CLASSE).trim().toUpperCase() : '';
+                        let indirizzo = row.INDIRIZZO ? String(row.INDIRIZZO).trim() : 'Generale';
+
+                        if (classe) discoveredClasses.add(classe);
+
+                        let prefix = tipo.substring(0, 3);
+                        let randomPart = generateRandomSuffix(6);
+                        let tokenId = `${prefix}-${classe ? classe + '-' : ''}${randomPart}`;
+
+                        const docRef = getDocumentRef('tokens', tokenId);
+                        batch.set(docRef, {
+                            id: tokenId,
+                            tipo: tipo,
+                            classe: classe,
+                            indirizzo: indirizzo,
+                            nome: nominativo,
+                            hasVoted: false,
+                            voted_consiglio: false,
+                            voted_istituto: false,
+                            voted_consulta: false,
+                            voted_classe_studente: false,
+                            voted_classe_genitore: false,
+                            voted_custom: {}
+                        });
+                    });
+
+                    await batch.commit();
+
+                    if (discoveredClasses.size > 0 && (tipo === 'STUDENTE' || tipo === 'GENITORE')) {
+                        await ensureReferentiKeysForClasses(Array.from(discoveredClasses), tipo);
+                    }
+
+                    showNotification("Importazione Riuscita", `Registrate con successo ${rawRows.length} credenziali nel cloud.`, "success");
+                    fileInput.value = '';
+                } catch (err) {
+                    showNotification("Errore di Lettura", "Formato del file Excel non supportato o errato: " + err.message, "error");
+                }
+            };
+            reader.readAsBinaryString(file);
+        };
+
+        window.generateManualTokens = async function(tipo) {
+            let classe = '';
+            let indirizzo = 'Generale';
+            if (tipo === 'STUDENTE') {
+                classe = document.getElementById('manualStuClasse').value.trim().toUpperCase();
+                indirizzo = document.getElementById('manualStuInd').value.trim() || 'Generale';
+            } else if (tipo === 'GENITORE') {
+                classe = document.getElementById('manualGenClasse').value.trim().toUpperCase();
+                indirizzo = document.getElementById('manualGenInd').value.trim() || 'Generale';
+            }
+
+            if ((tipo === 'STUDENTE' || tipo === 'GENITORE') && !classe) {
+                showNotification("Attenzione", "Inserire la classe per la generazione manuale.", "error");
+                return;
+            }
+
+            try {
+                const batch = writeBatch(db);
+                for (let i = 0; i < 5; i++) {
+                    let prefix = tipo.substring(0, 3);
+                    let randomPart = generateRandomSuffix(6);
+                    let tokenId = `${prefix}-${classe ? classe + '-' : ''}${randomPart}`;
+
+                    const docRef = getDocumentRef('tokens', tokenId);
+                    batch.set(docRef, {
+                        id: tokenId,
+                        tipo: tipo,
+                        classe: classe,
+                        indirizzo: indirizzo,
+                        nome: `Utente Manuale ${i+1}`,
+                        hasVoted: false,
+                        voted_consiglio: false,
+                        voted_istituto: false,
+                        voted_consulta: false,
+                        voted_classe_studente: false,
+                        voted_classe_genitore: false,
+                        voted_custom: {}
+                    });
+                }
+                await batch.commit();
+
+                if (classe && (tipo === 'STUDENTE' || tipo === 'GENITORE')) {
+                    await ensureReferentiKeysForClasses([classe], tipo);
+                }
+
+                showNotification("Token Creati", "Generati 5 Token di test con successo sul Cloud.", "success");
+            } catch (err) {
+                showNotification("Errore", "Impossibile generare i token: " + err.message, "error");
+            }
+        };
 
         window.downloadRegisterPDF = async function(tipo) {
             try {
@@ -2581,7 +2680,6 @@
                     return;
                 }
 
-                // Raggruppamento dei token per classe scolastica per generare una pagina separata per classe
                 const grouped = {};
                 filt.forEach(t => {
                     const cl = t.classe || 'Generale';
@@ -2601,8 +2699,7 @@
                     }
                     isFirstPage = false;
 
-                    // Header Istituzionale elegante su ogni foglio/classe
-                    doc.setFillColor(30, 58, 138); // Navy Blue dell'Istituto
+                    doc.setFillColor(30, 58, 138); 
                     doc.rect(0, 0, 210, 38, 'F');
                     
                     doc.setTextColor(255, 255, 255);
@@ -2615,7 +2712,6 @@
                     doc.text(`Registro Ufficiale Consegna Credenziali - Componente ${tipo}`, 15, 22);
                     doc.text("Sede Unica: Via Briantina 68 - Cod. Mecc: MBTD430001", 15, 28);
 
-                    // Metadati Sezione / Classe
                     doc.setTextColor(30, 41, 59);
                     doc.setFont("helvetica", "bold");
                     doc.setFontSize(11);
@@ -2632,20 +2728,17 @@
                         return a.id.localeCompare(b.id);
                     });
                     
-                    // NOME E COGNOME, CODICE TOKEN, FIRMA
                     const headers = [["N.", "Nome e Cognome", "Codice (Token Univoco)", "Firma Elettore"]];
                     const rows = classTokens.map((t, idx) => {
-                        // Recupero del nominativo caricato dal file Excel o inserimento di una linea vuota per compilazione a mano
                         let nominativo = t.nome || t.cognome_nome || t.nominativo || t.alunno || t.matricola || '___________________________';
                         return [
                             idx + 1,
                             nominativo,
                             t.id,
-                            "" // Lasciato appositamente vuoto, la linea tratteggiata viene disegnata da jsPDF AutoTable
+                            "" 
                         ];
                     });
 
-                    // Calibratura larghezza colonne ottimizzata per non far sforare AutoTable in pagina A4.
                     doc.autoTable({
                         startY: 57,
                         head: headers,
@@ -2661,12 +2754,11 @@
                         },
                         margin: { left: 15, right: 15 },
                         didDrawCell: function(data) {
-                            // Disegna la linea puntata per la firma Elettore nella colonna dinamica
                             if (data.section === 'body' && data.column.index === 3) {
                                 doc.setDrawColor(150, 150, 150);
                                 doc.setLineDash([1, 1], 0);
                                 doc.line(data.cell.x + 2, data.cell.y + 9, data.cell.x + data.cell.width - 2, data.cell.y + 9);
-                                doc.setLineDash([], 0); // reset back to solid
+                                doc.setLineDash([], 0); 
                             }
                         }
                     });
@@ -2730,8 +2822,7 @@
                     }
                     isFirstPage = false;
 
-                    // Header di Seggio per Referenti
-                    doc.setFillColor(30, 58, 138); // Navy Blue
+                    doc.setFillColor(30, 58, 138); 
                     doc.rect(0, 0, 210, 38, 'F');
                     
                     doc.setTextColor(255, 255, 255);
@@ -2744,7 +2835,6 @@
                     doc.text(`Credenziali di Scrutinio in Tempo Reale - Referenti ${tipo}`, 15, 22);
                     doc.text("Sede Unica: Via Briantina 68 - Seregno (MB)", 15, 28);
 
-                    // Metadati Referente Classe
                     doc.setTextColor(30, 41, 59);
                     doc.setFont("helvetica", "bold");
                     doc.setFontSize(11);
@@ -2756,7 +2846,6 @@
                     doc.text(`Si prega di custodirla con la massima riservatezza scolastica.`, 15, 57);
 
                     const classKeys = grouped[cl];
-                    // CODICE CHIAVE, E FIRMA DI CHI LA RICEVE (IL REFERENTE/COORDINATORE)
                     const headers = [["N.", "Sezione", "Chiave Segreta Referente", "Livello di Abilitazione", "Firma Consegna Referente"]];
                     const rows = classKeys.map((item, idx) => [
                         idx + 1,
@@ -2791,14 +2880,13 @@
                         }
                     });
 
-                    // Pannello d'istruzioni referenti ad alta visibilità
                     let finalY = doc.lastAutoTable.finalY + 12;
                     if (finalY > 210) {
                         doc.addPage();
                         finalY = 25;
                     }
 
-                    doc.setFillColor(254, 243, 199); // Sfondo giallo ambra per visibilità
+                    doc.setFillColor(254, 243, 199); 
                     doc.rect(15, finalY, 180, 28, 'F');
                     doc.setDrawColor(245, 158, 11);
                     doc.rect(15, finalY, 180, 28, 'D');
@@ -2814,7 +2902,6 @@
                     doc.text(`2. Cliccare in alto a destra su 'Referenti ${tipo === 'STUDENTE' ? 'Studenti' : 'Genitori'}' e digitare questa chiave segreta.`, 20, finalY + 19);
                     doc.text("3. Verificare i voti nominali registrati per proclamare gli eletti della sezione.", 20, finalY + 24);
 
-                    // Firme di conformità a piè di pagina
                     let signatureY = finalY + 45;
                     if (signatureY > 275) {
                         doc.addPage();
@@ -2834,6 +2921,563 @@
                 showNotification("Errore", "Impossibile generare il PDF: " + err.message, "error");
             }
         };
+
+        // --- SEZIONE 8: SCRUTINIO E VERBALI ---
+        window.switchScrutinioSection = function(sec) {
+            currentScrutinioSection = sec;
+            renderScrutinioTab(document.getElementById('admin-tab-content'));
+        };
+
+        window.switchScrutinioSubComponent = function(sub) {
+            currentScrutinioSubComponent = sub;
+            renderScrutinioTab(document.getElementById('admin-tab-content'));
+        };
+
+        async function renderScrutinioTab(container) {
+            container.innerHTML = `
+                <div class="text-center p-12 bg-white rounded-2xl shadow w-full">
+                    <div class="spinner border-blue-900 border-t-transparent mx-auto mb-3"></div>
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Scrutinio Urne Cloud in corso...</p>
+                </div>
+            `;
+
+            let colName = 'voti_istituto';
+            let titleLabel = 'Rappresentanti d\'Istituto (STUDENTI)';
+            let isClasse = false;
+            let isConsiglio = false;
+            let isCustom = false;
+
+            if (currentScrutinioSection === 'consulta') {
+                colName = 'voti_consulta';
+                titleLabel = 'Consulta Provinciale (STUDENTI)';
+            } else if (currentScrutinioSection === 'consiglio') {
+                colName = 'voti_consiglio';
+                titleLabel = `Consiglio d'Istituto (${currentScrutinioSubComponent})`;
+                isConsiglio = true;
+            } else if (currentScrutinioSection === 'classe_st') {
+                colName = 'voti_classe_studenti';
+                titleLabel = 'Rappresentanti di Classe (STUDENTI)';
+                isClasse = true;
+            } else if (currentScrutinioSection === 'classe_ge') {
+                colName = 'voti_classe_genitori';
+                titleLabel = 'Rappresentanti di Classe (GENITORI)';
+                isClasse = true;
+            } else if (currentScrutinioSection.startsWith('custom_')) {
+                let idCustom = currentScrutinioSection.replace('custom_', '');
+                colName = `voti_custom_${idCustom}`;
+                let ele = configElezioni.customElections.find(e => e.id === idCustom);
+                titleLabel = ele ? ele.titolo : 'Votazione Custom';
+                isCustom = true;
+            }
+
+            const voti = await getVotiUrna(colName);
+
+            let subNavConsiglioHTML = '';
+            if (currentScrutinioSection === 'consiglio') {
+                subNavConsiglioHTML = `
+                    <div class="flex gap-2 mb-4 bg-slate-50 p-2 rounded-xl border font-semibold">
+                        <button onclick="window.switchScrutinioSubComponent('GENITORE')" class="py-1 px-3 text-[10px] font-black uppercase rounded ${currentScrutinioSubComponent === 'GENITORE' ? 'bg-blue-900 text-white' : 'text-slate-500 hover:text-slate-800'}">Genitori</button>
+                        <button onclick="window.switchScrutinioSubComponent('DOCENTE')" class="py-1 px-3 text-[10px] font-black uppercase rounded ${currentScrutinioSubComponent === 'DOCENTE' ? 'bg-blue-900 text-white' : 'text-slate-500 hover:text-slate-800'}">Docenti</button>
+                        <button onclick="window.switchScrutinioSubComponent('ATA')" class="py-1 px-3 text-[10px] font-black uppercase rounded ${currentScrutinioSubComponent === 'ATA' ? 'bg-blue-900 text-white' : 'text-slate-500 hover:text-slate-800'}">ATA</button>
+                    </div>
+                `;
+            }
+
+            let mainNavHTML = `
+                <div class="flex flex-wrap gap-1.5 mb-6 font-semibold">
+                    <button onclick="window.switchScrutinioSection('istituto')" class="py-1.5 px-3 rounded-lg font-bold text-[9px] uppercase tracking-wide transition-all ${currentScrutinioSection === 'istituto' ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">Rappr. Istituto</button>
+                    <button onclick="window.switchScrutinioSection('consulta')" class="py-1.5 px-3 rounded-lg font-bold text-[9px] uppercase tracking-wide transition-all ${currentScrutinioSection === 'consulta' ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">Consulta Prov.</button>
+                    <button onclick="window.switchScrutinioSection('consiglio')" class="py-1.5 px-3 rounded-lg font-bold text-[9px] uppercase tracking-wide transition-all ${currentScrutinioSection === 'consiglio' ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">Consiglio Ist.</button>
+                    <button onclick="window.switchScrutinioSection('classe_st')" class="py-1.5 px-3 rounded-lg font-bold text-[9px] uppercase tracking-wide transition-all ${currentScrutinioSection === 'classe_st' ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">Classe Stu</button>
+                    <button onclick="window.switchScrutinioSection('classe_ge')" class="py-1.5 px-3 rounded-lg font-bold text-[9px] uppercase tracking-wide transition-all ${currentScrutinioSection === 'classe_ge' ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">Classe Gen</button>
+                    ${(configElezioni.customElections || []).map(ele => `
+                        <button onclick="window.switchScrutinioSection('custom_${ele.id}')" class="py-1.5 px-3 rounded-lg font-bold text-[9px] uppercase tracking-wide transition-all ${currentScrutinioSection === `custom_${ele.id}` ? 'bg-purple-900 text-white shadow' : 'bg-purple-50 text-purple-900 hover:bg-purple-100'}">${ele.titolo}</button>
+                    `).join('')}
+                </div>
+            `;
+
+            let scrutinioResultsHTML = '';
+
+            if (isClasse) {
+                let groupedByClass = {};
+                voti.forEach(v => {
+                    let cl = v.classe || 'N/A';
+                    if (!groupedByClass[cl]) groupedByClass[cl] = [];
+                    groupedByClass[cl].push(v);
+                });
+
+                let sortedClasses = Object.keys(groupedByClass).sort();
+
+                if (sortedClasses.length === 0) {
+                    scrutinioResultsHTML = `<div class="p-8 text-center text-xs text-slate-400 italic">Nessun voto di classe depositato in urna cloud.</div>`;
+                } else {
+                    scrutinioResultsHTML = sortedClasses.map(cl => {
+                        let totalVotes = groupedByClass[cl].length;
+                        let bianche = groupedByClass[cl].filter(v => v.isBianca).length;
+
+                        let counts = {};
+                        groupedByClass[cl].filter(v => !v.isBianca).forEach(v => {
+                            let name = normalizeName(v.candidate1);
+                            if(name) counts[name] = (counts[name] || 0) + 1;
+                        });
+
+                        let ranking = Object.entries(counts)
+                            .map(([name, v]) => ({ name, v }))
+                            .sort((a, b) => b.v - a.v);
+
+                        return `
+                            <div class="border rounded-2xl p-4 bg-slate-50 hover:bg-slate-100/50 transition-colors mb-4 font-semibold">
+                                <div class="flex flex-wrap justify-between items-center border-b pb-2 mb-3">
+                                    <span class="text-xs font-black text-slate-800 uppercase">Classe: ${cl}</span>
+                                    <div class="text-[10px] text-slate-500 space-x-3">
+                                        <span>Schede totali: <strong>${totalVotes}</strong></span>
+                                        <span>Bianche: <strong>${bianche}</strong></span>
+                                    </div>
+                                </div>
+                                <div class="space-y-1.5 text-xs">
+                                    ${ranking.map((el, i) => `
+                                        <div class="flex justify-between py-1 border-b last:border-0 border-slate-200">
+                                            <span class="font-bold text-slate-700">${i+1}. ${el.name}</span>
+                                            <span class="font-black text-blue-900">${el.v} voti</span>
+                                        </div>
+                                    `).join('')}
+                                    ${ranking.length === 0 ? `<p class="text-[10px] text-slate-400 italic">Solo schede bianche o nulle.</p>` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+
+            } else if (isCustom) {
+                let idCustom = currentScrutinioSection.replace('custom_', '');
+                let ele = configElezioni.customElections.find(e => e.id === idCustom);
+                let totalVotes = voti.length;
+
+                let counts = {};
+                if (ele) {
+                    ele.opzioni.forEach(o => counts[o] = 0);
+                }
+                voti.forEach(v => {
+                    let choice = v.scelta;
+                    if (choice) counts[choice] = (counts[choice] || 0) + 1;
+                });
+
+                let sortedOptions = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+
+                scrutinioResultsHTML = `
+                    <div class="bg-purple-50/50 p-6 rounded-2xl border border-purple-100 font-semibold">
+                        <div class="flex justify-between items-center mb-4 pb-2 border-b">
+                            <span class="font-bold text-slate-800 text-xs uppercase">Riepilogo Referendum</span>
+                            <span class="text-[10px] bg-purple-150 text-purple-900 px-3 py-1 rounded-full font-black">Urne totali: ${totalVotes}</span>
+                        </div>
+                        <div class="space-y-3 text-xs">
+                            ${sortedOptions.map(([opt, val]) => {
+                                let percent = totalVotes > 0 ? ((val / totalVotes) * 100).toFixed(1) : 0;
+                                return `
+                                    <div>
+                                        <div class="flex justify-between font-bold mb-1">
+                                            <span>${opt}</span>
+                                            <span>${val} voti (${percent}%)</span>
+                                        </div>
+                                        <div class="w-full bg-slate-200 rounded-full h-2">
+                                            <div class="bg-purple-600 h-2 rounded-full" style="width: ${percent}%"></div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+
+            } else {
+                let listCounts = {};
+                let prefCounts = {};
+
+                let subListe = {};
+                if (isConsiglio) {
+                    subListe = configElezioni.listeConsiglio[currentScrutinioSubComponent] || {};
+                } else if (currentScrutinioSection === 'consulta') {
+                    subListe = configElezioni.listeConsulta;
+                } else {
+                    subListe = configElezioni.listeIstituto;
+                }
+
+                Object.keys(subListe).forEach(lKey => {
+                    listCounts[lKey] = 0;
+                    prefCounts[lKey] = {};
+                    subListe[lKey].candidati.forEach(c => {
+                        prefCounts[lKey][c] = 0;
+                    });
+                });
+
+                let filteredVoti = voti;
+                if (isConsiglio) {
+                    filteredVoti = voti.filter(v => v.tipo === currentScrutinioSubComponent);
+                }
+
+                filteredVoti.forEach(v => {
+                    let lKey = v.lista;
+                    if (lKey && listCounts[lKey] !== undefined) {
+                        listCounts[lKey]++;
+                        if (v.p1 && prefCounts[lKey][v.p1] !== undefined) prefCounts[lKey][v.p1]++;
+                        if (v.p2 && prefCounts[lKey][v.p2] !== undefined) prefCounts[lKey][v.p2]++;
+                    }
+                });
+
+                scrutinioResultsHTML = Object.entries(subListe).map(([lKey, lVal]) => {
+                    let totalListVotes = listCounts[lKey] || 0;
+                    let sortedPrefs = Object.entries(prefCounts[lKey])
+                        .map(([c, count]) => ({ c, count }))
+                        .sort((a, b) => b.count - a.count);
+
+                    return `
+                        <div class="bg-slate-50 border rounded-2xl p-5 mb-4 font-semibold">
+                            <div class="flex justify-between items-center border-b pb-2 mb-4">
+                                <div>
+                                    <span class="text-[9px] bg-blue-100 text-blue-900 font-extrabold px-2 py-0.5 rounded uppercase">LISTA</span>
+                                    <h4 class="font-black text-slate-800 text-xs mt-0.5 uppercase">${lVal.nome}</h4>
+                                </div>
+                                <span class="text-sm font-black text-blue-900">${totalListVotes} voti lista</span>
+                            </div>
+                            <div class="space-y-2">
+                                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-black">Voti preferenza candidati:</p>
+                                ${sortedPrefs.map(pref => `
+                                    <div class="flex justify-between text-xs py-1 border-b border-dashed border-slate-250 last:border-0">
+                                        <span class="font-bold text-slate-700">${pref.c}</span>
+                                        <span class="font-black text-emerald-800">${pref.count} pref.</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                if (Object.keys(subListe).length === 0) {
+                    scrutinioResultsHTML = `<div class="p-8 text-center text-xs text-slate-400 italic">Nessuna lista configurata per questa elezione.</div>`;
+                }
+            }
+
+            container.innerHTML = `
+                <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 animate-fade-in w-full font-semibold">
+                    <div class="border-b border-slate-100 pb-3 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <span class="text-[9px] bg-red-100 text-red-800 font-black px-2 py-0.5 rounded uppercase">SCRUTINIO</span>
+                            <h3 class="text-base font-extrabold text-slate-800 mt-0.5">${titleLabel}</h3>
+                            <p class="text-[11px] text-slate-500">Riscontri dell'urna cloud aggiornati in tempo reale.</p>
+                        </div>
+                        <button onclick="window.downloadVerbalePDF('${currentScrutinioSection}', '${currentScrutinioSubComponent}')" class="bg-emerald-650 hover:bg-emerald-700 text-white font-extrabold py-2 px-5 rounded-xl text-xs flex items-center gap-1.5 shadow">
+                            <i data-lucide="file-text" class="w-4 h-4"></i> Esporta Verbale Ufficiale (PDF)
+                        </button>
+                    </div>
+
+                    ${mainNavHTML}
+                    ${subNavConsiglioHTML}
+
+                    <div class="space-y-4">
+                        ${scrutinioResultsHTML}
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        window.downloadVerbalePDF = async function(section, subComponent) {
+            try {
+                let colName = 'voti_istituto';
+                let docTitle = 'Rappresentanti d\'Istituto';
+                let isClasse = false;
+                let isConsiglio = false;
+                let isCustom = false;
+
+                if (section === 'consulta') {
+                    colName = 'voti_consulta';
+                    docTitle = 'Consulta Provinciale';
+                } else if (section === 'consiglio') {
+                    colName = 'voti_consiglio';
+                    docTitle = `Consiglio d'Istituto - Componente ${subComponent}`;
+                    isConsiglio = true;
+                } else if (section === 'classe_st') {
+                    colName = 'voti_classe_studenti';
+                    docTitle = 'Rappresentanti di Classe - Studenti';
+                    isClasse = true;
+                } else if (section === 'classe_ge') {
+                    colName = 'voti_classe_genitori';
+                    docTitle = 'Rappresentanti di Classe - Genitori';
+                    isClasse = true;
+                } else if (section.startsWith('custom_')) {
+                    let idCustom = section.replace('custom_', '');
+                    colName = `voti_custom_${idCustom}`;
+                    let ele = configElezioni.customElections.find(e => e.id === idCustom);
+                    docTitle = ele ? ele.titolo : 'Votazione Straordinaria';
+                    isCustom = true;
+                }
+
+                const voti = await getVotiUrna(colName);
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                doc.setFillColor(30, 58, 138);
+                doc.rect(0, 0, 210, 38, 'F');
+                
+                doc.setTextColor(255, 255, 255);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(14);
+                doc.text("ITSCG PRIMO LEVI DI SEREGNO", 15, 14);
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(9);
+                doc.text(`Verbale Elettorale Ufficiale - ${docTitle}`, 15, 22);
+                doc.text("Sede Unica: Via Briantina 68 - MBTD430001", 15, 28);
+
+                doc.setTextColor(30, 41, 59);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(11);
+                doc.text(`VERBALE DI PROCLAMAZIONE ED ESITI ELETTORALI`, 15, 48);
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(9);
+                let preamble = `Oggi, 12 Luglio 2026, la Commissione Elettorale d'Istituto presieduta da ${configElezioni.commissione[0]?.nome || 'Laura Iavarone'} si è riunita in seduta pubblica per procedere allo scrutinio informatico e alla convalida dei voti espressi per l'elezione di cui all'oggetto. Il sistema digitale ha garantito la segretezza del voto e l'unicità d'accesso degli elettori autorizzati.`;
+                let splitText = doc.splitTextToSize(preamble, 180);
+                doc.text(splitText, 15, 55);
+
+                let startY = 75;
+
+                if (isClasse) {
+                    const grouped = {};
+                    voti.forEach(v => {
+                        let cl = v.classe || 'N/A';
+                        if (!grouped[cl]) grouped[cl] = [];
+                        grouped[cl].push(v);
+                    });
+
+                    const rows = [];
+                    Object.entries(grouped).forEach(([cl, val]) => {
+                        let total = val.length;
+                        let bianche = val.filter(v => v.isBianca).length;
+
+                        let counts = {};
+                        val.filter(v => !v.isBianca).forEach(v => {
+                            let name = normalizeName(v.candidate1);
+                            if(name) counts[name] = (counts[name] || 0) + 1;
+                        });
+
+                        let topCandidates = Object.entries(counts)
+                            .map(([name, count]) => `${name} (${count})`)
+                            .sort((a,b) => b.substring(b.indexOf('(')+1, b.indexOf(')')) - a.substring(a.indexOf('(')+1, a.indexOf(')')))
+                            .slice(0, 3)
+                            .join(', ');
+
+                        rows.push([cl, total, bianche, topCandidates || 'Nessuno']);
+                    });
+
+                    doc.autoTable({
+                        startY: startY,
+                        head: [["Classe", "Votanti Totali", "Schede Bianche", "Primi Tre Candidati (Voti)"]],
+                        body: rows,
+                        theme: 'grid',
+                        headStyles: { fillColor: [30, 58, 138] },
+                        bodyStyles: { fontSize: 8.5 }
+                    });
+
+                } else if (isCustom) {
+                    let idCustom = section.replace('custom_', '');
+                    let ele = configElezioni.customElections.find(e => e.id === idCustom);
+                    let totalVotes = voti.length;
+
+                    let counts = {};
+                    if (ele) ele.opzioni.forEach(o => counts[o] = 0);
+                    voti.forEach(v => {
+                        if (v.scelta) counts[v.scelta] = (counts[v.scelta] || 0) + 1;
+                    });
+
+                    const rows = Object.entries(counts).map(([opt, val]) => {
+                        let percent = totalVotes > 0 ? ((val / totalVotes) * 100).toFixed(1) : 0;
+                        return [opt, val, `${percent}%`];
+                    });
+
+                    doc.autoTable({
+                        startY: startY,
+                        head: [["Opzione", "Voti Espressi", "Percentuale"]],
+                        body: rows,
+                        theme: 'grid',
+                        headStyles: { fillColor: [30, 58, 138] }
+                    });
+
+                } else {
+                    let subListe = {};
+                    if (isConsiglio) {
+                        subListe = configElezioni.listeConsiglio[subComponent] || {};
+                    } else if (section === 'consulta') {
+                        subListe = configElezioni.listeConsulta;
+                    } else {
+                        subListe = configElezioni.listeIstituto;
+                    }
+
+                    let listCounts = {};
+                    let prefCounts = {};
+                    Object.keys(subListe).forEach(lKey => {
+                        listCounts[lKey] = 0;
+                        prefCounts[lKey] = {};
+                        subListe[lKey].candidati.forEach(c => prefCounts[lKey][c] = 0);
+                    });
+
+                    let filtered = voti;
+                    if (isConsiglio) filtered = voti.filter(v => v.tipo === subComponent);
+
+                    filtered.forEach(v => {
+                        let lKey = v.lista;
+                        if (lKey && listCounts[lKey] !== undefined) {
+                            listCounts[lKey]++;
+                            if (v.p1 && prefCounts[lKey][v.p1] !== undefined) prefCounts[lKey][v.p1]++;
+                            if (v.p2 && prefCounts[lKey][v.p2] !== undefined) prefCounts[lKey][v.p2]++;
+                        }
+                    });
+
+                    const rows = [];
+                    Object.entries(subListe).forEach(([lKey, lVal]) => {
+                        let listVotes = listCounts[lKey] || 0;
+                        let sortedPrefs = Object.entries(prefCounts[lKey])
+                            .map(([c, count]) => `${c} (${count})`)
+                            .sort((a,b) => b.substring(b.indexOf('(')+1, b.indexOf(')')) - a.substring(a.indexOf('(')+1, a.indexOf(')')))
+                            .join(', ');
+
+                        rows.push([lVal.nome, listVotes, sortedPrefs || 'Nessuna preferenza']);
+                    });
+
+                    doc.autoTable({
+                        startY: startY,
+                        head: [["Lista Elettorale", "Voti di Lista", "Candidati e Preferenze Ricevute"]],
+                        body: rows,
+                        theme: 'grid',
+                        headStyles: { fillColor: [30, 58, 138] },
+                        bodyStyles: { fontSize: 8.5 }
+                    });
+                }
+
+                let finalY = doc.lastAutoTable.finalY + 15;
+                if (finalY > 230) {
+                    doc.addPage();
+                    finalY = 30;
+                }
+
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(9);
+                doc.text("LA COMMISSIONE ELETTORALE DI PRESIDIO", 15, finalY);
+
+                let nextLineY = finalY + 12;
+                configElezioni.commissione.forEach((m, idx) => {
+                    doc.setFont("helvetica", "normal");
+                    doc.text(`${m.nome} (${m.ruolo})`, 15, nextLineY + (idx * 10));
+                    doc.text("..........................................................", 115, nextLineY + (idx * 10));
+                });
+
+                doc.save(`Verbale_Ufficiale_${section}_Primo_Levi.pdf`);
+                showNotification("Successo", "Verbale di proclamazione esportato ufficialmente in PDF con firme di commissione.", "success");
+            } catch (err) {
+                console.error(err);
+                showNotification("Errore", "Impossibile generare il verbale PDF: " + err.message, "error");
+            }
+        };
+
+        // --- SEZIONE 9: GRAFICI E AFFLUENZA ---
+        async function renderGraficiTab(container) {
+            container.innerHTML = `
+                <div class="text-center p-12 bg-white rounded-2xl shadow w-full">
+                    <div class="spinner border-blue-900 border-t-transparent mx-auto mb-3"></div>
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Elaborazione statistiche di affluenza...</p>
+                </div>
+            `;
+
+            const tokensSnap = await getDocs(getCollectionRef('tokens'));
+            let totalTokens = [];
+            tokensSnap.forEach(doc => totalTokens.push(doc.data()));
+
+            let stats = {
+                STUDENTE: { generated: 0, voted: 0 },
+                GENITORE: { generated: 0, voted: 0 },
+                DOCENTE: { generated: 0, voted: 0 },
+                ATA: { generated: 0, voted: 0 }
+            };
+
+            totalTokens.forEach(t => {
+                let r = t.tipo;
+                if (stats[r] !== undefined) {
+                    stats[r].generated++;
+                    if (t.hasVoted) stats[r].voted++;
+                }
+            });
+
+            let globalGen = totalTokens.length;
+            let globalVoted = totalTokens.filter(t => t.hasVoted).length;
+            let globalPercent = globalGen > 0 ? ((globalVoted / globalGen) * 100).toFixed(1) : 0;
+
+            let componentBlocksHTML = Object.entries(stats).map(([comp, val]) => {
+                let p = val.generated > 0 ? ((val.voted / val.generated) * 100).toFixed(1) : 0;
+                let colorClass = comp === 'STUDENTE' ? 'bg-sky-500' : (comp === 'GENITORE' ? 'bg-rose-500' : (comp === 'DOCENTE' ? 'bg-emerald-500' : 'bg-amber-500'));
+                let textClass = comp === 'STUDENTE' ? 'text-sky-850' : (comp === 'GENITORE' ? 'text-rose-850' : (comp === 'DOCENTE' ? 'text-emerald-850' : 'text-amber-850'));
+                let borderClass = comp === 'STUDENTE' ? 'border-sky-200' : (comp === 'GENITORE' ? 'border-rose-200' : (comp === 'DOCENTE' ? 'border-emerald-200' : 'border-amber-200'));
+
+                return `
+                    <div class="bg-white p-5 rounded-2xl border ${borderClass} shadow-sm font-semibold">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-black uppercase ${textClass}">${comp}</span>
+                            <span class="text-sm font-black ${textClass}">${p}%</span>
+                        </div>
+                        <div class="text-xs text-slate-500 mb-3 font-semibold">
+                            Hanno votato: <strong>${val.voted}</strong> su <strong>${val.generated}</strong> token generati.
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                            <div class="${colorClass} h-3 rounded-full transition-all duration-500" style="width: ${p}%"></div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = `
+                <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 animate-fade-in w-full font-semibold">
+                    <div class="border-b border-slate-100 pb-3 mb-6">
+                        <span class="text-[9px] bg-indigo-100 text-indigo-800 font-black px-2 py-0.5 rounded uppercase">STATISTICHE</span>
+                        <h3 class="text-base font-extrabold text-slate-800 mt-0.5">Partecipazione & Affluenza in Tempo Reale</h3>
+                        <p class="text-[11px] text-slate-500">Monitoraggio asincrono dei flussi elettorali totali.</p>
+                    </div>
+
+                    <div class="grid lg:grid-cols-12 gap-6 mb-6">
+                        <div class="lg:col-span-4 bg-gradient-to-br from-blue-900 to-slate-900 text-white p-6 rounded-2xl flex flex-col justify-between shadow">
+                            <div>
+                                <h4 class="text-yellow-400 font-black text-xs uppercase tracking-wider">Affluenza Generale</h4>
+                                <div class="text-4xl font-black mt-2">${globalPercent}%</div>
+                                <p class="text-[11px] text-slate-350 mt-1">Elettori totali che hanno concluso le operazioni di voto.</p>
+                            </div>
+                            <div class="mt-6 border-t border-white/10 pt-4 text-xs">
+                                <span>Votanti globali: <strong>${globalVoted}</strong> / ${globalGen}</span>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-8 bg-slate-50 p-6 rounded-2xl border border-slate-200 flex flex-col justify-between">
+                            <h4 class="text-xs font-black text-slate-800 uppercase tracking-wider mb-4">Grafico Confronto Componenti</h4>
+                            <div class="flex flex-col gap-3">
+                                ${Object.entries(stats).map(([comp, val]) => {
+                                    let p = val.generated > 0 ? ((val.voted / val.generated) * 100).toFixed(1) : 0;
+                                    return `
+                                        <div class="flex items-center gap-4 text-xs font-semibold">
+                                            <span class="w-20 font-bold text-slate-700">${comp}</span>
+                                            <div class="flex-grow bg-slate-200 rounded-full h-4 overflow-hidden relative">
+                                                <div class="bg-blue-900 h-4 rounded-full" style="width: ${p}%"></div>
+                                                <span class="absolute inset-y-0 right-3 flex items-center text-[9px] font-black text-slate-800">${p}%</span>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        ${componentBlocksHTML}
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
 
         window.onload = () => {
             showPage('studentLogin'); 
