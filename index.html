@@ -37,11 +37,11 @@
         
         .delicate-bubble {
             position: absolute;
-            background-image: url('levi.png'), url('https://placehold.co/150x150/1e3a8a/ffffff?text=LEVI');
+            background-image: url('https://placehold.co/150x150/1e3a8a/ffffff?text=LEVI');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            opacity: 0.025;
+            opacity: 0.02;
             pointer-events: none;
             border-radius: 50%;
             border: 1px solid rgba(30, 58, 138, 0.05);
@@ -90,7 +90,7 @@
         }
     </style>
 </head>
-<body class="flex flex-col justify-between relative">
+<body class="flex flex-col justify-between relative min-h-screen">
 
     <div class="bubble-bg">
         <div class="delicate-bubble w-20 h-20" style="top: 10%; left: 5%; animation-delay: 0s; animation-duration: 22s;"></div>
@@ -100,32 +100,90 @@
         <div class="delicate-bubble w-18 h-18" style="top: 50%; left: 48%; animation-delay: 4s; animation-duration: 26s;"></div>
     </div>
 
-    <!-- Header Istituzionale con Logo della Scuola -->
-    <header class="bg-gradient-header text-white p-5 shadow-xl relative border-b-4 border-yellow-500 z-20">
-        <div class="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+    <header class="bg-gradient-header text-white shadow-xl relative border-b-4 border-yellow-500 z-20">
+        <div class="container mx-auto p-4 flex flex-col lg:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-4">
-                <img src="levi.png" 
+                <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" 
                      id="school-logo" 
                      alt="Logo ITCG Primo Levi" 
-                     class="h-16 w-16 rounded-xl shadow-md border border-yellow-400 object-contain p-1 bg-white transition-all hover:scale-105"
+                     class="h-14 w-14 rounded-xl shadow-md border border-yellow-400 object-contain p-1 bg-white transition-all hover:scale-105"
                      onerror="this.src='https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI'"/>
                 <div>
-                    <h1 class="text-xl md:text-2xl font-black tracking-tight uppercase">Piattaforma Elettorale Unificata</h1>
-                    <p class="text-yellow-400 font-extrabold tracking-wider text-xs uppercase">ITCG PRIMO LEVI DI SEREGNO</p>
-                    <p class="text-slate-300 text-[10px] font-medium">Via Briantina 68, Seregno (MB)</p>
+                    <h1 class="text-lg md:text-xl font-black tracking-tight uppercase leading-tight">Piattaforma Elettorale Unificata</h1>
+                    <p class="text-yellow-400 font-extrabold tracking-wider text-[11px] uppercase">ITCG PRIMO LEVI DI SEREGNO</p>
+                    <div class="text-slate-300 text-[10px] space-y-0.5">
+                        <p><span class="font-semibold text-white">Sede Centrale:</span> Via Briantina 68, Seregno (MB) — Cod. Meccanografico: <span class="font-semibold text-yellow-300">MBTD043001</span></p>
+                        <p><span class="font-semibold text-white">Sede Associata:</span> Via Piemonte 83, Seregno (MB)</p>
+                    </div>
                 </div>
             </div>
-            <!-- Area pulsanti di Logout contestuali gestiti dinamicamente -->
+            
+            <!-- Pulsanti ad accesso rapido posizionati nell'header per l'ottimizzazione BYOD -->
+            <div class="flex flex-wrap items-center justify-center gap-1.5 bg-slate-900/40 p-2 rounded-xl border border-white/10 w-full lg:w-auto">
+                <button onclick="window.openInformativaModal()" class="bg-blue-800/80 hover:bg-blue-750 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5 text-[10px]">
+                    <i data-lucide="scale" class="w-3.5 h-3.5 text-yellow-400"></i> Norme & Commissione
+                </button>
+                <button onclick="window.showClassMasterLogin('STUDENTE')" class="bg-slate-800 hover:bg-slate-750 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5 text-[10px]">
+                    <i data-lucide="users" class="w-3.5 h-3.5 text-sky-450"></i> Referenti Studenti
+                </button>
+                <button onclick="window.showClassMasterLogin('GENITORE')" class="bg-slate-800 hover:bg-slate-750 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5 text-[10px]">
+                    <i data-lucide="heart" class="w-3.5 h-3.5 text-rose-450"></i> Referenti Genitori
+                </button>
+                <button onclick="window.showPage('adminLogin')" class="bg-red-950/60 hover:bg-red-900 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5 text-[10px] border border-red-900/50">
+                    <i data-lucide="shield" class="w-3.5 h-3.5 text-red-400"></i> Commissione
+                </button>
+            </div>
+            
             <div id="header-actions" class="flex items-center space-x-3"></div>
         </div>
     </header>
 
-    <!-- Contenitore Principale per il Rendering delle Pagine -->
-    <main class="flex-grow container mx-auto p-4 md:p-6 w-full max-w-7xl z-10" id="app-container">
-        <!-- Contenuto dinamico iniettato via Javascript -->
+    <main class="flex-grow container mx-auto p-4 md:p-6 w-full max-w-7xl z-10 flex items-center justify-center" id="app-container">
+        <!-- Contenuto dinamico iniettato via Javascript (Login, Cabina, Dashboard, ecc.) -->
     </main>
 
-    <!-- Modale per le Notifiche Personalizzate -->
+    <div id="informativa-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-2xl w-full mx-4 border border-slate-150 transform scale-95 transition-all flex flex-col max-h-[90vh]">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+                <div class="flex items-center space-x-2 text-blue-900">
+                    <i data-lucide="scale" class="w-5 h-5 text-yellow-500"></i>
+                    <h3 class="text-base font-bold text-slate-900">Informativa Ministeriale & Norme Vigenti</h3>
+                </div>
+                <button onclick="window.closeInformativaModal()" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="overflow-y-auto pr-2 custom-scrollbar space-y-4 text-xs text-slate-700 leading-relaxed">
+                <p class="font-bold text-slate-900 border-l-4 border-blue-900 pl-3">D.Lgs. 16 aprile 1994, n. 297 & O.M. 215/1991</p>
+                <p>Le consultazioni elettorali della componente studentesca e della componente genitori sono normate dal Testo Unico della Scuola e dalle ordinanze ministeriali vigenti. Il presente sistema digitale garantisce l'assoluto anonimato, l'unicità e la segretezza del voto.</p>
+                
+                <div class="bg-emerald-50/70 p-3 rounded-xl border border-emerald-100 space-y-1">
+                    <h4 class="font-bold text-emerald-900 flex items-center"><i data-lucide="zap" class="w-4 h-4 mr-1.5"></i> Dissociazione ed Anonimato:</h4>
+                    <p class="text-[11px]">La convalida del Token e il deposito del voto anonimo avvengono tramite transazioni asincrone separate. Non vi è alcun log o record relazionale che possa ricollegare il voto all'identità dell'elettore.</p>
+                </div>
+
+                <div class="bg-amber-50/70 p-3 rounded-xl border border-amber-100 space-y-1">
+                    <h4 class="font-bold text-amber-900 flex items-center"><i data-lucide="heart" class="w-4 h-4 mr-1.5"></i> Votazione Componente Genitori:</h4>
+                    <p class="text-[11px]">I genitori sono chiamati ad esprimere il loro voto per i Rappresentanti nei Consigli di Classe e d'Istituto. In conformità alle direttive, l'atto finale prevede la presenza a scuola per la firma formale dei registri e la compilazione del verbale congiunto.</p>
+                </div>
+
+                <div class="pt-2 border-t border-slate-100">
+                    <h4 class="font-bold text-slate-900 mb-2 flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-blue-950"></i> Commissione Elettorale di Presidio:</h4>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-150 space-y-2" id="commissione-list-modal">
+                        <!-- Generato dinamicamente via JS -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex justify-end pt-4 border-t border-slate-100 mt-4">
+                <button onclick="window.closeInformativaModal()" class="bg-blue-900 hover:bg-blue-850 text-white font-bold py-2 px-6 rounded-xl text-xs shadow transition-all">
+                    Ho letto tutto
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div id="custom-alert-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full mx-4 border border-slate-100 transform scale-95 transition-all">
             <div class="flex items-center space-x-3 mb-4">
@@ -141,7 +199,6 @@
         </div>
     </div>
 
-    <!-- Modale di Conferma Azzeramento Cloud -->
     <div id="custom-confirm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full mx-4 border border-red-100 transform scale-95 transition-all">
             <div class="flex items-center space-x-3 mb-4 text-red-600">
@@ -160,22 +217,10 @@
     </div>
 
     <!-- Piè di Pagina Istituzionale -->
-    <footer class="bg-slate-900 text-slate-400 p-5 text-center text-[11px] border-t border-slate-800 z-10">
-        <div class="container mx-auto space-y-3">
+    <footer class="bg-slate-900 text-slate-400 p-4 text-center text-[10px] border-t border-slate-800 z-10">
+        <div class="container mx-auto space-y-1">
             <p class="font-bold text-slate-300">Sistema Elettorale Digitale ITCG "G. Levi" Seregno</p>
             <p>Conformità Costituzionale e MIM Garantita • Anonimato Cifrato Asincrono in Urna Cloud</p>
-            
-            <div class="pt-2 flex flex-wrap justify-center gap-2">
-                <button onclick="window.showClassMasterLogin('STUDENTE')" class="bg-slate-800 hover:bg-slate-750 text-white font-bold py-2 px-4 rounded-xl shadow transition-all border border-slate-700 flex items-center gap-1.5 text-[10px]">
-                    <i data-lucide="users" class="w-3.5 h-3.5 text-sky-400"></i> Accesso Referenti Studenti
-                </button>
-                <button onclick="window.showClassMasterLogin('GENITORE')" class="bg-slate-800 hover:bg-slate-750 text-white font-bold py-2 px-4 rounded-xl shadow transition-all border border-slate-700 flex items-center gap-1.5 text-[10px]">
-                    <i data-lucide="heart" class="w-3.5 h-3.5 text-rose-400"></i> Accesso Referenti Genitori
-                </button>
-                <button onclick="window.showPage('adminLogin')" class="bg-red-950/60 hover:bg-red-900 text-white font-bold py-2 px-4 rounded-xl shadow transition-all border border-red-900 flex items-center gap-1.5 text-[10px]">
-                    <i data-lucide="shield" class="w-3.5 h-3.5 text-red-400"></i> Accesso Commissione
-                </button>
-            </div>
         </div>
     </footer>
 
@@ -200,8 +245,8 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Password istituzionale per l'accesso amministrativo
-        const ADMIN_PWD = "docenti206levi";
+        // Password istituzionale per l'accesso amministrativo richiesta dall'utente
+        const ADMIN_PWD = "docenti226levi";
 
         function getCollectionRef(colName) { return collection(db, 'artifacts', appId, 'public', 'data', colName); }
         function getDocumentRef(colName, docId) { return doc(db, 'artifacts', appId, 'public', 'data', colName, docId); }
@@ -244,7 +289,7 @@
             }
         };
 
-        // ESPOSIZIONE GLOBALE CRUCIALE PER LE IMMISSIONI ONCHANGE NEI MODULI ES
+        // Esposizione globale per i moduli dinamici
         window.configElezioni = configElezioni;
 
         let activeTokensList = [];
@@ -274,12 +319,31 @@
 
         window.closeNotification = function() { document.getElementById('custom-alert-modal').classList.add('hidden'); };
 
+        window.openInformativaModal = function() {
+            const modal = document.getElementById('informativa-modal');
+            const commContainer = document.getElementById('commissione-list-modal');
+            
+            commContainer.innerHTML = configElezioni.commissione.map(c => `
+                <div class="flex items-center justify-between py-1.5 border-b border-slate-150 last:border-0 text-xs">
+                    <span class="font-bold text-slate-800">${c.nome}</span>
+                    <span class="text-[10px] px-2 py-0.5 bg-blue-100 text-blue-850 rounded font-semibold">${c.ruolo}</span>
+                </div>
+            `).join('');
+
+            modal.classList.remove('hidden');
+            lucide.createIcons();
+        };
+
+        window.closeInformativaModal = function() {
+            document.getElementById('informativa-modal').classList.add('hidden');
+        };
+
         async function syncConfigFromDB() {
             try {
                 const snap = await getDoc(getDocumentRef('config', 'settings_v2'));
                 if (snap.exists()) {
                     configElezioni = snap.data();
-                    window.configElezioni = configElezioni; // Allineo l'oggetto globale su window
+                    window.configElezioni = configElezioni;
                 } else {
                     await setDoc(getDocumentRef('config', 'settings_v2'), configElezioni);
                 }
@@ -298,33 +362,32 @@
             }
         };
 
-        // Aggiorna gli elementi di Logout e della Navbar in modo pulito e non distruttivo
         function updateHeaderActions() {
             const headerActions = document.getElementById('header-actions');
             headerActions.innerHTML = '';
             
             if (currentUserData) {
                 headerActions.innerHTML = `
-                    <div class="flex items-center space-x-3 bg-white/10 px-3 py-1.5 rounded-xl border border-white/20">
-                        <span class="text-xs font-bold text-white uppercase hidden sm:inline">Cabina: ${currentUserData.id}</span>
-                        <button onclick="logoutElettore()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-black px-3.5 py-1.5 rounded-lg shadow-sm transition-all flex items-center gap-1.5">
-                            <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Esci
+                    <div class="flex items-center space-x-2 bg-white/10 px-2 py-1 rounded-lg border border-white/20">
+                        <span class="text-[10px] font-bold text-white uppercase hidden sm:inline">Cabina: ${currentUserData.id}</span>
+                        <button onclick="logoutElettore()" class="bg-red-600 hover:bg-red-700 text-white text-[10px] font-black px-2.5 py-1 rounded shadow-sm transition-all flex items-center gap-1">
+                            <i data-lucide="log-out" class="w-3 h-3"></i> Esci
                         </button>
                     </div>
                 `;
             } else if (currentClassMasterData) {
                 headerActions.innerHTML = `
-                    <div class="flex items-center space-x-3 bg-white/10 px-3 py-1.5 rounded-xl border border-white/20">
-                        <span class="text-xs font-bold text-white uppercase hidden sm:inline">Referente: ${currentClassMasterData.classe}</span>
-                        <button onclick="logoutClassMaster()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-black px-3.5 py-1.5 rounded-lg shadow-sm transition-all flex items-center gap-1.5">
-                            <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Esci
+                    <div class="flex items-center space-x-2 bg-white/10 px-2 py-1 rounded-lg border border-white/20">
+                        <span class="text-[10px] font-bold text-white uppercase hidden sm:inline">Ref: ${currentClassMasterData.classe}</span>
+                        <button onclick="logoutClassMaster()" class="bg-red-600 hover:bg-red-700 text-white text-[10px] font-black px-2.5 py-1 rounded shadow-sm transition-all flex items-center gap-1">
+                            <i data-lucide="log-out" class="w-3 h-3"></i> Esci
                         </button>
                     </div>
                 `;
             } else if (auth.currentUser && activeAdminTab) {
                 headerActions.innerHTML = `
-                    <button onclick="logoutAdmin()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-black px-4 py-2 rounded-lg shadow-sm transition-all flex items-center gap-1.5">
-                        <i data-lucide="log-out" class="w-3.5 h-3.5"></i> Esci Commissione
+                    <button onclick="logoutAdmin()" class="bg-red-600 hover:bg-red-700 text-white text-[10px] font-black px-3 py-1.5 rounded shadow-sm transition-all flex items-center gap-1">
+                        <i data-lucide="log-out" class="w-3 h-3"></i> Esci Comm.
                     </button>
                 `;
             }
@@ -364,63 +427,30 @@
         window.showClassMasterLogin = function(type) { loginReferenteType = type; showPage('classMasterLogin'); };
 
         function renderStudentLogin(container) {
-            let commissioneHTML = configElezioni.commissione.map(c => `
-                <div class="flex items-center justify-between py-1.5 border-b border-slate-100 last:border-0">
-                    <span class="font-bold text-slate-800 text-xs">${c.nome}</span>
-                    <span class="text-[10px] px-2.5 py-0.5 bg-blue-50 text-blue-800 rounded-full font-semibold">${c.ruolo}</span>
-                </div>
-            `).join('');
-
             container.innerHTML = `
-                <div class="grid lg:grid-cols-12 gap-8 items-start animate-fade-in mt-4">
-                    <!-- Informativa Ministeriale & Norme Vigenti -->
-                    <div class="lg:col-span-7 bg-white/95 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-slate-200">
-                        <div class="flex items-center space-x-3 mb-4 text-blue-900">
-                            <i data-lucide="scale" class="w-6 h-6"></i>
-                            <h3 class="text-lg font-bold">Informativa Ministeriale & Norme Vigenti</h3>
+                <div class="w-full max-w-md mx-auto bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-slate-200 text-center animate-fade-in mt-4">
+                    <div class="mb-6">
+                        <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-900">
+                            <i data-lucide="door-closed" class="w-7 h-7"></i>
                         </div>
-                        <div class="space-y-4 text-xs text-slate-700 leading-relaxed max-h-[420px] overflow-y-auto pr-2 custom-scrollbar">
-                            <p class="font-bold text-slate-900 border-l-4 border-blue-900 pl-3 text-sm">D.Lgs. 16 aprile 1994, n. 297 & O.M. 215/1991</p>
-                            <p>Le consultazioni elettorali della componente studentesca e della componente genitori sono normate dal Testo Unico della Scuola e dalle ordinanze ministeriali vigenti. Il presente sistema digitale garantisce l'assoluto anonimato, l'unicità e la segretezza del voto.</p>
-                            
-                            <div class="bg-emerald-50/70 p-3 rounded-xl border border-emerald-100 space-y-1">
-                                <h4 class="font-bold text-emerald-900 flex items-center"><i data-lucide="zap" class="w-4 h-4 mr-1.5"></i> Dissociation and Anonimato:</h4>
-                                <p class="text-[11px]">La convalida del Token e il deposito del voto anonimo avvengono tramite transazioni asincrone separate. Non vi è alcun log o record relazionale che possa ricollegare il voto all'identità dell'elettore.</p>
-                            </div>
-
-                            <div class="bg-amber-50/70 p-3 rounded-xl border border-amber-100 space-y-1">
-                                <h4 class="font-bold text-amber-900 flex items-center"><i data-lucide="heart" class="w-4 h-4 mr-1.5"></i> Votazione Componente Genitori:</h4>
-                                <p class="text-[11px]">I genitori sono chiamati ad esprimere il loro voto per i Rappresentanti nei Consigli di Classe e d'Istituto. In conformità alle direttive, l'atto finale prevede la presenza a scuola per la firma formale dei registri e la compilazione del verbale congiunto.</p>
-                            </div>
-
-                            <div class="mt-4 pt-3 border-t border-slate-200">
-                                <h4 class="font-bold text-slate-900 mb-2 flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-blue-950"></i> Commissione Elettorale di Presidio:</h4>
-                                <div class="bg-slate-50 p-3 rounded-xl border border-slate-150 space-y-2">
-                                    ${commissioneHTML}
-                                </div>
-                            </div>
-                        </div>
+                        <h2 class="text-xl font-black text-slate-800">Entra in Cabina</h2>
+                        <p class="text-slate-500 text-xs mt-1">Digita il codice segreto (Token) ricevuto dal docente della tua classe per votare dal tuo smartphone.</p>
                     </div>
-
-                    <!-- Portale Cabina di Voto -->
-                    <div class="lg:col-span-5 bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-slate-200 text-center">
-                        <div class="mb-6">
-                            <div class="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-900">
-                                <i data-lucide="door-closed" class="w-7 h-7"></i>
-                            </div>
-                            <h2 class="text-xl font-black text-slate-800">Entra in Cabina</h2>
-                            <p class="text-slate-500 text-xs mt-1">Digita il codice segreto (Token) ricevuto.</p>
-                        </div>
-                        <div class="space-y-4">
-                            <input type="text" id="tokenInput" placeholder="ES: STU-4A-X2Y9" class="w-full p-4 text-center text-2xl font-mono border-2 border-slate-200 rounded-xl uppercase tracking-wider focus:border-blue-600 outline-none font-bold">
-                            <button id="loginBtn" onclick="handleStudentLogin()" class="w-full bg-blue-900 hover:bg-blue-850 text-white font-extrabold py-3.5 rounded-xl shadow-md transition-all text-sm flex items-center justify-center space-x-2">
-                                <i data-lucide="key" class="w-4 h-4"></i> <span>Accedi alla Votazione</span>
-                            </button>
-                            <p id="loginError" class="text-red-600 text-xs font-semibold hidden bg-red-50 p-3 rounded-xl border border-red-100"></p>
-                        </div>
+                    <div class="space-y-4">
+                        <input type="text" id="tokenInput" placeholder="ES: STU-4A-X2Y9" class="w-full p-4 text-center text-2xl font-mono border-2 border-slate-200 rounded-xl uppercase tracking-wider focus:border-blue-600 outline-none font-bold">
+                        <button id="loginBtn" onclick="handleStudentLogin()" class="w-full bg-blue-900 hover:bg-blue-850 text-white font-extrabold py-3.5 rounded-xl shadow-md transition-all text-sm flex items-center justify-center space-x-2">
+                            <i data-lucide="key" class="w-4 h-4"></i> <span>Accedi alla Votazione</span>
+                        </button>
+                        <p id="loginError" class="text-red-600 text-xs font-semibold hidden bg-red-50 p-3 rounded-xl border border-red-100"></p>
+                    </div>
+                    
+                    <div class="mt-6 pt-4 border-t border-slate-100 flex justify-between items-center text-[10px] text-slate-400 font-medium">
+                        <span><i data-lucide="shield-check" class="w-3.5 h-3.5 inline mr-1"></i> Voto Anonimo Garantito</span>
+                        <button onclick="window.openInformativaModal()" class="text-blue-900 hover:underline font-bold">Leggi Regolamento</button>
                     </div>
                 </div>
             `;
+            lucide.createIcons();
         }
 
         window.handleStudentLogin = async function() {
@@ -566,27 +596,30 @@
             });
 
             container.innerHTML = `
-                <div class="bg-white/95 backdrop-blur-md p-6 rounded-2xl shadow-md border border-slate-200 mb-6 flex justify-between items-center animate-fade-in">
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
-                            <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded font-extrabold tracking-wider uppercase">CABINA ATTIVA</span>
+                <div class="w-full animate-fade-in">
+                    <div class="bg-white/95 backdrop-blur-md p-6 rounded-2xl shadow-md border border-slate-200 mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-3 h-3 rounded-full bg-emerald-500 animate-ping"></span>
+                                <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded font-extrabold tracking-wider uppercase">CABINA ATTIVA</span>
+                            </div>
+                            <h2 class="text-xl font-black text-slate-800 mt-1">Elettore Classe ${currentUserData.classe} (${currentUserData.tipo})</h2>
+                            <p class="text-[11px] text-slate-500">ITCG Primo Levi • Indirizzo: ${currentUserData.indirizzo}</p>
                         </div>
-                        <h2 class="text-xl font-black text-slate-800 mt-1">Elettore Classe ${currentUserData.classe} (${currentUserData.tipo})</h2>
-                        <p class="text-[11px] text-slate-500">ITCG Primo Levi • Indirizzo: ${currentUserData.indirizzo}</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${activeCardsHTML}
+                    </div>
+
+                    <div class="mt-8 flex justify-center">
+                        <button onclick="showPage('riepilogo')" class="bg-blue-900 text-white font-black py-3.5 px-8 rounded-xl shadow-lg hover:bg-blue-850 transition-all transform hover:-translate-y-0.5 text-sm flex items-center space-x-2">
+                            <i data-lucide="send" class="w-4 h-4"></i> <span>Verifica ed Esprimi Voto</span>
+                        </button>
                     </div>
                 </div>
-
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in">
-                    ${activeCardsHTML}
-                </div>
-
-                <div class="mt-8 flex justify-center animate-fade-in">
-                    <button onclick="showPage('riepilogo')" class="bg-blue-900 text-white font-black py-3.5 px-8 rounded-xl shadow-lg hover:bg-blue-850 transition-all transform hover:-translate-y-0.5 text-sm flex items-center space-x-2">
-                        <i data-lucide="send" class="w-4 h-4"></i> <span>Verifica ed Esprimi Voto</span>
-                    </button>
-                </div>
             `;
+            lucide.createIcons();
         }
 
         window.logoutElettore = function() { currentUserData = null; showPage('studentLogin'); };
@@ -594,7 +627,7 @@
         function getCardHeaderHTML(title) {
             return `
                 <div class="flex flex-col items-center mb-6 text-center border-b border-slate-100 pb-4">
-                    <img src="levi.png" onerror="this.src='https://placehold.co/80x80/1e3a8a/ffffff?text=LEVI'" class="h-12 w-auto mb-2 object-contain" />
+                    <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" onerror="this.src='https://placehold.co/80x80/1e3a8a/ffffff?text=LEVI'" class="h-12 w-auto mb-2 object-contain" />
                     <span class="text-[10px] uppercase tracking-widest text-slate-400 font-extrabold">ITCG PRIMO LEVI DI SEREGNO</span>
                     <h2 class="text-lg font-black text-slate-800 mt-1 uppercase">${title}</h2>
                 </div>
@@ -616,7 +649,7 @@
             `).join('');
 
             container.innerHTML = `
-                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in">
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full">
                     ${headerHTML}
                     <p class="text-xs text-slate-500 mb-4">Puoi esprimere il voto per una lista e al massimo due preferenze nominali per i candidati di quella lista.</p>
                     
@@ -637,6 +670,7 @@
                 </div>
             `;
             if (cartVotes.consiglio?.lista) updateConsiglioPreferenzeOptions(cartVotes.consiglio.lista);
+            lucide.createIcons();
         }
 
         window.updateConsiglioPreferenzeOptions = function(listaKey) {
@@ -709,7 +743,7 @@
             `).join('');
 
             container.innerHTML = `
-                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in">
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full">
                     ${headerHTML}
                     <p class="text-xs text-slate-500 mb-4">Scegli una lista ed esprimi fino a due preferenze nominali.</p>
                     
@@ -730,6 +764,7 @@
                 </div>
             `;
             if (cartVotes.istituto?.lista) updateIstitutoPreferenzeOptions(cartVotes.istituto.lista);
+            lucide.createIcons();
         }
 
         window.updateIstitutoPreferenzeOptions = function(listaKey) {
@@ -802,7 +837,7 @@
             `).join('');
 
             container.innerHTML = `
-                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in">
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full">
                     ${headerHTML}
                     <p class="text-xs text-slate-500 mb-4">Scegli la lista ed esprimi al massimo una preferenza nominale.</p>
                     
@@ -823,6 +858,7 @@
                 </div>
             `;
             if (cartVotes.consulta?.lista) updateConsultaPreferenzeOptions(cartVotes.consulta.lista);
+            lucide.createIcons();
         }
 
         window.updateConsultaPreferenzeOptions = function(listaKey) {
@@ -871,7 +907,7 @@
         function renderVotoClasseStudenti(container) {
             let headerHTML = getCardHeaderHTML("Rappresentanti di Classe (Studenti)");
             container.innerHTML = `
-                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-xl mx-auto animate-fade-in">
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-xl mx-auto animate-fade-in w-full">
                     ${headerHTML}
                     <p class="text-xs text-slate-500 mb-6">Digita i cognomi e nomi dei candidati studenti per la classe <strong>${currentUserData.classe}</strong>.</p>
 
@@ -892,6 +928,7 @@
                     </div>
                 </div>
             `;
+            lucide.createIcons();
         }
 
         window.saveVotoClasseStudenti = function() {
@@ -911,7 +948,7 @@
         function renderVotoClasseGenitori(container) {
             let headerHTML = getCardHeaderHTML("Rappresentanti di Classe (Genitori)");
             container.innerHTML = `
-                <div class="bg-white p-6 rounded-2xl shadow-lg border border-rose-200 max-w-xl mx-auto animate-fade-in">
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-rose-200 max-w-xl mx-auto animate-fade-in w-full">
                     ${headerHTML}
                     <p class="text-xs text-slate-500 mb-6">Digita i cognomi e nomi dei candidati genitori per la classe <strong>${currentUserData.classe}</strong>.</p>
 
@@ -932,6 +969,7 @@
                     </div>
                 </div>
             `;
+            lucide.createIcons();
         }
 
         window.saveVotoClasseGenitori = function() {
@@ -965,7 +1003,7 @@
             `).join('');
 
             container.innerHTML = `
-                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-xl mx-auto animate-fade-in">
+                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-xl mx-auto animate-fade-in w-full">
                     ${headerHTML}
                     <p class="text-xs text-slate-500 mb-6">${ce.descrizione}</p>
 
@@ -1104,14 +1142,14 @@
             });
 
             container.innerHTML = `
-                <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200 max-w-2xl mx-auto animate-fade-in">
+                <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full">
                     <div class="border-b border-slate-100 pb-4 mb-6 text-center">
                         <i data-lucide="shield-check" class="w-10 h-10 text-emerald-600 mx-auto mb-2"></i>
                         <h2 class="text-xl font-black text-slate-800">Verifica le tue scelte</h2>
                         <p class="text-xs text-slate-500 mt-1">Nessuna modifica sarà possibile dopo aver confermato il deposito asincrono nell'urna d'istituto.</p>
                     </div>
 
-                    <div class="divide-y divide-slate-100 mb-8">
+                    <div class="divide-y divide-slate-100 mb-8 font-medium">
                         ${rowsHTML}
                     </div>
 
@@ -1198,6 +1236,7 @@
                     </button>
                 </div>
             `;
+            lucide.createIcons();
         }
 
         function renderClassMasterLogin(container) {
@@ -1206,7 +1245,7 @@
             let placeholder = loginReferenteType === 'STUDENTE' ? 'REF-STU-4A' : 'REF-GEN-4A';
             
             container.innerHTML = `
-                <div class="max-w-md mx-auto bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-slate-200 mt-10 animate-fade-in">
+                <div class="max-w-md mx-auto bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-slate-200 mt-10 animate-fade-in w-full">
                     <div class="text-center mb-6">
                         <div class="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
                             <i data-lucide="key-round" class="w-5 h-5 ${colorClass}"></i>
@@ -1221,6 +1260,7 @@
                     </div>
                 </div>
             `;
+            lucide.createIcons();
         }
 
         window.handleClassMasterLogin = async function() {
@@ -1258,7 +1298,7 @@
         }
 
         async function renderClassMasterDashboard(container) {
-            container.innerHTML = `<div class="text-center p-12 bg-white rounded-2xl shadow"><div class="spinner border-blue-900 border-t-transparent mx-auto mb-3"></div> Elaborazione dati in corso...</div>`;
+            container.innerHTML = `<div class="text-center p-12 bg-white rounded-2xl shadow w-full max-w-md mx-auto"><div class="spinner border-blue-900 border-t-transparent mx-auto mb-3"></div> Elaborazione dati in corso...</div>`;
             
             const colUrna = currentClassMasterData.tipo === 'STUDENTE' ? 'voti_classe_studenti' : 'voti_classe_genitori';
             const votiClasseUrna = await getVotiUrna(colUrna);
@@ -1332,60 +1372,63 @@
             }
 
             container.innerHTML = `
-                <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 mb-6 flex justify-between items-center animate-fade-in">
-                    <div>
-                        <span class="text-[9px] bg-sky-100 text-sky-800 font-extrabold px-2 py-0.5 rounded uppercase">Risultanze Classe</span>
-                        <h2 class="text-xl font-black text-slate-800 mt-1">Sezione: ${currentClassMasterData.classe} (${currentClassMasterData.tipo})</h2>
-                        <p class="text-xs text-slate-500">ITCG Primo Levi • Componente: ${currentClassMasterData.tipo}</p>
+                <div class="w-full max-w-5xl mx-auto animate-fade-in">
+                    <div class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 mb-6 flex justify-between items-center">
+                        <div>
+                            <span class="text-[9px] bg-sky-100 text-sky-800 font-extrabold px-2 py-0.5 rounded uppercase">Risultanze Classe</span>
+                            <h2 class="text-xl font-black text-slate-800 mt-1">Sezione: ${currentClassMasterData.classe} (${currentClassMasterData.tipo})</h2>
+                            <p class="text-xs text-slate-500">ITCG Primo Levi • Componente: ${currentClassMasterData.tipo}</p>
+                        </div>
                     </div>
-                </div>
 
-                <div class="grid lg:grid-cols-12 gap-6 animate-fade-in">
-                    <div class="lg:col-span-5 space-y-4">
-                        <div class="bg-white p-6 rounded-2xl shadow border border-slate-200">
-                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5"><i data-lucide="crown" class="text-yellow-500 w-4 h-4"></i> Rappresentanti Eletti</h3>
-                            <div class="space-y-3">
-                                ${elettiHTML}
+                    <div class="grid lg:grid-cols-12 gap-6">
+                        <div class="lg:col-span-5 space-y-4">
+                            <div class="bg-white p-6 rounded-2xl shadow border border-slate-200">
+                                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5"><i data-lucide="crown" class="text-yellow-500 w-4 h-4"></i> Rappresentanti Eletti</h3>
+                                <div class="space-y-3 font-medium">
+                                    ${elettiHTML}
+                                </div>
                             </div>
+                            ${rigaSorteggioHTML}
                         </div>
-                        ${rigaSorteggioHTML}
-                    </div>
 
-                    <div class="lg:col-span-7 bg-white p-6 rounded-2xl shadow border border-slate-200">
-                        <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
-                            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Classifica Preferenze</h3>
-                            <span class="text-[10px] bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold">Votanti totali: ${votiClasseFiltrati.length}</span>
-                        </div>
-                        <div class="max-h-[350px] overflow-y-auto pr-1 custom-scrollbar">
-                            <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="text-[9px] uppercase text-slate-400 font-bold border-b border-slate-100 pb-2">
-                                        <th class="py-2">Nominativo</th>
-                                        <th class="py-2 text-right">Voti</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100 text-xs">
-                                    ${sortedCandidates.map(c => `
-                                        <tr>
-                                            <td class="py-2 font-bold text-slate-700 uppercase">${c.name}</td>
-                                            <td class="py-2 text-right font-black text-slate-800">${c.count}</td>
+                        <div class="lg:col-span-7 bg-white p-6 rounded-2xl shadow border border-slate-200">
+                            <div class="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
+                                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Classifica Preferenze</h3>
+                                <span class="text-[10px] bg-slate-100 text-slate-600 px-2.5 py-1 rounded-full font-bold">Votanti totali: ${votiClasseFiltrati.length}</span>
+                            </div>
+                            <div class="max-h-[350px] overflow-y-auto pr-1 custom-scrollbar">
+                                <table class="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr class="text-[9px] uppercase text-slate-400 font-bold border-b border-slate-100 pb-2">
+                                            <th class="py-2">Nominativo</th>
+                                            <th class="py-2 text-right">Voti</th>
                                         </tr>
-                                    `).join('')}
-                                    ${sortedCandidates.length === 0 ? `<tr><td colspan="2" class="py-8 text-center text-[11px] text-slate-400 italic font-medium">Nessuna preferenza espressa.</td></tr>` : ''}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-100 text-xs">
+                                        ${sortedCandidates.map(c => `
+                                            <tr>
+                                                <td class="py-2 font-bold text-slate-700 uppercase">${c.name}</td>
+                                                <td class="py-2 text-right font-black text-slate-800">${c.count}</td>
+                                            </tr>
+                                        `).join('')}
+                                        ${sortedCandidates.length === 0 ? `<tr><td colspan="2" class="py-8 text-center text-[11px] text-slate-400 italic font-medium">Nessuna preferenza espressa.</td></tr>` : ''}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             `;
             updateHeaderActions();
+            lucide.createIcons();
         }
 
         window.logoutClassMaster = function() { currentClassMasterData = null; showPage('studentLogin'); };
 
         function renderAdminLogin(container) {
             container.innerHTML = `
-                <div class="max-w-md mx-auto bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-slate-200 mt-10 animate-fade-in">
+                <div class="max-w-md mx-auto bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-slate-200 mt-10 animate-fade-in w-full">
                     <div class="text-center mb-6">
                         <i data-lucide="shield-alert" class="mx-auto w-12 h-12 text-red-600 mb-2"></i>
                         <h2 class="text-xl font-black text-slate-800">Area Commissione</h2>
@@ -1398,6 +1441,7 @@
                     </div>
                 </div>
             `;
+            lucide.createIcons();
         }
 
         window.checkAdminLogin = function() {
@@ -1430,21 +1474,24 @@
             `).join('');
 
             container.innerHTML = `
-                <div class="bg-white/95 backdrop-blur-md p-5 rounded-2xl shadow border border-slate-200 mb-6 flex flex-col md:flex-row justify-between items-center gap-4 animate-fade-in">
-                    <div>
-                        <h2 class="text-lg font-black text-slate-800">Cruscotto Tecnico di Controllo</h2>
-                        <p class="text-slate-500 text-xs">Gestione in tempo reale • Sincronizzazione cloud asincrona</p>
+                <div class="w-full animate-fade-in">
+                    <div class="bg-white/95 backdrop-blur-md p-5 rounded-2xl shadow border border-slate-200 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div>
+                            <h2 class="text-lg font-black text-slate-800">Cruscotto Tecnico di Controllo</h2>
+                            <p class="text-slate-500 text-xs">Gestione in tempo reale • Sincronizzazione cloud asincrona</p>
+                        </div>
                     </div>
-                </div>
 
-                <div class="flex flex-wrap gap-1.5 mb-6 animate-fade-in">
-                    ${navTabsHTML}
-                </div>
+                    <div class="flex flex-wrap gap-1.5 mb-6">
+                        ${navTabsHTML}
+                    </div>
 
-                <div id="admin-tab-content"></div>
+                    <div id="admin-tab-content"></div>
+                </div>
             `;
             renderActiveAdminTab();
             updateHeaderActions();
+            lucide.createIcons();
         }
 
         window.switchAdminTab = function(tabId) { 
@@ -1485,39 +1532,39 @@
             `).join('');
 
             container.innerHTML = `
-                <div class="grid lg:grid-cols-12 gap-6 animate-fade-in">
+                <div class="grid lg:grid-cols-12 gap-6 animate-fade-in w-full">
                     <div class="lg:col-span-6 bg-white p-6 rounded-2xl shadow border border-slate-200">
                         <h3 class="text-sm font-extrabold text-slate-800 mb-4 flex items-center gap-1.5"><i data-lucide="settings" class="text-blue-900"></i> Abilitazione Elezioni</h3>
                         <div class="space-y-3">
-                            <label class="flex items-center justify-between p-3 border rounded-xl hover:bg-slate-50 cursor-pointer">
+                            <label class="flex items-center justify-between p-3 border rounded-xl hover:bg-slate-50 cursor-pointer font-semibold">
                                 <div>
                                     <span class="font-extrabold text-xs text-slate-800">Consiglio d'Istituto</span>
                                     <p class="text-[9px] text-slate-500">Abilita per tutte le componenti.</p>
                                 </div>
                                 <input type="checkbox" ${configElezioni.consiglioAttivo ? 'checked' : ''} onchange="configElezioni.consiglioAttivo = this.checked; saveConfigToDB();" class="w-4 h-4 rounded text-blue-900">
                             </label>
-                            <label class="flex items-center justify-between p-3 border rounded-xl hover:bg-slate-50 cursor-pointer">
+                            <label class="flex items-center justify-between p-3 border rounded-xl hover:bg-slate-50 cursor-pointer font-semibold">
                                 <div>
                                     <span class="font-extrabold text-xs text-slate-800">Rappresentanti d'Istituto</span>
                                     <p class="text-[9px] text-slate-500">Solo componente studenti.</p>
                                 </div>
                                 <input type="checkbox" ${configElezioni.rappresentantiIstitutoAttivo ? 'checked' : ''} onchange="configElezioni.rappresentantiIstitutoAttivo = this.checked; saveConfigToDB();" class="w-4 h-4 rounded text-blue-900">
                             </label>
-                            <label class="flex items-center justify-between p-3 border rounded-xl hover:bg-slate-50 cursor-pointer">
+                            <label class="flex items-center justify-between p-3 border rounded-xl hover:bg-slate-50 cursor-pointer font-semibold">
                                 <div>
                                     <span class="font-extrabold text-xs text-slate-800">Consulta Provinciale</span>
                                     <p class="text-[9px] text-slate-500">Solo componente studenti.</p>
                                 </div>
                                 <input type="checkbox" ${configElezioni.consultaAttiva ? 'checked' : ''} onchange="configElezioni.consultaAttiva = this.checked; saveConfigToDB();" class="w-4 h-4 rounded text-blue-900">
                             </label>
-                            <label class="flex items-center justify-between p-3 border rounded-xl hover:bg-slate-50 cursor-pointer">
+                            <label class="flex items-center justify-between p-3 border rounded-xl hover:bg-slate-50 cursor-pointer font-semibold">
                                 <div>
                                     <span class="font-extrabold text-xs text-slate-800">Rappresentanti di Classe - Studenti</span>
                                     <p class="text-[9px] text-slate-500">Elezioni dei rappresentanti alunni.</p>
                                 </div>
                                 <input type="checkbox" ${configElezioni.rappresentantiClasseStudentiAttivo ? 'checked' : ''} onchange="configElezioni.rappresentantiClasseStudentiAttivo = this.checked; saveConfigToDB();" class="w-4 h-4 rounded text-blue-900">
                             </label>
-                            <label class="flex items-center justify-between p-3 border rounded-xl hover:bg-rose-50/50 cursor-pointer">
+                            <label class="flex items-center justify-between p-3 border rounded-xl hover:bg-rose-50/50 cursor-pointer font-semibold">
                                 <div>
                                     <span class="font-extrabold text-xs text-rose-950">Rappresentanti di Classe - Genitori</span>
                                     <p class="text-[9px] text-slate-500">Elezioni dei rappresentanti genitori.</p>
@@ -1529,7 +1576,7 @@
                         <!-- Creazione Elezione Custom -->
                         <div class="mt-6 pt-6 border-t border-slate-100">
                             <h4 class="font-bold text-xs text-slate-800 mb-3 flex items-center gap-1.5"><i data-lucide="plus-circle" class="text-rose-600"></i> Crea Nuova Elezione Custom</h4>
-                            <div class="space-y-3">
+                            <div class="space-y-3 font-semibold">
                                 <input type="text" id="customTitle" placeholder="Titolo Elezione (es: Referendum Comitato)" class="w-full p-2.5 border rounded-xl text-xs outline-none">
                                 <textarea id="customDesc" placeholder="Descrizione o istruzioni..." class="w-full p-2.5 border rounded-xl text-xs outline-none" rows="2"></textarea>
                                 <div class="grid grid-cols-2 gap-2">
@@ -1562,12 +1609,13 @@
                 </div>
 
                 <!-- Reset Database Cloud -->
-                <div class="mt-6 bg-red-50 border border-red-200 p-6 rounded-2xl animate-fade-in">
+                <div class="mt-6 bg-red-50 border border-red-200 p-6 rounded-2xl animate-fade-in w-full">
                     <h4 class="text-red-800 font-extrabold text-xs flex items-center gap-1.5"><i data-lucide="shield-alert"></i> Danger Zone: Reset Completo Cloud</h4>
                     <p class="text-slate-600 text-[11px] mt-1">Svuota l'urna cloud cancellando tutti i voti e ripristinando lo stato dei token a "Inutilizzato".</p>
                     <button onclick="openConfirmModal()" class="mt-4 bg-red-600 hover:bg-red-700 text-white font-extrabold py-2.5 px-5 rounded-xl text-xs shadow-md transition-colors">Azzeramento Totale Cloud</button>
                 </div>
             `;
+            lucide.createIcons();
         }
 
         window.updateCommissioneMember = function(idx, field, value) { configElezioni.commissione[idx][field] = value; };
@@ -1703,7 +1751,7 @@
             }
 
             container.innerHTML = `
-                <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 animate-fade-in">
+                <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 animate-fade-in w-full">
                     <div class="border-b border-slate-100 pb-3 mb-4">
                         <h3 class="text-base font-extrabold text-slate-800">Modifica Candidati e Liste</h3>
                         <p class="text-xs text-slate-500 mt-1">Gestisci i candidati associati alle liste elettorali d'istituto.</p>
@@ -1849,7 +1897,7 @@
 
         function renderCredStuTab(container) {
             container.innerHTML = `
-                <div class="grid lg:grid-cols-12 gap-6 animate-fade-in">
+                <div class="grid lg:grid-cols-12 gap-6 animate-fade-in w-full">
                     <div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow border border-slate-200">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5"><i data-lucide="upload-cloud"></i> Importa Elenco Studenti</h3>
                         <p class="text-[11px] text-slate-500 mb-4">Carica file Excel con colonne: <strong>MATRICOLA</strong>, <strong>CLASSE</strong>, <strong>INDIRIZZO</strong>.</p>
@@ -1860,7 +1908,7 @@
                             <span class="text-xs font-bold text-slate-600 block">Carica file Excel (.xlsx)</span>
                         </div>
 
-                        <div class="mt-4 pt-4 border-t border-slate-100">
+                        <div class="mt-4 pt-4 border-t border-slate-100 font-semibold">
                             <span class="text-xs font-bold text-slate-800 block mb-2">Generazione Manuale Rapida (5 Token)</span>
                             <div class="flex gap-2">
                                 <input type="text" id="manualStuClasse" placeholder="4A" class="p-2 border rounded-xl text-xs w-20 text-center uppercase font-bold">
@@ -1897,7 +1945,7 @@
 
         function renderCredGenTab(container) {
             container.innerHTML = `
-                <div class="grid lg:grid-cols-12 gap-6 animate-fade-in">
+                <div class="grid lg:grid-cols-12 gap-6 animate-fade-in w-full">
                     <div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow border border-slate-200">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5"><i data-lucide="upload-cloud"></i> Importa Elenco Genitori</h3>
                         <p class="text-[11px] text-slate-500 mb-4">Colonne Excel richieste: <strong>ALUNNO</strong>, <strong>CLASSE</strong>, <strong>INDIRIZZO</strong>.</p>
@@ -1908,7 +1956,7 @@
                             <span class="text-xs font-bold text-slate-600 block">Carica file Excel (.xlsx)</span>
                         </div>
 
-                        <div class="mt-4 pt-4 border-t border-slate-100">
+                        <div class="mt-4 pt-4 border-t border-slate-100 font-semibold">
                             <span class="text-xs font-bold text-slate-800 block mb-2">Generazione Manuale Rapida (5 Token)</span>
                             <div class="flex gap-2">
                                 <input type="text" id="manualGenClasse" placeholder="1A" class="p-2 border rounded-xl text-xs w-20 text-center uppercase font-bold">
@@ -1945,7 +1993,7 @@
 
         function renderCredDocTab(container) {
             container.innerHTML = `
-                <div class="grid lg:grid-cols-12 gap-6 animate-fade-in">
+                <div class="grid lg:grid-cols-12 gap-6 animate-fade-in w-full">
                     <div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow border border-slate-200">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5"><i data-lucide="upload-cloud"></i> Importa Elenco Docenti</h3>
                         <p class="text-[11px] text-slate-500 mb-4">Carica Excel con colonna: <strong>COGNOME_NOME</strong> per abilitare il personale docente d'istituto.</p>
@@ -1956,7 +2004,7 @@
                             <span class="text-xs font-bold text-slate-600 block">Carica file Excel (.xlsx)</span>
                         </div>
 
-                        <div class="mt-4 pt-4 border-t border-slate-100">
+                        <div class="mt-4 pt-4 border-t border-slate-100 font-semibold">
                             <span class="text-xs font-bold text-slate-800 block mb-2">Generazione Manuale Rapida</span>
                             <button onclick="generateManualTokens('DOCENTE')" class="w-full bg-blue-950 hover:bg-blue-900 text-white font-extrabold py-2.5 rounded-xl text-xs transition-colors">Genera 5 Token Docenti</button>
                         </div>
@@ -1989,7 +2037,7 @@
 
         function renderCredAtaTab(container) {
             container.innerHTML = `
-                <div class="grid lg:grid-cols-12 gap-6 animate-fade-in">
+                <div class="grid lg:grid-cols-12 gap-6 animate-fade-in w-full">
                     <div class="lg:col-span-4 bg-white p-6 rounded-2xl shadow border border-slate-200">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5"><i data-lucide="upload-cloud"></i> Importa Elenco Personale ATA</h3>
                         <p class="text-[11px] text-slate-500 mb-4">Carica Excel con colonna: <strong>COGNOME_NOME</strong> per abilitare il personale amministrativo, tecnico ed ausiliario.</p>
@@ -2000,7 +2048,7 @@
                             <span class="text-xs font-bold text-slate-600 block">Carica file Excel (.xlsx)</span>
                         </div>
 
-                        <div class="mt-4 pt-4 border-t border-slate-100">
+                        <div class="mt-4 pt-4 border-t border-slate-100 font-semibold">
                             <span class="text-xs font-bold text-slate-800 block mb-2">Generazione Manuale Rapida</span>
                             <button onclick="generateManualTokens('ATA')" class="w-full bg-slate-800 hover:bg-slate-750 text-white font-extrabold py-2.5 rounded-xl text-xs transition-colors">Genera 5 Token ATA</button>
                         </div>
@@ -2149,7 +2197,7 @@
 
         function renderScrutinioTab(container) {
             container.innerHTML = `
-                <div class="grid lg:grid-cols-12 gap-6 animate-fade-in">
+                <div class="grid lg:grid-cols-12 gap-6 animate-fade-in w-full">
                     <!-- Colonna Sinistra: Selettore Votazione -->
                     <div class="lg:col-span-4 space-y-6">
                         <div class="bg-white p-5 rounded-2xl shadow border border-slate-200">
@@ -2160,7 +2208,7 @@
                         <!-- Verbali Generici di Commissione -->
                         <div class="bg-white p-5 rounded-2xl shadow border border-slate-200">
                             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3"><i data-lucide="file-text"></i> Verbali di Commissione</h3>
-                            <div class="space-y-2">
+                            <div class="space-y-2 font-semibold">
                                 <button onclick="window.loadScrutinioDetail('verbale_costituzione')" class="w-full text-left p-3 rounded-xl border hover:bg-slate-50 font-bold text-xs flex justify-between items-center bg-white text-slate-700"><span>1. Verbale Costituzione Seggio</span> <i data-lucide="chevron-right" class="w-4 h-4"></i></button>
                                 <button onclick="window.loadScrutinioDetail('verbale_commissione')" class="w-full text-left p-3 rounded-xl border hover:bg-slate-50 font-bold text-xs flex justify-between items-center bg-white text-slate-700 mt-2"><span>2. Riunione della Commissione</span> <i data-lucide="chevron-right" class="w-4 h-4"></i></button>
                                 <button onclick="window.loadScrutinioDetail('verbale_chiusura')" class="w-full text-left p-3 rounded-xl border hover:bg-slate-50 font-bold text-xs flex justify-between items-center bg-white text-slate-700 mt-2"><span>3. Chiusura delle Operazioni</span> <i data-lucide="chevron-right" class="w-4 h-4"></i></button>
@@ -2169,7 +2217,7 @@
                     </div>
 
                     <!-- Colonna Destra: Dettagli, Calcoli, Verbali, Grafici dedicati -->
-                    <div class="lg:col-span-8 bg-white p-6 rounded-2xl shadow border border-slate-200" id="scrutinio-details-container">
+                    <div class="lg:col-span-8 bg-white p-6 rounded-2xl shadow border border-slate-200 font-semibold" id="scrutinio-details-container">
                         <div class="text-center py-12 text-slate-400">
                             <i data-lucide="arrow-left-right" class="w-10 h-10 mx-auto mb-2 text-slate-300 animate-pulse"></i>
                             <p class="text-xs font-bold">Seleziona una votazione o un verbale dal pannello sinistro per visualizzare lo scrutinio ed i calcoli.</p>
@@ -2520,7 +2568,7 @@
                     </div>
                     <div class="text-xs text-slate-700 leading-relaxed space-y-4">
                         <p class="font-bold border-l-4 border-red-500 pl-3 uppercase tracking-wider text-[9px] text-red-800">Dettaglio e Riferimenti Normativi:</p>
-                        <textarea class="w-full p-4 border rounded-xl font-sans text-xs bg-slate-50 outline-none focus:border-red-500 custom-scrollbar" rows="10" id="area-verbale-txt">${refText}</textarea>
+                        <textarea class="w-full p-4 border rounded-xl font-sans text-xs bg-slate-50 outline-none focus:border-red-500 custom-scrollbar font-medium" rows="10" id="area-verbale-txt">${refText}</textarea>
                     </div>
                 </div>
             `;
@@ -2590,14 +2638,14 @@
             let p3 = total > 0 ? ((listVotes["BIANCA"] || 0) / total * 100) : 0;
 
             container.innerHTML = `
-                <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 animate-fade-in">
+                <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 animate-fade-in w-full">
                     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b pb-4 mb-6">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Affluenza e Grafici Interattivi</h3>
                         <button onclick="window.downloadScrutinioExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2 px-4 rounded-xl text-xs flex items-center gap-1.5 shadow"><i data-lucide="file-spreadsheet"></i> Esporta Excel (.xlsx)</button>
                     </div>
                     
                     <div class="grid md:grid-cols-12 gap-6 items-center">
-                        <div class="md:col-span-5 space-y-3">
+                        <div class="md:col-span-5 space-y-3 font-semibold">
                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Consiglio d'Istituto</span>
                             <div class="flex items-center justify-between border-b pb-1.5 text-xs font-bold">
                                 <span>Lista 1 (Levi ed Oltre):</span>
@@ -2671,7 +2719,7 @@
         window.onload = () => {
             showPage('studentLogin'); 
             
-            // onAuthStateChanged garantisce che Firestore sia contattato solo DOPO l'autenticazione anonima del client
+            // onAuthStateChanged garantisce l'aggiornamento dinamico delle informazioni di presidio
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
                     try {
