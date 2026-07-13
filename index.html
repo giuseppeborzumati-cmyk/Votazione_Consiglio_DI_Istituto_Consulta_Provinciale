@@ -184,7 +184,7 @@
                 <p>Le consultazioni elettorali scolastiche per il rinnovo delle componenti d'Istituto (della durata di 3 anni per Docenti, Genitori e ATA; annuali per gli Studenti) e dei Consigli di Classe avvengono in conformità con le direttive ministeriali. Il sistema digitale garantisce l'assoluto anonimato, l'unicità e la segretezza del voto.</p>
                 
                 <div class="bg-emerald-50/70 p-3 rounded-xl border border-emerald-100 space-y-1">
-                    <h4 class="font-bold text-emerald-900 flex items-center"><i data-lucide="zap" class="w-4 h-4 mr-1.5"></i> Dissociazione e Sicurezza:</h4>
+                    <h4 class="font-bold text-emerald-900 flex items-center"><i data-lucide="zap" class="w-4 h-4 mr-1.5"></i> Dissociatione e Sicurezza:</h4>
                     <p class="text-[11px]">La convalida del token e il deposito della scheda di voto avvengono in modo asincrono e indipendente. È tecnicamente impossibile risalire all'elettore che ha espresso una preferenza.</p>
                 </div>
 
@@ -269,7 +269,7 @@
                 </div>
                 <h3 class="text-lg font-bold text-red-900">Eliminazione Totale Credenziali</h3>
             </div>
-            <p class="text-slate-600 text-sm mb-4 leading-relaxed">Attenzione: questa azione <strong>eliminerà completamente tutti i token</strong> (studenti, genitori, docenti, ATA) memorizzati nel database. L'operazione non è reversibile.</p>
+            <p class="text-slate-600 text-sm mb-4 leading-relaxed">Attenzione: questa azione <strong>eliminerà completamente tutti i token</strong> memorizzati nel database. L'operazione non è reversibile.</p>
             <input type="password" id="confirmPurgePassword" placeholder="Digitare Password Amministratore" class="w-full p-3 border rounded-xl mb-6 text-center text-xs outline-none focus:ring-2 focus:ring-red-250 focus:border-red-500 font-semibold uppercase">
             <div class="flex justify-end space-x-3">
                 <button onclick="closePurgeModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-5 rounded-xl text-xs transition-colors">Annulla</button>
@@ -314,7 +314,7 @@
         let currentUserData = null; 
         let currentClassMasterData = null; 
         let loginReferenteType = 'STUDENTE'; 
-        let cartVotes = { consiglio: null, istituto: null, consulta: null, classeStudente: null, classeGenitore: null, custom: {} };
+        let cartVotes = { consiglio: null, istituto: null, consulta: null, classeStudente: null, classeGenitore: null };
         
         let activeAdminTab = 'config';
         let currentAccordionSection = 'consiglio';
@@ -322,6 +322,22 @@
         let currentScrutinioSubComponent = 'GENITORE'; 
         let firebaseStateConnected = false;
         let adminSettingsEditEnabled = false; 
+
+        // Registro dei voti temporanei modificabili per il ricalcolo manuale (scrutinio)
+        let localVotiScrutinio = {
+            liste: {},      // voti di lista per liste istituto, consulta, consiglio
+            preferenze: {}, // preferenze per candidati
+            classi: {},     // voti candidati classi
+            seggiDisponibili: {
+                'istituto': 4,
+                'consulta': 2,
+                'consiglio_GENITORE': 4,
+                'consiglio_DOCENTE': 8,
+                'consiglio_ATA': 2,
+                'classe': 2
+            },
+            overrideEletti: {} // ID cand -> boolean (se forzato eletto)
+        };
 
         function generateRandomSuffix(length = 6) {
             const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -374,7 +390,6 @@
             rappresentantiIstitutoAttivo: true,
             rappresentantiClasseStudentiAttivo: true,
             rappresentantiClasseGenitoriAttivo: true,
-            customElections: [], 
             commissione: [
                 { nome: "Laura Iavarone", ruolo: "Presidente" },
                 { nome: "Giuseppe Borzumati", ruolo: "Segretario" },
@@ -477,7 +492,6 @@
                 const snap = await getDoc(getDocumentRef('config', 'settings_v3'));
                 if (snap.exists()) {
                     configElezioni = snap.data();
-                    if (!configElezioni.customElections) configElezioni.customElections = [];
                     window.configElezioni = configElezioni;
                 } else {
                     await setDoc(getDocumentRef('config', 'settings_v3'), configElezioni);
@@ -514,14 +528,14 @@
                 headerActions.innerHTML = `
                     <div class="flex items-center space-x-2 bg-white/10 px-2 py-1 rounded-lg border border-white/20">
                         <span class="text-[10px] font-bold text-white uppercase hidden sm:inline">Ref: ${currentClassMasterData.classe}</span>
-                        <button onclick="logoutClassMaster()" class="bg-red-650 hover:bg-red-700 text-white text-[10px] font-black px-2.5 py-1 rounded shadow-sm transition-all flex items-center gap-1">
+                        <button onclick="logoutClassMaster()" class="bg-red-655 hover:bg-red-700 text-white text-[10px] font-black px-2.5 py-1 rounded shadow-sm transition-all flex items-center gap-1">
                             <i data-lucide="log-out" class="w-3 h-3"></i> Esci
                         </button>
                     </div>
                 `;
             } else if (auth.currentUser && activeAdminTab) {
                 headerActions.innerHTML = `
-                    <button onclick="logoutAdmin()" class="bg-red-650 hover:bg-red-700 text-white text-[10px] font-black px-3 py-1.5 rounded shadow-sm transition-all flex items-center gap-1">
+                    <button onclick="logoutAdmin()" class="bg-red-655 hover:bg-red-700 text-white text-[10px] font-black px-3 py-1.5 rounded shadow-sm transition-all flex items-center gap-1">
                         <i data-lucide="log-out" class="w-3 h-3"></i> Esci Comm.
                     </button>
                 `;
@@ -546,7 +560,6 @@
                 case 'votoConsulta': renderVotoConsulta(container); break;
                 case 'votoClasseStudenti': renderVotoClasseStudenti(container); break;
                 case 'votoClasseGenitori': renderVotoClasseGenitori(container); break;
-                case 'votoCustom': renderVotoCustom(container); break;
                 case 'riepilogo': renderRiepilogo(container); break;
                 case 'success': renderSuccess(container); break;
                 case 'classMasterLogin': renderClassMasterLogin(container); break;
@@ -616,11 +629,10 @@
                     voted_istituto: data.voted_istituto || false,
                     voted_consulta: data.voted_consulta || false,
                     voted_classe_studente: data.voted_classe_studente || false,
-                    voted_classe_genitore: data.voted_classe_genitore || false,
-                    voted_custom: data.voted_custom || {}
+                    voted_classe_genitore: data.voted_classe_genitore || false
                 };
 
-                cartVotes = { consiglio: null, istituto: null, consulta: null, classeStudente: null, classeGenitore: null, custom: {} };
+                cartVotes = { consiglio: null, istituto: null, consulta: null, classeStudente: null, classeGenitore: null };
                 showPage('dashboard');
             } catch (error) {
                 errEl.textContent = error.message;
@@ -740,34 +752,6 @@
                 }
             }
 
-            if (configElezioni.customElections && configElezioni.customElections.length > 0) {
-                configElezioni.customElections.forEach(ele => {
-                    if (ele.voterTypes.includes(currentUserData.tipo)) {
-                        eligibleElectionsCount++;
-                        const isVotedInToken = currentUserData.voted_custom && currentUserData.voted_custom[ele.id];
-                        if (isVotedInToken) {
-                            alreadyVotedCount++;
-                        } else {
-                            let userChoice = cartVotes.custom[ele.id];
-                            let status = userChoice ? 'Compilata nel carrello' : 'Da compilare';
-                            let btnText = userChoice ? 'Modifica Scelta' : 'Seleziona';
-                            let statusColor = userChoice ? 'bg-indigo-50 border-indigo-200 text-indigo-850' : 'bg-amber-50 border-amber-200 text-amber-800';
-                            activeCardsHTML += `
-                                <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 flex flex-col justify-between font-semibold">
-                                    <div>
-                                        <span class="text-[10px] font-bold uppercase tracking-wider text-purple-855">Votazione Straordinaria</span>
-                                        <h3 class="text-base font-black text-slate-800 mt-1">${ele.titolo}</h3>
-                                        <p class="text-slate-500 text-xs mt-1">${ele.descrizione}</p>
-                                        <div class="mt-3 inline-block px-3 py-1 rounded-full text-[10px] font-extrabold border ${statusColor}">${status}</div>
-                                    </div>
-                                    <button onclick="window.showVotoCustomPage('${ele.id}')" class="mt-5 w-full bg-purple-900 text-white font-extrabold py-2.5 rounded-xl hover:bg-purple-850 transition-colors text-xs">${btnText}</button>
-                                </div>
-                            `;
-                        }
-                    }
-                });
-            }
-
             let hasRemainingElections = (eligibleElectionsCount - alreadyVotedCount) > 0;
 
             let submitBtnHTML = '';
@@ -784,7 +768,7 @@
                     <div class="mt-8 text-center bg-emerald-50 border border-emerald-150 p-6 rounded-2xl max-w-md mx-auto font-semibold">
                         <i data-lucide="shield-check" class="w-10 h-10 text-emerald-600 mx-auto mb-2"></i>
                         <h4 class="font-bold text-slate-800 text-sm">Cabina Elettorale Completata</h4>
-                        <p class="text-slate-500 text-xs mt-1 leading-relaxed">Hai espresso tutte le schede elettorali associate a questo Token. Ti ringraziamo per la partecipazione alla vita democratica dell'istituto.</p>
+                        <p class="text-slate-500 text-xs mt-1 leading-relaxed">Hai espresso tutte le schede associate a questo Token. Grazie per la partecipazione.</p>
                     </div>
                 `;
             }
@@ -845,7 +829,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full font-semibold">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4 font-semibold text-slate-600">La tua componente (${currentUserData.tipo}) può esprimere il voto per una lista e al massimo **due preferenze nominali** della medesima lista (voto disgiunto non consentito).</p>
+                    <p class="text-xs text-slate-500 mb-4 font-semibold text-slate-600">La tua componente (${currentUserData.tipo}) può esprimere il voto per una lista e al massimo **due preferenze nominali** della stessa lista.</p>
                     
                     <div class="space-y-4">
                         ${listeHTML}
@@ -1156,50 +1140,6 @@
             showPage('dashboard');
         };
 
-        window.showVotoCustomPage = function(eleId) {
-            const ele = configElezioni.customElections.find(e => e.id === eleId);
-            if(!ele) return;
-            
-            let headerHTML = getCardHeaderHTML(ele.titolo);
-            let optionsHTML = ele.opzioni.map(opt => `
-                <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 hover:bg-slate-100/50 transition-colors font-semibold">
-                    <label class="flex items-center space-x-3 cursor-pointer">
-                        <input type="radio" name="customOption" value="${opt}" ${cartVotes.custom[ele.id] === opt ? 'checked' : ''} class="w-5 h-5 text-purple-900 border-slate-300 focus:ring-purple-900">
-                        <span class="font-bold text-slate-800 text-xs uppercase">${opt}</span>
-                    </label>
-                </div>
-            `).join('');
-
-            const container = document.getElementById('app-container');
-            container.innerHTML = `
-                <div class="bg-white p-6 rounded-2xl shadow-lg border border-purple-200 max-w-xl mx-auto animate-fade-in w-full font-semibold">
-                    ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-6 font-semibold">${ele.descrizione}</p>
-
-                    <div class="space-y-4">
-                        ${optionsHTML}
-                    </div>
-
-                    <div class="mt-8 flex justify-between">
-                        <button onclick="showPage('dashboard')" class="bg-slate-100 text-slate-700 px-5 py-2.5 rounded-xl hover:bg-slate-200 font-bold text-xs">Annulla</button>
-                        <button onclick="window.saveVotoCustom('${ele.id}')" class="bg-purple-900 text-white px-6 py-2.5 rounded-xl hover:bg-purple-850 font-bold text-xs">Salva Scheda</button>
-                    </div>
-                </div>
-            `;
-            lucide.createIcons();
-        };
-
-        window.saveVotoCustom = function(eleId) {
-            const rads = document.getElementsByName('customOption');
-            let selected = null;
-            for(let r of rads) { if(r.checked) selected = r.value; }
-
-            if (!selected) { showNotification("Attenzione", "Seleziona un'opzione.", "error"); return; }
-
-            cartVotes.custom[eleId] = selected;
-            showPage('dashboard');
-        };
-
         function renderRiepilogo(container) {
             let rowsHTML = '';
             
@@ -1296,32 +1236,12 @@
                 `;
             }
 
-            if (configElezioni.customElections && configElezioni.customElections.length > 0) {
-                configElezioni.customElections.forEach(ele => {
-                    if (ele.voterTypes.includes(currentUserData.tipo)) {
-                        const isVotedInToken = currentUserData.voted_custom && currentUserData.voted_custom[ele.id];
-                        if (!isVotedInToken) {
-                            let text = cartVotes.custom[ele.id] || "Non compilata (Astenuto)";
-                            rowsHTML += `
-                                <div class="p-4 border-b border-slate-100 flex justify-between items-center font-semibold">
-                                    <div>
-                                        <h4 class="font-bold text-slate-800 text-xs">${ele.titolo}</h4>
-                                        <p class="text-[10px] text-slate-500 mt-0.5">${text}</p>
-                                    </div>
-                                    <button onclick="window.showVotoCustomPage('${ele.id}')" class="text-blue-900 hover:underline font-bold text-[10px]">Modifica</button>
-                                </div>
-                            `;
-                        }
-                    }
-                });
-            }
-
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full font-semibold">
                     <div class="border-b border-slate-100 pb-4 mb-6 text-center">
                         <i data-lucide="shield-check" class="w-10 h-10 text-emerald-600 mx-auto mb-2"></i>
                         <h2 class="text-xl font-black text-slate-800">Verifica le tue scelte</h2>
-                        <p class="text-xs text-slate-500 mt-1">Nessuna modifica sarà possibile dopo aver confermato l'invio asincrono all'urna d'Istituto.</p>
+                        <p class="text-xs text-slate-500 mt-1">Nessuna modifica sarà possibile dopo aver confermato l'invio all'urna d'Istituto.</p>
                     </div>
 
                     <div class="divide-y divide-slate-100 mb-8">
@@ -1383,23 +1303,13 @@
                     tokenUpdates.voted_classe_genitore = true;
                 }
 
-                const customTokenMap = { ...currentUserData.voted_custom };
-                for (let [eleId, opt] of Object.entries(cartVotes.custom)) {
-                    if (opt) {
-                        const voteRef = doc(getCollectionRef(`voti_custom_${eleId}`), uuid);
-                        batch.set(voteRef, { scelta: opt, tipo: currentUserData.tipo, classe: currentUserData.classe, dataVoto: "12 Luglio 2026" });
-                        customTokenMap[eleId] = true;
-                    }
-                }
-                tokenUpdates.voted_custom = customTokenMap;
-
                 tokenUpdates.hasVoted = true;
 
                 batch.update(tokenRef, tokenUpdates);
                 await batch.commit();
 
                 currentUserData = null; 
-                cartVotes = { consiglio: null, istituto: null, consulta: null, classeStudente: null, classeGenitore: null, custom: {} };
+                cartVotes = { consiglio: null, istituto: null, consulta: null, classeStudente: null, classeGenitore: null };
                 showPage('success');
             } catch (err) {
                 console.error(err);
@@ -1631,7 +1541,7 @@
                     </div>
                     <div class="space-y-4">
                         <input type="password" id="adminPwd" placeholder="Password della Commissione" class="w-full p-4 border rounded-xl text-center text-lg outline-none focus:ring-4 focus:ring-red-100 focus:border-red-650 font-bold">
-                        <button onclick="checkAdminLogin()" class="w-full bg-red-650 hover:bg-red-700 text-white font-extrabold py-3.5 rounded-xl shadow transition-all text-xs">Sblocca Cruscotto</button>
+                        <button onclick="checkAdminLogin()" class="w-full bg-red-655 hover:bg-red-700 text-white font-extrabold py-3.5 rounded-xl shadow transition-all text-xs">Sblocca Cruscotto</button>
                         <button onclick="showPage('studentLogin')" class="w-full text-xs text-slate-500 hover:underline text-center block font-extrabold">Torna alla cabina</button>
                     </div>
                 </div>
@@ -1654,13 +1564,12 @@
             const tabs = [
                 { id: 'config', label: '1. Configurazione & Presidio' },
                 { id: 'liste', label: '2. Liste & Candidati' },
-                { id: 'custom_elections', label: '3. Elezioni Custom' },
-                { id: 'cred_stu', label: '4. Registri Studenti' },
-                { id: 'cred_gen', label: '5. Registri Genitori' },
-                { id: 'cred_doc', label: '6. Registri Docenti' },
-                { id: 'cred_ata', label: '7. Registri ATA' },
-                { id: 'scrutinio', label: '8. Scrutinio & Verbali' },
-                { id: 'grafici', label: '9. Grafici & Affluenza' }
+                { id: 'cred_stu', label: '3. Registri Studenti' },
+                { id: 'cred_gen', label: '4. Registri Genitori' },
+                { id: 'cred_doc', label: '5. Registri Docenti' },
+                { id: 'cred_ata', label: '6. Registri ATA' },
+                { id: 'scrutinio', label: '7. Scrutinio & Proclamazione' },
+                { id: 'grafici', label: '8. Grafici & Affluenza' }
             ];
 
             let navTabsHTML = tabs.map(tab => `
@@ -1709,7 +1618,6 @@
             
             if(activeAdminTab === 'config') renderConfigTab(content);
             if(activeAdminTab === 'liste') renderListeTab(content);
-            if(activeAdminTab === 'custom_elections') renderCustomElectionsTab(content);
             if(activeAdminTab === 'cred_stu') renderCredStuTab(content);
             if(activeAdminTab === 'cred_gen') renderCredGenTab(content);
             if(activeAdminTab === 'cred_doc') renderCredDocTab(content);
@@ -1724,7 +1632,7 @@
                 <div class="flex items-center gap-2 mb-2 font-semibold">
                     <input type="text" value="${c.nome}" onchange="updateCommissioneMember(${idx}, 'nome', this.value)" class="p-2 border rounded-xl text-xs flex-grow font-bold">
                     <input type="text" value="${c.ruolo}" onchange="updateCommissioneMember(${idx}, 'ruolo', this.value)" class="p-2 border rounded-xl text-xs font-bold w-40 bg-slate-50">
-                    <button onclick="deleteCommissioneMember(${idx})" class="p-2 text-red-655 hover:bg-red-50 rounded-xl"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    <button onclick="deleteCommissioneMember(${idx})" class="p-2 text-red-655 hover:bg-red-55 rounded-xl"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
                 </div>
             `).join('');
 
@@ -1874,18 +1782,11 @@
                         voted_istituto: false,
                         voted_consulta: false,
                         voted_classe_studente: false,
-                        voted_classe_genitore: false,
-                        voted_custom: {}
+                        voted_classe_genitore: false
                     });
                 });
                 
                 const collectionsToClean = ['voti_consiglio', 'voti_istituto', 'voti_consulta', 'voti_classe_studenti', 'voti_classe_genitori'];
-                // Pulisci anche le eventuali urne custom
-                if (configElezioni.customElections) {
-                    configElezioni.customElections.forEach(ele => {
-                        collectionsToClean.push(`voti_custom_${ele.id}`);
-                    });
-                }
 
                 for(let col of collectionsToClean) {
                     const colSnap = await getDocs(getCollectionRef(col));
@@ -2090,125 +1991,6 @@
             renderListeTab(document.getElementById('admin-tab-content'));
         };
 
-        function renderCustomElectionsTab(container) {
-            if (!configElezioni.customElections) configElezioni.customElections = [];
-
-            let listHTML = configElezioni.customElections.map((ele, idx) => {
-                return `
-                    <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 mb-3 flex flex-col justify-between font-semibold">
-                        <div class="flex justify-between items-start border-b pb-2 mb-2">
-                            <div>
-                                <span class="text-[9px] bg-purple-100 text-purple-800 px-2 py-0.5 rounded font-black uppercase">Custom Election</span>
-                                <h4 class="font-black text-slate-800 text-xs mt-1">${ele.titolo}</h4>
-                                <p class="text-slate-500 text-[10px] mt-0.5">${ele.descrizione}</p>
-                            </div>
-                            <button onclick="deleteCustomElection(${idx})" class="p-1.5 text-red-655 hover:bg-red-50 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                        </div>
-                        <div class="grid sm:grid-cols-2 gap-4 mt-2 text-xs font-semibold">
-                            <div>
-                                <p class="text-[9px] text-slate-400 uppercase tracking-wider font-extrabold mb-1">Target Elettori:</p>
-                                <div class="flex flex-wrap gap-1 font-semibold">
-                                    ${ele.voterTypes.map(t => `<span class="bg-blue-100 text-blue-800 py-0.5 px-2 rounded font-bold text-[10px]">${t}</span>`).join('')}
-                                </div>
-                            </div>
-                            <div>
-                                <p class="text-[9px] text-slate-400 uppercase tracking-wider font-extrabold mb-1">Opzioni di Scelta:</p>
-                                <div class="flex flex-wrap gap-1 font-semibold">
-                                    ${ele.opzioni.map(o => `<span class="bg-purple-100 text-purple-800 py-0.5 px-2 rounded font-bold text-[10px] uppercase">${o}</span>`).join('')}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            container.innerHTML = `
-                <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 animate-fade-in w-full font-semibold">
-                    <div class="border-b border-slate-100 pb-3 mb-6 flex justify-between items-center">
-                        <div>
-                            <h3 class="text-base font-extrabold text-slate-800">Crea Nuova Elezione / Referendum</h3>
-                            <p class="text-xs text-slate-500 mt-1">Configura elezioni personalizzate con target d'accesso dedicato.</p>
-                        </div>
-                    </div>
-
-                    <div class="grid lg:grid-cols-12 gap-6">
-                        <div class="lg:col-span-5 bg-slate-50 p-5 rounded-2xl border border-slate-150 text-xs space-y-4 font-semibold">
-                            <h4 class="font-bold text-slate-800 text-xs border-b pb-2">Nuova Elezione Custom</h4>
-                            <div>
-                                <label class="block text-[10px] text-slate-500 uppercase mb-1">Filone / Titolo dell'Elezione</label>
-                                <input type="text" id="customEleTitle" placeholder="Es. Approvazione Regolamento" class="w-full p-2.5 border rounded-xl font-bold bg-white outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-slate-500 uppercase mb-1">Descrizione / Quesito</label>
-                                <textarea id="customEleDesc" placeholder="Es. Sei favorevole all'introduzione del regolamento B.Y.O.D.?" class="w-full p-2.5 border rounded-xl font-semibold bg-white outline-none" rows="2"></textarea>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-slate-500 uppercase mb-1.5">Target Elettori Abilitati</label>
-                                <div class="flex gap-4">
-                                    <label class="flex items-center space-x-1.5 cursor-pointer"><input type="checkbox" id="chkStu" checked class="w-4 h-4 rounded text-purple-900"> <span class="font-bold">STU</span></label>
-                                    <label class="flex items-center space-x-1.5 cursor-pointer"><input type="checkbox" id="chkGen" class="w-4 h-4 rounded text-purple-900"> <span class="font-bold">GEN</span></label>
-                                    <label class="flex items-center space-x-1.5 cursor-pointer"><input type="checkbox" id="chkDoc" class="w-4 h-4 rounded text-purple-900"> <span class="font-bold">DOC</span></label>
-                                    <label class="flex items-center space-x-1.5 cursor-pointer"><input type="checkbox" id="chkAta" class="w-4 h-4 rounded text-purple-900"> <span class="font-bold">ATA</span></label>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-[10px] text-slate-500 uppercase mb-1">Opzioni (separate da virgola)</label>
-                                <input type="text" id="customEleOptions" placeholder="Es. Favorevole, Contrario, Astenuto" class="w-full p-2.5 border rounded-xl font-bold bg-white outline-none">
-                            </div>
-                            <button onclick="createCustomElection()" class="w-full bg-purple-900 hover:bg-purple-850 text-white font-black py-2.5 rounded-xl transition-all shadow flex justify-center items-center gap-1.5"><i data-lucide="plus"></i> Salva e Pubblica Elezione</button>
-                        </div>
-
-                        <div class="lg:col-span-7 bg-white">
-                            <h4 class="font-bold text-slate-800 text-xs border-b pb-2 mb-3">Elezioni Custom Attive</h4>
-                            <div class="space-y-3">
-                                ${listHTML}
-                                ${configElezioni.customElections.length === 0 ? `<p class="text-xs text-slate-400 italic py-8 text-center">Nessuna votazione custom creata.</p>` : ''}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            lucide.createIcons();
-        }
-
-        window.createCustomElection = function() {
-            const title = document.getElementById('customEleTitle').value.trim();
-            const desc = document.getElementById('customEleDesc').value.trim();
-            const optionsRaw = document.getElementById('customEleOptions').value.trim();
-
-            if (!title || !optionsRaw) { showNotification("Attenzione", "Compila tutti i campi obbligatori.", "error"); return; }
-
-            let voterTypes = [];
-            if(document.getElementById('chkStu').checked) voterTypes.push('STUDENTE');
-            if(document.getElementById('chkGen').checked) voterTypes.push('GENITORE');
-            if(document.getElementById('chkDoc').checked) voterTypes.push('DOCENTE');
-            if(document.getElementById('chkAta').checked) voterTypes.push('ATA');
-
-            if(voterTypes.length === 0) { showNotification("Attenzione", "Seleziona almeno un target elettore.", "error"); return; }
-
-            let opzioni = optionsRaw.split(',').map(o => o.trim()).filter(o => o.length > 0);
-
-            let newEle = {
-                id: 'custom_' + Date.now(),
-                titolo: title,
-                descrizione: desc,
-                voterTypes,
-                opzioni
-            };
-
-            configElezioni.customElections.push(newEle);
-            saveConfigToDB().then(() => {
-                renderCustomElectionsTab(document.getElementById('admin-tab-content'));
-            });
-        };
-
-        window.deleteCustomElection = function(idx) {
-            configElezioni.customElections.splice(idx, 1);
-            saveConfigToDB().then(() => {
-                renderCustomElectionsTab(document.getElementById('admin-tab-content'));
-            });
-        };
-
         function bindTokensRealTimeListener(componentFilter, containerId) {
             const table = document.getElementById(containerId);
             if (!table) return;
@@ -2230,16 +2012,12 @@
             });
         }
 
-        window.toggleSpecificVote = async function(tokenId, fieldName, currentStatus, isCustom = false) {
+        window.toggleSpecificVote = async function(tokenId, fieldName, currentStatus) {
             try {
                 const docRef = getDocumentRef('tokens', tokenId);
                 const nextStatus = !currentStatus;
                 let updates = {};
-                if (isCustom) {
-                    updates[`voted_custom.${fieldName}`] = nextStatus;
-                } else {
-                    updates[fieldName] = nextStatus;
-                }
+                updates[fieldName] = nextStatus;
                 await updateDoc(docRef, updates);
             } catch (err) {
                 showNotification("Errore", "Impossibile aggiornare lo stato della scheda: " + err.message, "error");
@@ -2258,10 +2036,10 @@
                     ? `<button onclick="window.toggleTokenVotedState('${t.id}', ${t.hasVoted})" class="px-2 py-0.5 rounded-full text-[9px] font-black bg-red-100 text-red-800 inline-block hover:bg-red-200 transition-all cursor-pointer font-semibold shadow-sm" title="Clicca per riabilitare il Token">Completato</button>`
                     : `<button onclick="window.toggleTokenVotedState('${t.id}', ${t.hasVoted})" class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-850 inline-block hover:bg-emerald-200 transition-all cursor-pointer font-semibold shadow-sm" title="Clicca per forzare Token su Votato">Inutilizzato</button>`;
 
-                const makeBtn = (field, currentVal, label, tooltip, isCustom = false) => {
+                const makeBtn = (field, currentVal, label, tooltip) => {
                     const bg = currentVal ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-red-50 text-red-500 border-red-100';
                     const icon = currentVal ? 'check' : 'x';
-                    return `<button onclick="window.toggleSpecificVote('${t.id}', '${field}', ${!!currentVal}, ${isCustom})" class="inline-flex items-center px-1.5 py-0.5 rounded border text-[9px] font-bold ${bg} hover:brightness-95 transition-all shadow-sm" title="Clicca per invertire stato: ${tooltip}">
+                    return `<button onclick="window.toggleSpecificVote('${t.id}', '${field}', ${!!currentVal})" class="inline-flex items-center px-1.5 py-0.5 rounded border text-[9px] font-bold ${bg} hover:brightness-95 transition-all shadow-sm" title="Clicca per invertire stato: ${tooltip}">
                         <i data-lucide="${icon}" class="w-2.5 h-2.5 mr-0.5"></i> ${label}
                     </button>`;
                 };
@@ -2279,14 +2057,6 @@
                     checklistHTML += makeBtn('voted_consiglio', t.voted_consiglio, 'C.I.', 'Consiglio d\'Istituto');
                 }
 
-                if (configElezioni.customElections && configElezioni.customElections.length > 0) {
-                    configElezioni.customElections.forEach(ele => {
-                        if (ele.voterTypes.includes(componentFilter)) {
-                            const isVoted = t.voted_custom && t.voted_custom[ele.id];
-                            checklistHTML += makeBtn(ele.id, isVoted, 'CST', ele.titolo, true);
-                        }
-                    });
-                }
                 checklistHTML += '</div>';
 
                 let rowHTML = '';
@@ -2341,7 +2111,7 @@
                     voted_classe_studente: nextStatus,
                     voted_classe_genitore: nextStatus
                 });
-                showNotification("Stato Modificato", `Token ${tokenId} impostato su ${nextStatus ? 'Completato' : 'Inutilizzato'}. Tutte le sue schede associate sono state conformate.`, "success");
+                showNotification("Stato Modificato", `Token ${tokenId} impostato su ${nextStatus ? 'Completato' : 'Inutilizzato'}.`, "success");
             } catch (err) {
                 showNotification("Errore", "Impossibile aggiornare lo stato del token: " + err.message, "error");
             }
@@ -2482,7 +2252,7 @@
 
                         <div class="mt-4 pt-4 border-t border-slate-100 font-semibold">
                             <span class="text-xs font-bold text-slate-800 block mb-2">Generazione Manuale Rapida</span>
-                            <button onclick="window.generateManualTokens('DOCENTE')" class="w-full bg-blue-950 hover:bg-blue-900 text-white font-extrabold py-2.5 rounded-xl text-xs transition-colors font-semibold">Genera 5 Token Docenti</button>
+                            <button onclick="window.generateManualTokens('DOCENTE')" class="w-full bg-blue-955 hover:bg-blue-900 text-white font-extrabold py-2.5 rounded-xl text-xs transition-colors font-semibold">Genera 5 Token Docenti</button>
                         </div>
                     </div>
 
@@ -2597,8 +2367,7 @@
                             voted_istituto: false,
                             voted_consulta: false,
                             voted_classe_studente: false,
-                            voted_classe_genitore: false,
-                            voted_custom: {}
+                            voted_classe_genitore: false
                         });
                     });
 
@@ -2652,8 +2421,7 @@
                         voted_istituto: false,
                         voted_consulta: false,
                         voted_classe_studente: false,
-                        voted_classe_genitore: false,
-                        voted_custom: {}
+                        voted_classe_genitore: false
                     });
                 }
                 await batch.commit();
@@ -2777,7 +2545,7 @@
                 }
 
                 doc.save(`Registro_Token_${tipo}_Primo_Levi.pdf`);
-                showNotification("PDF Generato", `Registro formattato con nome, cognome e firma, suddiviso in pagine per classe, generato con successo.`, "success");
+                showNotification("PDF Generato", `Registro generato con successo.`, "success");
             } catch (err) {
                 console.error(err);
                 showNotification("Errore", "Impossibile generare il PDF: " + err.message, "error");
@@ -2922,7 +2690,7 @@
             }
         };
 
-        // --- SEZIONE 8: SCRUTINIO E VERBALI ---
+        // --- SEZIONE 7: SCRUTINIO INTERATTIVO & PROCLAMAZIONE ---
         window.switchScrutinioSection = function(sec) {
             currentScrutinioSection = sec;
             renderScrutinioTab(document.getElementById('admin-tab-content'));
@@ -2933,11 +2701,123 @@
             renderScrutinioTab(document.getElementById('admin-tab-content'));
         };
 
+        function runDHondtCalculation(listsVotes, totalSeats) {
+            // listsVotes: { listKey: votesCount }
+            // Ritorna: { listKey: allocatedSeatsCount }
+            let allocated = {};
+            Object.keys(listsVotes).forEach(k => allocated[k] = 0);
+
+            if (totalSeats <= 0) return allocated;
+
+            for (let s = 0; s < totalSeats; s++) {
+                let maxVal = -1;
+                let maxKey = null;
+                
+                Object.entries(listsVotes).forEach(([key, votes]) => {
+                    let divisor = allocated[key] + 1;
+                    let val = votes / divisor;
+                    if (val > maxVal && votes > 0) {
+                        maxVal = val;
+                        maxKey = key;
+                    }
+                });
+
+                if (maxKey) {
+                    allocated[maxKey]++;
+                } else {
+                    break; 
+                }
+            }
+            return allocated;
+        }
+
+        async function fetchScrutinioData(colName) {
+            const votiDb = await getVotiUrna(colName);
+            
+            // Inizializza i valori locali temporanei se vuoti
+            if (!localVotiScrutinio.liste[colName]) {
+                localVotiScrutinio.liste[colName] = {};
+                localVotiScrutinio.preferenze[colName] = {};
+                localVotiScrutinio.classi[colName] = {};
+
+                let subListe = {};
+                if (currentScrutinioSection === 'consiglio') {
+                    subListe = configElezioni.listeConsiglio[currentScrutinioSubComponent] || {};
+                } else if (currentScrutinioSection === 'consulta') {
+                    subListe = configElezioni.listeConsulta;
+                } else if (currentScrutinioSection === 'istituto') {
+                    subListe = configElezioni.listeIstituto;
+                }
+
+                // Default voti reali
+                Object.keys(subListe).forEach(lKey => {
+                    localVotiScrutinio.liste[colName][lKey] = 0;
+                    subListe[lKey].candidati.forEach(cand => {
+                        localVotiScrutinio.preferenze[colName][`${lKey}_${cand}`] = 0;
+                    });
+                });
+
+                votiDb.forEach(v => {
+                    if (currentScrutinioSection === 'consiglio' && v.tipo !== currentScrutinioSubComponent) return;
+
+                    let lKey = v.lista;
+                    if (lKey && localVotiScrutinio.liste[colName][lKey] !== undefined) {
+                        localVotiScrutinio.liste[colName][lKey]++;
+                        if (v.p1 && localVotiScrutinio.preferenze[colName][`${lKey}_${v.p1}`] !== undefined) {
+                            localVotiScrutinio.preferenze[colName][`${lKey}_${v.p1}`]++;
+                        }
+                        if (v.p2 && localVotiScrutinio.preferenze[colName][`${lKey}_${v.p2}`] !== undefined) {
+                            localVotiScrutinio.preferenze[colName][`${lKey}_${v.p2}`]++;
+                        }
+                    }
+
+                    // Per le classi
+                    if (v.classe) {
+                        if (!localVotiScrutinio.classi[colName][v.classe]) {
+                            localVotiScrutinio.classi[colName][v.classe] = {};
+                        }
+                        if (!v.isBianca && v.candidate1) {
+                            let normalizedName = normalizeName(v.candidate1);
+                            localVotiScrutinio.classi[colName][v.classe][normalizedName] = (localVotiScrutinio.classi[colName][v.classe][normalizedName] || 0) + 1;
+                        }
+                    }
+                });
+            }
+
+            return votiDb;
+        }
+
+        window.updateLocalScrutinioVote = function(colName, field, value, extraId = null) {
+            let valNum = parseInt(value) || 0;
+            if (field === 'lista') {
+                localVotiScrutinio.liste[colName][extraId] = valNum;
+            } else if (field === 'preferenza') {
+                localVotiScrutinio.preferenze[colName][extraId] = valNum;
+            } else if (field === 'classe') {
+                let [classeId, candidateName] = extraId.split('__');
+                localVotiScrutinio.classi[colName][classeId][candidateName] = valNum;
+            }
+            // Ricalcola istantaneamente l'interfaccia
+            calculateAndRenderElettiPanel(colName);
+        };
+
+        window.updateSeggiParam = function(colName, val) {
+            let valNum = parseInt(val) || 1;
+            let key = currentScrutinioSection === 'consiglio' ? `consiglio_${currentScrutinioSubComponent}` : colName;
+            localVotiScrutinio.seggiDisponibili[key] = valNum;
+            calculateAndRenderElettiPanel(colName);
+        };
+
+        window.toggleManualElettoOverride = function(candKey) {
+            localVotiScrutinio.overrideEletti[candKey] = !localVotiScrutinio.overrideEletti[candKey];
+            calculateAndRenderElettiPanel(currentScrutinioSection === 'consiglio' ? 'voti_consiglio' : (currentScrutinioSection === 'consulta' ? 'voti_consulta' : 'voti_istituto'));
+        };
+
         async function renderScrutinioTab(container) {
             container.innerHTML = `
                 <div class="text-center p-12 bg-white rounded-2xl shadow w-full">
                     <div class="spinner border-blue-900 border-t-transparent mx-auto mb-3"></div>
-                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Scrutinio Urne Cloud in corso...</p>
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Scrutinio Urne Cloud e Calcoli in corso...</p>
                 </div>
             `;
 
@@ -2945,7 +2825,6 @@
             let titleLabel = 'Rappresentanti d\'Istituto (STUDENTI)';
             let isClasse = false;
             let isConsiglio = false;
-            let isCustom = false;
 
             if (currentScrutinioSection === 'consulta') {
                 colName = 'voti_consulta';
@@ -2962,15 +2841,10 @@
                 colName = 'voti_classe_genitori';
                 titleLabel = 'Rappresentanti di Classe (GENITORI)';
                 isClasse = true;
-            } else if (currentScrutinioSection.startsWith('custom_')) {
-                let idCustom = currentScrutinioSection.replace('custom_', '');
-                colName = `voti_custom_${idCustom}`;
-                let ele = configElezioni.customElections.find(e => e.id === idCustom);
-                titleLabel = ele ? ele.titolo : 'Votazione Custom';
-                isCustom = true;
             }
 
-            const voti = await getVotiUrna(colName);
+            // Forza il download dei dati reali dall'urna prima di calcolare
+            await fetchScrutinioData(colName);
 
             let subNavConsiglioHTML = '';
             if (currentScrutinioSection === 'consiglio') {
@@ -2990,109 +2864,38 @@
                     <button onclick="window.switchScrutinioSection('consiglio')" class="py-1.5 px-3 rounded-lg font-bold text-[9px] uppercase tracking-wide transition-all ${currentScrutinioSection === 'consiglio' ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">Consiglio Ist.</button>
                     <button onclick="window.switchScrutinioSection('classe_st')" class="py-1.5 px-3 rounded-lg font-bold text-[9px] uppercase tracking-wide transition-all ${currentScrutinioSection === 'classe_st' ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">Classe Stu</button>
                     <button onclick="window.switchScrutinioSection('classe_ge')" class="py-1.5 px-3 rounded-lg font-bold text-[9px] uppercase tracking-wide transition-all ${currentScrutinioSection === 'classe_ge' ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">Classe Gen</button>
-                    ${(configElezioni.customElections || []).map(ele => `
-                        <button onclick="window.switchScrutinioSection('custom_${ele.id}')" class="py-1.5 px-3 rounded-lg font-bold text-[9px] uppercase tracking-wide transition-all ${currentScrutinioSection === `custom_${ele.id}` ? 'bg-purple-900 text-white shadow' : 'bg-purple-50 text-purple-900 hover:bg-purple-100'}">${ele.titolo}</button>
-                    `).join('')}
                 </div>
             `;
 
-            let scrutinioResultsHTML = '';
+            let leftVotiEditorHTML = '';
 
             if (isClasse) {
-                let groupedByClass = {};
-                voti.forEach(v => {
-                    let cl = v.classe || 'N/A';
-                    if (!groupedByClass[cl]) groupedByClass[cl] = [];
-                    groupedByClass[cl].push(v);
-                });
-
-                let sortedClasses = Object.keys(groupedByClass).sort();
+                let classesVoti = localVotiScrutinio.classi[colName];
+                let sortedClasses = Object.keys(classesVoti).sort();
 
                 if (sortedClasses.length === 0) {
-                    scrutinioResultsHTML = `<div class="p-8 text-center text-xs text-slate-400 italic">Nessun voto di classe depositato in urna cloud.</div>`;
+                    leftVotiEditorHTML = `<div class="p-4 text-center text-xs text-slate-400 italic">Nessun voto caricato.</div>`;
                 } else {
-                    scrutinioResultsHTML = sortedClasses.map(cl => {
-                        let totalVotes = groupedByClass[cl].length;
-                        let bianche = groupedByClass[cl].filter(v => v.isBianca).length;
-
-                        let counts = {};
-                        groupedByClass[cl].filter(v => !v.isBianca).forEach(v => {
-                            let name = normalizeName(v.candidate1);
-                            if(name) counts[name] = (counts[name] || 0) + 1;
-                        });
-
-                        let ranking = Object.entries(counts)
-                            .map(([name, v]) => ({ name, v }))
-                            .sort((a, b) => b.v - a.v);
-
+                    leftVotiEditorHTML = sortedClasses.map(cl => {
                         return `
-                            <div class="border rounded-2xl p-4 bg-slate-50 hover:bg-slate-100/50 transition-colors mb-4 font-semibold">
-                                <div class="flex flex-wrap justify-between items-center border-b pb-2 mb-3">
-                                    <span class="text-xs font-black text-slate-800 uppercase">Classe: ${cl}</span>
-                                    <div class="text-[10px] text-slate-500 space-x-3">
-                                        <span>Schede totali: <strong>${totalVotes}</strong></span>
-                                        <span>Bianche: <strong>${bianche}</strong></span>
-                                    </div>
-                                </div>
-                                <div class="space-y-1.5 text-xs">
-                                    ${ranking.map((el, i) => `
-                                        <div class="flex justify-between py-1 border-b last:border-0 border-slate-200">
-                                            <span class="font-bold text-slate-700">${i+1}. ${el.name}</span>
-                                            <span class="font-black text-blue-900">${el.v} voti</span>
+                            <div class="border rounded-xl p-3 mb-3 bg-white">
+                                <h4 class="font-black text-slate-800 text-[11px] uppercase mb-2 border-b pb-1">Sezione/Classe: ${cl}</h4>
+                                <div class="space-y-2">
+                                    ${Object.entries(classesVoti[cl]).map(([name, count]) => `
+                                        <div class="flex items-center justify-between text-xs font-semibold">
+                                            <span class="text-slate-700 font-bold uppercase truncate max-w-[140px]">${name}</span>
+                                            <input type="number" min="0" value="${count}" 
+                                                onchange="window.updateLocalScrutinioVote('${colName}', 'classe', this.value, '${cl}__${name}')"
+                                                class="w-14 p-1 border rounded text-center text-xs font-bold outline-none focus:ring-1 focus:ring-blue-900">
                                         </div>
                                     `).join('')}
-                                    ${ranking.length === 0 ? `<p class="text-[10px] text-slate-400 italic">Solo schede bianche o nulle.</p>` : ''}
+                                    ${Object.keys(classesVoti[cl]).length === 0 ? `<p class="text-[10px] text-slate-400 italic">Nessun candidato votato.</p>` : ''}
                                 </div>
                             </div>
                         `;
                     }).join('');
                 }
-
-            } else if (isCustom) {
-                let idCustom = currentScrutinioSection.replace('custom_', '');
-                let ele = configElezioni.customElections.find(e => e.id === idCustom);
-                let totalVotes = voti.length;
-
-                let counts = {};
-                if (ele) {
-                    ele.opzioni.forEach(o => counts[o] = 0);
-                }
-                voti.forEach(v => {
-                    let choice = v.scelta;
-                    if (choice) counts[choice] = (counts[choice] || 0) + 1;
-                });
-
-                let sortedOptions = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-
-                scrutinioResultsHTML = `
-                    <div class="bg-purple-50/50 p-6 rounded-2xl border border-purple-100 font-semibold">
-                        <div class="flex justify-between items-center mb-4 pb-2 border-b">
-                            <span class="font-bold text-slate-800 text-xs uppercase">Riepilogo Referendum</span>
-                            <span class="text-[10px] bg-purple-150 text-purple-900 px-3 py-1 rounded-full font-black">Urne totali: ${totalVotes}</span>
-                        </div>
-                        <div class="space-y-3 text-xs">
-                            ${sortedOptions.map(([opt, val]) => {
-                                let percent = totalVotes > 0 ? ((val / totalVotes) * 100).toFixed(1) : 0;
-                                return `
-                                    <div>
-                                        <div class="flex justify-between font-bold mb-1">
-                                            <span>${opt}</span>
-                                            <span>${val} voti (${percent}%)</span>
-                                        </div>
-                                        <div class="w-full bg-slate-200 rounded-full h-2">
-                                            <div class="bg-purple-600 h-2 rounded-full" style="width: ${percent}%"></div>
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                `;
-
             } else {
-                let listCounts = {};
-                let prefCounts = {};
-
                 let subListe = {};
                 if (isConsiglio) {
                     subListe = configElezioni.listeConsiglio[currentScrutinioSubComponent] || {};
@@ -3102,60 +2905,40 @@
                     subListe = configElezioni.listeIstituto;
                 }
 
-                Object.keys(subListe).forEach(lKey => {
-                    listCounts[lKey] = 0;
-                    prefCounts[lKey] = {};
-                    subListe[lKey].candidati.forEach(c => {
-                        prefCounts[lKey][c] = 0;
-                    });
-                });
-
-                let filteredVoti = voti;
-                if (isConsiglio) {
-                    filteredVoti = voti.filter(v => v.tipo === currentScrutinioSubComponent);
-                }
-
-                filteredVoti.forEach(v => {
-                    let lKey = v.lista;
-                    if (lKey && listCounts[lKey] !== undefined) {
-                        listCounts[lKey]++;
-                        if (v.p1 && prefCounts[lKey][v.p1] !== undefined) prefCounts[lKey][v.p1]++;
-                        if (v.p2 && prefCounts[lKey][v.p2] !== undefined) prefCounts[lKey][v.p2]++;
-                    }
-                });
-
-                scrutinioResultsHTML = Object.entries(subListe).map(([lKey, lVal]) => {
-                    let totalListVotes = listCounts[lKey] || 0;
-                    let sortedPrefs = Object.entries(prefCounts[lKey])
-                        .map(([c, count]) => ({ c, count }))
-                        .sort((a, b) => b.count - a.count);
-
+                leftVotiEditorHTML = Object.entries(subListe).map(([lKey, lVal]) => {
+                    let listVotes = localVotiScrutinio.liste[colName][lKey] || 0;
                     return `
-                        <div class="bg-slate-50 border rounded-2xl p-5 mb-4 font-semibold">
-                            <div class="flex justify-between items-center border-b pb-2 mb-4">
-                                <div>
-                                    <span class="text-[9px] bg-blue-100 text-blue-900 font-extrabold px-2 py-0.5 rounded uppercase">LISTA</span>
-                                    <h4 class="font-black text-slate-800 text-xs mt-0.5 uppercase">${lVal.nome}</h4>
+                        <div class="border rounded-2xl p-4 mb-4 bg-white/50">
+                            <div class="flex items-center justify-between border-b pb-2 mb-3">
+                                <span class="text-xs font-black text-slate-800 uppercase max-w-[150px] truncate" title="${lVal.nome}">${lVal.nome}</span>
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-[9px] text-slate-400 font-bold uppercase">VOTI LISTA</span>
+                                    <input type="number" min="0" value="${listVotes}" 
+                                        onchange="window.updateLocalScrutinioVote('${colName}', 'lista', this.value, '${lKey}')"
+                                        class="w-16 p-1 border rounded-lg text-center font-black text-xs text-blue-900 focus:ring-1 focus:ring-blue-900">
                                 </div>
-                                <span class="text-sm font-black text-blue-900">${totalListVotes} voti lista</span>
                             </div>
                             <div class="space-y-2">
-                                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-black">Voti preferenza candidati:</p>
-                                ${sortedPrefs.map(pref => `
-                                    <div class="flex justify-between text-xs py-1 border-b border-dashed border-slate-250 last:border-0">
-                                        <span class="font-bold text-slate-700">${pref.c}</span>
-                                        <span class="font-black text-emerald-800">${pref.count} pref.</span>
-                                    </div>
-                                `).join('')}
+                                <p class="text-[9px] text-slate-400 uppercase font-extrabold tracking-widest">Preferenze Candidati:</p>
+                                ${lVal.candidati.map(cand => {
+                                    let cPref = localVotiScrutinio.preferenze[colName][`${lKey}_${cand}`] || 0;
+                                    return `
+                                        <div class="flex items-center justify-between text-xs font-semibold">
+                                            <span class="text-slate-700 font-medium">${cand}</span>
+                                            <input type="number" min="0" value="${cPref}" 
+                                                onchange="window.updateLocalScrutinioVote('${colName}', 'preferenza', this.value, '${lKey}_${cand}')"
+                                                class="w-14 p-1 border rounded text-center text-xs font-bold outline-none focus:ring-1 focus:ring-blue-900">
+                                        </div>
+                                    `;
+                                }).join('')}
                             </div>
                         </div>
                     `;
                 }).join('');
-
-                if (Object.keys(subListe).length === 0) {
-                    scrutinioResultsHTML = `<div class="p-8 text-center text-xs text-slate-400 italic">Nessuna lista configurata per questa elezione.</div>`;
-                }
             }
+
+            let seggiDisponibiliKey = currentScrutinioSection === 'consiglio' ? `consiglio_${currentScrutinioSubComponent}` : colName;
+            let initialSeggi = localVotiScrutinio.seggiDisponibili[seggiDisponibiliKey] || 4;
 
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 animate-fade-in w-full font-semibold">
@@ -3163,56 +2946,214 @@
                         <div>
                             <span class="text-[9px] bg-red-100 text-red-800 font-black px-2 py-0.5 rounded uppercase">SCRUTINIO</span>
                             <h3 class="text-base font-extrabold text-slate-800 mt-0.5">${titleLabel}</h3>
-                            <p class="text-[11px] text-slate-500">Riscontri dell'urna cloud aggiornati in tempo reale.</p>
+                            <p class="text-[11px] text-slate-500">I voti sono modificabili per simulare assegnazioni o sanare anomalie.</p>
                         </div>
-                        <button onclick="window.downloadVerbalePDF('${currentScrutinioSection}', '${currentScrutinioSubComponent}')" class="bg-emerald-650 hover:bg-emerald-700 text-white font-extrabold py-2 px-5 rounded-xl text-xs flex items-center gap-1.5 shadow">
-                            <i data-lucide="file-text" class="w-4 h-4"></i> Esporta Verbale Ufficiale (PDF)
-                        </button>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="window.downloadVerbaleVotiPDF('${currentScrutinioSection}', '${currentScrutinioSubComponent}')" class="bg-slate-800 hover:bg-slate-700 text-white font-extrabold py-2 px-3 rounded-xl text-xs flex items-center gap-1.5 shadow">
+                                <i data-lucide="file-text" class="w-4 h-4"></i> Verbale Voti (PDF)
+                            </button>
+                            <button onclick="window.downloadVerbaleProclamazionePDF('${currentScrutinioSection}', '${currentScrutinioSubComponent}')" class="bg-blue-900 hover:bg-blue-850 text-white font-extrabold py-2 px-3 rounded-xl text-xs flex items-center gap-1.5 shadow">
+                                <i data-lucide="award" class="w-4 h-4"></i> Verbale Eletti (PDF)
+                            </button>
+                        </div>
                     </div>
 
                     ${mainNavHTML}
                     ${subNavConsiglioHTML}
 
-                    <div class="space-y-4">
-                        ${scrutinioResultsHTML}
+                    <div class="grid lg:grid-cols-12 gap-6">
+                        <!-- COLONNA SINISTRA: Modifica Voti e Preferenze -->
+                        <div class="lg:col-span-5 bg-slate-50 p-4 rounded-2xl border border-slate-150">
+                            <div class="flex justify-between items-center mb-3 pb-1 border-b">
+                                <h4 class="text-xs font-black text-slate-800 uppercase">Input Registrazione Voti</h4>
+                                <span class="text-[9px] bg-slate-200 text-slate-600 px-2 py-0.5 rounded font-black">Editabile</span>
+                            </div>
+                            <div class="space-y-3 max-h-[500px] overflow-y-auto pr-1 custom-scrollbar">
+                                ${leftVotiEditorHTML}
+                            </div>
+                        </div>
+
+                        <!-- COLONNA DESTRA: Ripartizione Seggi e Proclamazione Eletti -->
+                        <div class="lg:col-span-7 bg-white p-4 rounded-2xl border border-slate-150" id="panel-eletti-calcolati">
+                            <!-- Inserito dinamicamente tramite calculateAndRenderElettiPanel -->
+                        </div>
                     </div>
                 </div>
+            `;
+            calculateAndRenderElettiPanel(colName);
+            lucide.createIcons();
+        }
+
+        function calculateAndRenderElettiPanel(colName) {
+            const panel = document.getElementById('panel-eletti-calcolati');
+            if(!panel) return;
+
+            let isClasse = (currentScrutinioSection === 'classe_st' || currentScrutinioSection === 'classe_ge');
+            let isConsiglio = currentScrutinioSection === 'consiglio';
+            
+            let seggiDisponibiliKey = isConsiglio ? `consiglio_${currentScrutinioSubComponent}` : colName;
+            let currentSeats = localVotiScrutinio.seggiDisponibili[seggiDisponibiliKey] || (isClasse ? 2 : 4);
+
+            let subNavSeatsHTML = `
+                <div class="flex items-center justify-between bg-blue-50/50 p-3 rounded-xl border border-blue-100 mb-4 font-semibold text-xs">
+                    <span class="text-blue-900 font-bold uppercase text-[10px]">Parametri Elettorali:</span>
+                    <div class="flex items-center space-x-2">
+                        <label class="text-[10px] text-slate-500 font-semibold">Seggi Disponibili:</label>
+                        <input type="number" min="1" max="20" value="${currentSeats}" 
+                            onchange="window.updateSeggiParam('${colName}', this.value)"
+                            class="w-12 p-1 border rounded text-center text-xs font-bold outline-none focus:ring-1 focus:ring-blue-900 bg-white">
+                    </div>
+                </div>
+            `;
+
+            let outputHTML = '';
+
+            if (isClasse) {
+                // Calcoli di sezione per i rappresentanti di classe
+                let classesVoti = localVotiScrutinio.classi[colName] || {};
+                outputHTML = Object.keys(classesVoti).sort().map(cl => {
+                    let candidates = Object.entries(classesVoti[cl])
+                        .map(([name, v]) => ({ name, v }))
+                        .sort((a,b) => b.v - a.v);
+
+                    let eletti = candidates.slice(0, currentSeats);
+
+                    return `
+                        <div class="border rounded-xl p-3 mb-3 bg-slate-50/50">
+                            <h4 class="font-black text-slate-800 text-[10px] uppercase mb-2 border-b pb-1">Risultanze di Classe: ${cl}</h4>
+                            <div class="space-y-1.5">
+                                ${eletti.map((el, i) => `
+                                    <div class="flex justify-between items-center text-xs py-1 border-b last:border-0 border-slate-100 font-bold">
+                                        <span class="text-slate-800 flex items-center gap-1.5">
+                                            <span class="w-5 h-5 bg-emerald-650 text-white rounded text-[10px] font-black flex items-center justify-center">E${i+1}</span>
+                                            ${el.name}
+                                        </span>
+                                        <span class="text-emerald-800">${el.v} voti</span>
+                                    </div>
+                                `).join('')}
+                                ${eletti.length === 0 ? `<p class="text-[10px] text-slate-400 italic font-semibold">Nessuno proclamato.</p>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } else {
+                // Elezioni generali (Istituto, Consulta, Consiglio): Distribuzione Proporzionale D'Hondt
+                let subListe = {};
+                if (isConsiglio) {
+                    subListe = configElezioni.listeConsiglio[currentScrutinioSubComponent] || {};
+                } else if (currentScrutinioSection === 'consulta') {
+                    subListe = configElezioni.listeConsulta;
+                } else {
+                    subListe = configElezioni.listeIstituto;
+                }
+
+                let listVotes = {};
+                Object.keys(subListe).forEach(lKey => {
+                    listVotes[lKey] = localVotiScrutinio.liste[colName][lKey] || 0;
+                });
+
+                // Attribuzione proporzionale seggi alle liste
+                let allocatedSeats = runDHondtCalculation(listVotes, currentSeats);
+
+                let candidatiEletti = [];
+                Object.entries(allocatedSeats).forEach(([lKey, seats]) => {
+                    if (seats <= 0) return;
+
+                    let listVal = subListe[lKey];
+                    let listCandidates = listVal.candidati.map(cand => {
+                        let prefs = localVotiScrutinio.preferenze[colName][`${lKey}_${cand}`] || 0;
+                        return { name: cand, listName: listVal.nome, listKey: lKey, prefs };
+                    }).sort((a,b) => b.prefs - a.prefs);
+
+                    // Prendi i primi 'seats' candidati
+                    for (let s = 0; s < Math.min(seats, listCandidates.length); s++) {
+                        candidatiEletti.push({
+                            ...listCandidates[s],
+                            elettoState: true
+                        });
+                    }
+                });
+
+                // Visualizzazione seggi assegnati
+                let seggiAssegnatiHTML = Object.entries(allocatedSeats).map(([lKey, s]) => {
+                    let nomeL = subListe[lKey]?.nome || lKey;
+                    return `
+                        <div class="flex justify-between items-center text-xs border-b pb-1 border-slate-100 font-semibold last:border-0">
+                            <span class="text-slate-600 truncate max-w-[200px]" title="${nomeL}">${nomeL}</span>
+                            <span class="font-black text-blue-900 bg-blue-100 px-2 py-0.5 rounded">${s} seggi</span>
+                        </div>
+                    `;
+                }).join('');
+
+                // Visualizzazione Candidati Proclamati Eletti
+                let elettiProclamatiHTML = candidatiEletti.map((cand, i) => {
+                    let keyOverride = `${currentScrutinioSection}_${cand.listKey}_${cand.name}`;
+                    let isForced = localVotiScrutinio.overrideEletti[keyOverride] !== undefined 
+                        ? localVotiScrutinio.overrideEletti[keyOverride] 
+                        : true;
+
+                    let bgClass = isForced ? 'bg-emerald-50 border-emerald-100' : 'bg-rose-50 border-rose-100 opacity-60';
+                    let badgeClass = isForced ? 'bg-emerald-650 text-white' : 'bg-rose-655 text-white';
+                    let label = isForced ? `PROCLAMATO` : `ASTENUTO/ESCLUSO`;
+
+                    return `
+                        <div class="p-3 border rounded-xl flex items-center justify-between ${bgClass} font-semibold">
+                            <div>
+                                <span class="text-[9px] ${badgeClass} font-black px-2 py-0.5 rounded tracking-wider uppercase">${label}</span>
+                                <h4 class="font-black text-slate-800 text-xs mt-1 uppercase">${cand.name}</h4>
+                                <p class="text-[9px] text-slate-400 mt-0.5">Lista: ${cand.listName}</p>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="text-xs font-black text-slate-700">${cand.prefs} pref.</span>
+                                <button onclick="window.toggleManualElettoOverride('${keyOverride}')" class="p-1 hover:bg-slate-100 rounded text-slate-500 hover:text-blue-900" title="Cambia stato eletto">
+                                    <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                outputHTML = `
+                    <div class="space-y-4">
+                        <div class="bg-slate-50 border rounded-2xl p-4">
+                            <h4 class="text-xs font-black text-slate-800 uppercase mb-2 border-b pb-1">Assegnazione Seggi Proporzionale (D'Hondt)</h4>
+                            <div class="space-y-1.5">
+                                ${seggiAssegnatiHTML}
+                            </div>
+                        </div>
+                        <div class="bg-white">
+                            <h4 class="text-xs font-black text-slate-800 uppercase mb-3 flex items-center gap-1.5"><i data-lucide="award" class="text-yellow-500 w-4.5 h-4.5"></i> Graduatoria Candidati Proclamati Eletti</h4>
+                            <div class="space-y-2">
+                                ${elettiProclamatiHTML}
+                                ${candidatiEletti.length === 0 ? `<p class="text-xs text-slate-450 italic text-center py-6">Nessun candidato eletto con i voti attuali.</p>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            panel.innerHTML = `
+                <div class="flex justify-between items-center mb-3 pb-1 border-b">
+                    <h4 class="text-xs font-black text-slate-800 uppercase">Esiti & Proclamazioni di Seggio</h4>
+                    <span class="text-[9px] bg-blue-100 text-blue-900 px-2 py-0.5 rounded font-black uppercase">Algoritmo in Tempo Reale</span>
+                </div>
+                ${subNavSeatsHTML}
+                ${outputHTML}
             `;
             lucide.createIcons();
         }
 
-        window.downloadVerbalePDF = async function(section, subComponent) {
+        window.downloadVerbaleVotiPDF = async function(section, subComponent) {
             try {
-                let colName = 'voti_istituto';
-                let docTitle = 'Rappresentanti d\'Istituto';
-                let isClasse = false;
-                let isConsiglio = false;
-                let isCustom = false;
-
-                if (section === 'consulta') {
-                    colName = 'voti_consulta';
-                    docTitle = 'Consulta Provinciale';
-                } else if (section === 'consiglio') {
-                    colName = 'voti_consiglio';
-                    docTitle = `Consiglio d'Istituto - Componente ${subComponent}`;
-                    isConsiglio = true;
-                } else if (section === 'classe_st') {
-                    colName = 'voti_classe_studenti';
-                    docTitle = 'Rappresentanti di Classe - Studenti';
-                    isClasse = true;
-                } else if (section === 'classe_ge') {
-                    colName = 'voti_classe_genitori';
-                    docTitle = 'Rappresentanti di Classe - Genitori';
-                    isClasse = true;
-                } else if (section.startsWith('custom_')) {
-                    let idCustom = section.replace('custom_', '');
-                    colName = `voti_custom_${idCustom}`;
-                    let ele = configElezioni.customElections.find(e => e.id === idCustom);
-                    docTitle = ele ? ele.titolo : 'Votazione Straordinaria';
-                    isCustom = true;
+                let colName = section === 'consiglio' ? 'voti_consiglio' : (section === 'consulta' ? 'voti_consulta' : 'voti_istituto');
+                let docTitle = section === 'consiglio' ? `Consiglio d'Istituto - Componente ${subComponent}` : (section === 'consulta' ? 'Consulta Provinciale' : 'Rappresentanti d\'Istituto');
+                let isClasse = (section === 'classe_st' || section === 'classe_ge');
+                if(isClasse) {
+                    colName = section === 'classe_st' ? 'voti_classe_studenti' : 'voti_classe_genitori';
+                    docTitle = section === 'classe_st' ? 'Rappresentanti Classe - Studenti' : 'Rappresentanti Classe - Genitori';
                 }
 
-                const voti = await getVotiUrna(colName);
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
 
@@ -3225,86 +3166,41 @@
                 doc.text("ITSCG PRIMO LEVI DI SEREGNO", 15, 14);
                 doc.setFont("helvetica", "normal");
                 doc.setFontSize(9);
-                doc.text(`Verbale Elettorale Ufficiale - ${docTitle}`, 15, 22);
+                doc.text(`Verbale Elettorale di Riscontro - ${docTitle}`, 15, 22);
                 doc.text("Sede Unica: Via Briantina 68 - MBTD430001", 15, 28);
 
                 doc.setTextColor(30, 41, 59);
                 doc.setFont("helvetica", "bold");
                 doc.setFontSize(11);
-                doc.text(`VERBALE DI PROCLAMAZIONE ED ESITI ELETTORALI`, 15, 48);
+                doc.text(`REGISTRO GENERALE DEI VOTI E DELLE PREFERENZE`, 15, 48);
 
                 doc.setFont("helvetica", "normal");
                 doc.setFontSize(9);
-                let preamble = `Oggi, 12 Luglio 2026, la Commissione Elettorale d'Istituto presieduta da ${configElezioni.commissione[0]?.nome || 'Laura Iavarone'} si è riunita in seduta pubblica per procedere allo scrutinio informatico e alla convalida dei voti espressi per l'elezione di cui all'oggetto. Il sistema digitale ha garantito la segretezza del voto e l'unicità d'accesso degli elettori autorizzati.`;
+                let preamble = `In data odierna si è proceduto alla stampa ufficiale dei flussi di voto e delle relative preferenze nominali registrate per l'elezione in epigrafe, estratti dall'urna cloud della scuola.`;
                 let splitText = doc.splitTextToSize(preamble, 180);
                 doc.text(splitText, 15, 55);
 
-                let startY = 75;
+                let startY = 70;
 
                 if (isClasse) {
-                    const grouped = {};
-                    voti.forEach(v => {
-                        let cl = v.classe || 'N/A';
-                        if (!grouped[cl]) grouped[cl] = [];
-                        grouped[cl].push(v);
-                    });
-
-                    const rows = [];
-                    Object.entries(grouped).forEach(([cl, val]) => {
-                        let total = val.length;
-                        let bianche = val.filter(v => v.isBianca).length;
-
-                        let counts = {};
-                        val.filter(v => !v.isBianca).forEach(v => {
-                            let name = normalizeName(v.candidate1);
-                            if(name) counts[name] = (counts[name] || 0) + 1;
+                    let classesVoti = localVotiScrutinio.classi[colName] || {};
+                    let rows = [];
+                    Object.entries(classesVoti).forEach(([cl, cand]) => {
+                        Object.entries(cand).forEach(([name, count]) => {
+                            rows.push([cl, name, count]);
                         });
-
-                        let topCandidates = Object.entries(counts)
-                            .map(([name, count]) => `${name} (${count})`)
-                            .sort((a,b) => b.substring(b.indexOf('(')+1, b.indexOf(')')) - a.substring(a.indexOf('(')+1, a.indexOf(')')))
-                            .slice(0, 3)
-                            .join(', ');
-
-                        rows.push([cl, total, bianche, topCandidates || 'Nessuno']);
                     });
 
                     doc.autoTable({
                         startY: startY,
-                        head: [["Classe", "Votanti Totali", "Schede Bianche", "Primi Tre Candidati (Voti)"]],
-                        body: rows,
-                        theme: 'grid',
-                        headStyles: { fillColor: [30, 58, 138] },
-                        bodyStyles: { fontSize: 8.5 }
-                    });
-
-                } else if (isCustom) {
-                    let idCustom = section.replace('custom_', '');
-                    let ele = configElezioni.customElections.find(e => e.id === idCustom);
-                    let totalVotes = voti.length;
-
-                    let counts = {};
-                    if (ele) ele.opzioni.forEach(o => counts[o] = 0);
-                    voti.forEach(v => {
-                        if (v.scelta) counts[v.scelta] = (counts[v.scelta] || 0) + 1;
-                    });
-
-                    const rows = Object.entries(counts).map(([opt, val]) => {
-                        let percent = totalVotes > 0 ? ((val / totalVotes) * 100).toFixed(1) : 0;
-                        return [opt, val, `${percent}%`];
-                    });
-
-                    doc.autoTable({
-                        startY: startY,
-                        head: [["Opzione", "Voti Espressi", "Percentuale"]],
+                        head: [["Classe/Sezione", "Candidato Unico", "Preferenze Ricevute"]],
                         body: rows,
                         theme: 'grid',
                         headStyles: { fillColor: [30, 58, 138] }
                     });
-
                 } else {
                     let subListe = {};
-                    if (isConsiglio) {
+                    if (section === 'consiglio') {
                         subListe = configElezioni.listeConsiglio[subComponent] || {};
                     } else if (section === 'consulta') {
                         subListe = configElezioni.listeConsulta;
@@ -3312,40 +3208,136 @@
                         subListe = configElezioni.listeIstituto;
                     }
 
-                    let listCounts = {};
-                    let prefCounts = {};
-                    Object.keys(subListe).forEach(lKey => {
-                        listCounts[lKey] = 0;
-                        prefCounts[lKey] = {};
-                        subListe[lKey].candidati.forEach(c => prefCounts[lKey][c] = 0);
-                    });
-
-                    let filtered = voti;
-                    if (isConsiglio) filtered = voti.filter(v => v.tipo === subComponent);
-
-                    filtered.forEach(v => {
-                        let lKey = v.lista;
-                        if (lKey && listCounts[lKey] !== undefined) {
-                            listCounts[lKey]++;
-                            if (v.p1 && prefCounts[lKey][v.p1] !== undefined) prefCounts[lKey][v.p1]++;
-                            if (v.p2 && prefCounts[lKey][v.p2] !== undefined) prefCounts[lKey][v.p2]++;
-                        }
-                    });
-
-                    const rows = [];
+                    let rows = [];
                     Object.entries(subListe).forEach(([lKey, lVal]) => {
-                        let listVotes = listCounts[lKey] || 0;
-                        let sortedPrefs = Object.entries(prefCounts[lKey])
-                            .map(([c, count]) => `${c} (${count})`)
-                            .sort((a,b) => b.substring(b.indexOf('(')+1, b.indexOf(')')) - a.substring(a.indexOf('(')+1, a.indexOf(')')))
-                            .join(', ');
-
-                        rows.push([lVal.nome, listVotes, sortedPrefs || 'Nessuna preferenza']);
+                        let lVotes = localVotiScrutinio.liste[colName][lKey] || 0;
+                        rows.push([`Lista: ${lVal.nome}`, `VOTI TOTALI DI LISTA: ${lVotes}`, ""]);
+                        lVal.candidati.forEach(cand => {
+                            let pref = localVotiScrutinio.preferenze[colName][`${lKey}_${cand}`] || 0;
+                            rows.push(["", cand, `${pref} pref.`]);
+                        });
                     });
 
                     doc.autoTable({
                         startY: startY,
-                        head: [["Lista Elettorale", "Voti di Lista", "Candidati e Preferenze Ricevute"]],
+                        head: [["Raggruppamento / Lista", "Nominativo Candidato", "Preferenze Nominali"]],
+                        body: rows,
+                        theme: 'grid',
+                        headStyles: { fillColor: [30, 58, 138] },
+                        bodyStyles: { fontSize: 8.5 }
+                    });
+                }
+
+                doc.save(`Verbale_Voti_${section}_Primo_Levi.pdf`);
+                showNotification("Esportato", "Scaricamento del registro ufficiale dei voti completato.", "success");
+            } catch (err) {
+                console.error(err);
+                showNotification("Errore", "Impossibile generare il PDF: " + err.message, "error");
+            }
+        };
+
+        window.downloadVerbaleProclamazionePDF = async function(section, subComponent) {
+            try {
+                let colName = section === 'consiglio' ? 'voti_consiglio' : (section === 'consulta' ? 'voti_consulta' : 'voti_istituto');
+                let docTitle = section === 'consiglio' ? `Consiglio d'Istituto - Componente ${subComponent}` : (section === 'consulta' ? 'Consulta Provinciale' : 'Rappresentanti d\'Istituto');
+                let isClasse = (section === 'classe_st' || section === 'classe_ge');
+                if(isClasse) {
+                    colName = section === 'classe_st' ? 'voti_classe_studenti' : 'voti_classe_genitori';
+                    docTitle = section === 'classe_st' ? 'Rappresentanti Classe - Studenti' : 'Rappresentanti Classe - Genitori';
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                doc.setFillColor(30, 58, 138);
+                doc.rect(0, 0, 210, 38, 'F');
+                
+                doc.setTextColor(255, 255, 255);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(14);
+                doc.text("ITSCG PRIMO LEVI DI SEREGNO", 15, 14);
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(9);
+                doc.text(`Verbale di Proclamazione Rappresentanti Eletti - ${docTitle}`, 15, 22);
+                doc.text("Sede Unica: Via Briantina 68 - MBTD430001", 15, 28);
+
+                doc.setTextColor(30, 41, 59);
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(11);
+                doc.text(`FOGLIO DI PROCLAMAZIONE DEGLI ELETTI`, 15, 48);
+
+                doc.setFont("helvetica", "normal");
+                doc.setFontSize(9);
+                let preamble = `La Commissione Elettorale d'Istituto presieduta da ${configElezioni.commissione[0]?.nome || 'Laura Iavarone'} si è riunita in seduta pubblica per convalidare ed attribuire i seggi disponibili, proclamando eletti alla carica di rappresentanza scolastica i seguenti candidati in conformità alla vigente ordinanza ministeriale.`;
+                let splitText = doc.splitTextToSize(preamble, 180);
+                doc.text(splitText, 15, 55);
+
+                let startY = 70;
+                let rows = [];
+
+                if (isClasse) {
+                    let classesVoti = localVotiScrutinio.classi[colName] || {};
+                    Object.entries(classesVoti).forEach(([cl, cand]) => {
+                        let sortedC = Object.entries(cand)
+                            .map(([name, v]) => ({ name, v }))
+                            .sort((a,b) => b.v - a.v)
+                            .slice(0, 2);
+
+                        sortedC.forEach((c, idx) => {
+                            rows.push([cl, `Eletto ${idx+1}`, c.name, `${c.v} voti`]);
+                        });
+                    });
+
+                    doc.autoTable({
+                        startY: startY,
+                        head: [["Classe/Sezione", "Grado", "Eletto Proclamato", "Consenso Registrato"]],
+                        body: rows,
+                        theme: 'grid',
+                        headStyles: { fillColor: [30, 58, 138] }
+                    });
+                } else {
+                    let subListe = {};
+                    if (section === 'consiglio') {
+                        subListe = configElezioni.listeConsiglio[subComponent] || {};
+                    } else if (section === 'consulta') {
+                        subListe = configElezioni.listeConsulta;
+                    } else {
+                        subListe = configElezioni.listeIstituto;
+                    }
+
+                    let listVotes = {};
+                    Object.keys(subListe).forEach(lKey => {
+                        listVotes[lKey] = localVotiScrutinio.liste[colName][lKey] || 0;
+                    });
+
+                    let seggiDisponibiliKey = section === 'consiglio' ? `consiglio_${subComponent}` : colName;
+                    let currentSeats = localVotiScrutinio.seggiDisponibili[seggiDisponibiliKey] || 4;
+                    let allocatedSeats = runDHondtCalculation(listVotes, currentSeats);
+
+                    Object.entries(allocatedSeats).forEach(([lKey, seats]) => {
+                        if (seats <= 0) return;
+                        let listVal = subListe[lKey];
+                        let listCandidates = listVal.candidati.map(cand => {
+                            let prefs = localVotiScrutinio.preferenze[colName][`${lKey}_${cand}`] || 0;
+                            return { name: cand, listName: listVal.nome, listKey: lKey, prefs };
+                        }).sort((a,b) => b.prefs - a.prefs);
+
+                        for (let s = 0; s < Math.min(seats, listCandidates.length); s++) {
+                            let cand = listCandidates[s];
+                            let overrideKey = `${section}_${lKey}_${cand.name}`;
+                            let isForced = localVotiScrutinio.overrideEletti[overrideKey] !== undefined 
+                                ? localVotiScrutinio.overrideEletti[overrideKey] 
+                                : true;
+
+                            if (isForced) {
+                                rows.push([cand.name, cand.listName, `${cand.prefs} pref.`, "ELETTO PROCLAMATO"]);
+                            }
+                        }
+                    });
+
+                    doc.autoTable({
+                        startY: startY,
+                        head: [["Candidato Eletto", "Appartenenza Lista", "Voti Preferenza", "Stato Proclamazione"]],
                         body: rows,
                         theme: 'grid',
                         headStyles: { fillColor: [30, 58, 138] },
@@ -3370,15 +3362,15 @@
                     doc.text("..........................................................", 115, nextLineY + (idx * 10));
                 });
 
-                doc.save(`Verbale_Ufficiale_${section}_Primo_Levi.pdf`);
-                showNotification("Successo", "Verbale di proclamazione esportato ufficialmente in PDF con firme di commissione.", "success");
+                doc.save(`Verbale_Proclamazione_${section}_Primo_Levi.pdf`);
+                showNotification("Esportato", "Scaricamento del verbale di proclamazione eletti completato.", "success");
             } catch (err) {
                 console.error(err);
-                showNotification("Errore", "Impossibile generare il verbale PDF: " + err.message, "error");
+                showNotification("Errore", "Impossibile generare il PDF: " + err.message, "error");
             }
         };
 
-        // --- SEZIONE 9: GRAFICI E AFFLUENZA ---
+        // --- SEZIONE 8: GRAFICI E AFFLUENZA ---
         async function renderGraficiTab(container) {
             container.innerHTML = `
                 <div class="text-center p-12 bg-white rounded-2xl shadow w-full">
@@ -3432,6 +3424,11 @@
                 `;
             }).join('');
 
+            // Costruiamo un grafico a ciambella SVG minimale per l'affluenza globale
+            let radius = 50;
+            let circumference = 2 * Math.PI * radius;
+            let offset = circumference - (globalPercent / 100) * circumference;
+
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 animate-fade-in w-full font-semibold">
                     <div class="border-b border-slate-100 pb-3 mb-6">
@@ -3441,18 +3438,27 @@
                     </div>
 
                     <div class="grid lg:grid-cols-12 gap-6 mb-6">
-                        <div class="lg:col-span-4 bg-gradient-to-br from-blue-900 to-slate-900 text-white p-6 rounded-2xl flex flex-col justify-between shadow">
-                            <div>
+                        <div class="lg:col-span-5 bg-gradient-to-br from-blue-900 to-slate-900 text-white p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between shadow">
+                            <div class="space-y-2">
                                 <h4 class="text-yellow-400 font-black text-xs uppercase tracking-wider">Affluenza Generale</h4>
                                 <div class="text-4xl font-black mt-2">${globalPercent}%</div>
-                                <p class="text-[11px] text-slate-350 mt-1">Elettori totali che hanno concluso le operazioni di voto.</p>
+                                <p class="text-[11px] text-slate-300 mt-1 max-w-[200px]">Elettori totali che hanno concluso le operazioni di voto.</p>
+                                <div class="text-xs border-t border-white/10 pt-2">
+                                    <span>Votanti globali: <strong>${globalVoted}</strong> / ${globalGen}</span>
+                                </div>
                             </div>
-                            <div class="mt-6 border-t border-white/10 pt-4 text-xs">
-                                <span>Votanti globali: <strong>${globalVoted}</strong> / ${globalGen}</span>
+                            <!-- Grafico SVG circolare dinamicamente calcolato -->
+                            <div class="relative w-28 h-28 mt-4 md:mt-0 flex items-center justify-center">
+                                <svg class="w-full h-full transform -rotate-90">
+                                    <circle cx="56" cy="56" r="${radius}" fill="transparent" stroke="rgba(255,255,255,0.1)" stroke-width="10"></circle>
+                                    <circle cx="56" cy="56" r="${radius}" fill="transparent" stroke="#eab308" stroke-width="10" 
+                                        stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" class="transition-all duration-700"></circle>
+                                </svg>
+                                <span class="absolute text-xs font-black text-white">${globalPercent}%</span>
                             </div>
                         </div>
 
-                        <div class="lg:col-span-8 bg-slate-50 p-6 rounded-2xl border border-slate-200 flex flex-col justify-between">
+                        <div class="lg:col-span-7 bg-slate-50 p-6 rounded-2xl border border-slate-200 flex flex-col justify-between">
                             <h4 class="text-xs font-black text-slate-800 uppercase tracking-wider mb-4">Grafico Confronto Componenti</h4>
                             <div class="flex flex-col gap-3">
                                 ${Object.entries(stats).map(([comp, val]) => {
@@ -3462,7 +3468,7 @@
                                             <span class="w-20 font-bold text-slate-700">${comp}</span>
                                             <div class="flex-grow bg-slate-200 rounded-full h-4 overflow-hidden relative">
                                                 <div class="bg-blue-900 h-4 rounded-full" style="width: ${p}%"></div>
-                                                <span class="absolute inset-y-0 right-3 flex items-center text-[9px] font-black text-slate-800">${p}%</span>
+                                                <span class="absolute inset-y-0 right-3 flex items-center text-[9px] font-black text-slate-850">${p}%</span>
                                             </div>
                                         </div>
                                     `;
