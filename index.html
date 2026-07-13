@@ -120,7 +120,7 @@
             <span>MBTD430001</span>
         </div>
         <div class="delicate-bubble w-24 h-24" style="top: 50%; left: 48%; animation-delay: 4s; animation-duration: 26s;">
-            <img src="levi.png" alt="Levi Logo" onerror="this.style.display='none'">
+            <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" alt="Levi Logo" onerror="this.style.display='none'">
             <span>20831, SEREGNO</span>
         </div>
     </div>
@@ -128,7 +128,7 @@
     <header class="bg-gradient-header text-white shadow-xl relative border-b-4 border-yellow-500 z-20">
         <div class="container mx-auto p-4 flex flex-col lg:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-4">
-                <img src="levi.png" 
+                <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" 
                      id="school-logo" 
                      alt="Logo ITSCG Primo Levi" 
                      class="h-14 w-14 rounded-xl shadow-md border border-yellow-400 object-contain p-1 bg-white transition-all hover:scale-105"/>
@@ -315,6 +315,7 @@
             liste: {},      
             preferenze: {}, 
             classi: {},
+            classDetail: {}, // Struttura dati per archiviare il dettaglio multi-dimensionale per classe
             totali: { votanti: 0, bianche: 0, validi: 0 }
         };
 
@@ -616,7 +617,7 @@
             container.innerHTML = `
                 <div class="w-full max-w-md mx-auto bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-slate-200 text-center animate-fade-in mt-4 font-semibold">
                     <div class="mb-6 flex flex-col items-center">
-                        <img src="levi.png" alt="Primo Levi Logo" class="w-16 h-16 object-contain mb-4" onerror="this.style.display='none'">
+                        <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" alt="Primo Levi Logo" class="w-16 h-16 object-contain mb-4" onerror="this.style.display='none'">
                         <h2 class="text-xl font-black text-slate-800">Entra in Cabina Elettorale</h2>
                         <p class="text-slate-500 text-xs mt-1">Digita il codice segreto (Token) per votare dal tuo dispositivo.</p>
                     </div>
@@ -857,7 +858,7 @@
         function getCardHeaderHTML(title) {
             return `
                 <div class="flex flex-col items-center mb-6 text-center border-b border-slate-100 pb-4 font-semibold">
-                    <img src="levi.png" onerror="this.src='levi.png'" class="h-12 w-auto mb-2 object-contain" />
+                    <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" onerror="this.src='https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI'" class="h-12 w-auto mb-2 object-contain" />
                     <span class="text-[10px] uppercase tracking-widest text-slate-400 font-extrabold">ITSCG PRIMO LEVI DI SEREGNO</span>
                     <h2 class="text-lg font-black text-slate-800 mt-1 uppercase">${title}</h2>
                 </div>
@@ -883,7 +884,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full font-semibold">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4 font-semibold text-slate-600">Esprimi il voto per una lista e fino a un massimo di ${configElezioni.maxPrefConsiglio} preferenze nominali in base alle impostazioni elettorali vigenti.</p>
+                    <p class="text-xs text-slate-500 mb-4 font-semibold text-slate-600">Esprimi il voto per una lista e fino a un massimo di **${configElezioni.maxPrefConsiglio} preferenze nominali** in base alle impostazioni elettorali vigenti.</p>
                     
                     <div class="space-y-4">
                         ${listeHTML}
@@ -987,7 +988,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full font-semibold">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4 font-semibold text-slate-600">Scegli una lista ed esprimi fino a un massimo di ${configElezioni.maxPrefIstituto} preferenze nominali.</p>
+                    <p class="text-xs text-slate-500 mb-4 font-semibold text-slate-600">Scegli una lista ed esprimi fino a un massimo di **${configElezioni.maxPrefIstituto} preferenze nominali**.</p>
                     
                     <div class="space-y-4">
                         ${listelst}
@@ -1090,7 +1091,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full font-semibold">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4 font-semibold text-slate-600">Scegli la lista ed esprimi fino a un massimo di ${configElezioni.maxPrefConsulta} preferenze nominali.</p>
+                    <p class="text-xs text-slate-500 mb-4 font-semibold text-slate-600">Scegli la lista ed esprimi fino a un massimo di **${configElezioni.maxPrefConsulta} preferenze nominali**.</p>
                     
                     <div class="space-y-4">
                         ${listacon}
@@ -2778,6 +2779,12 @@
             officialVotiScrutinio.liste[colName] = {};
             officialVotiScrutinio.preferenze[colName] = {};
             officialVotiScrutinio.classi[colName] = {};
+            
+            if (!officialVotiScrutinio.classDetail) {
+                officialVotiScrutinio.classDetail = {};
+            }
+            officialVotiScrutinio.classDetail[colName] = {};
+            
             officialVotiScrutinio.totali = { votanti: votiDb.length, bianche: 0, validi: 0 };
 
             let subListe = {};
@@ -2820,6 +2827,49 @@
                             }
                             if (officialVotiScrutinio.preferenze[colName][`${lKey}_${prefVal}`] !== undefined) {
                                 officialVotiScrutinio.preferenze[colName][`${lKey}_${prefVal}`]++;
+                            }
+                        }
+                    }
+                }
+
+                // Inizializzazione ed elaborazione del dettaglio granulare per classe
+                let cl = v.classe || "SENZA CLASSE";
+                if (!officialVotiScrutinio.classDetail[colName][cl]) {
+                    officialVotiScrutinio.classDetail[colName][cl] = {
+                        liste: {},
+                        preferenze: {},
+                        totali: { votanti: 0, bianche: 0 }
+                    };
+                    Object.keys(subListe).forEach(lk => {
+                        officialVotiScrutinio.classDetail[colName][cl].liste[lk] = 0;
+                        subListe[lk].candidati.forEach(cand => {
+                            officialVotiScrutinio.classDetail[colName][cl].preferenze[`${lk}_${cand}`] = 0;
+                        });
+                    });
+                }
+
+                let clData = officialVotiScrutinio.classDetail[colName][cl];
+                clData.totali.votanti++;
+
+                if (v.isBianca) {
+                    clData.totali.bianche++;
+                } else {
+                    let lKeyClass = v.lista;
+                    if (lKeyClass && clData.liste[lKeyClass] !== undefined) {
+                        clData.liste[lKeyClass]++;
+                        
+                        const maxPrefClass = (currentScrutinioSection === 'consiglio') ? (configElezioni.maxPrefConsiglio) : 
+                                             ((currentScrutinioSection === 'consulta') ? configElezioni.maxPrefConsulta : configElezioni.maxPrefIstituto);
+
+                        for (let i = 1; i <= maxPrefClass; i++) {
+                            let prefVal = v[`p${i}`];
+                            if (prefVal) {
+                                if (prefVal.includes(":")) {
+                                    prefVal = prefVal.split(":")[1]; 
+                                }
+                                if (clData.preferenze[`${lKeyClass}_${prefVal}`] !== undefined) {
+                                    clData.preferenze[`${lKeyClass}_${prefVal}`]++;
+                                }
                             }
                         }
                     }
@@ -3540,7 +3590,7 @@
                         <div class="space-y-5">
                             <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl text-xs text-emerald-900 leading-relaxed">
                                 <h4 class="font-bold flex items-center gap-1.5"><i data-lucide="eye" class="w-4 h-4 text-emerald-600"></i> Scrutinio Pubblico e Trasparente</h4>
-                                <p class="mt-1.5">Come da disposizioni di legge, lo scrutinio per la Consulta Provinciale e per i Rappresentanti d'Istituto è pubblico.</p>
+                                <p class="mt-1.5">Come da disposizioni di legge, lo scrutinio per la **Consulta Provinciale** e per i **Rappresentanti d'Istituto** è pubblico.</p>
                                 <p class="mt-1 font-medium">Attraverso questo link o QR code, gli studenti potranno consultare l'esito elettorale in tempo reale (eletti, ripartizione D'Hondt e dettagli per classe) senza bisogno di alcuna credenziale o login.</p>
                             </div>
 
@@ -3634,9 +3684,11 @@
                 if (publicSection === 'consulta') {
                     colName = 'voti_consulta';
                     titleLabel = 'Consulta Provinciale (STUDENTI)';
+                    currentScrutinioSection = 'consulta';
                 } else {
                     colName = 'voti_istituto';
                     titleLabel = 'Rappresentanti d\'Istituto (STUDENTI)';
+                    currentScrutinioSection = 'istituto';
                 }
 
                 await fetchScrutinioData(colName);
@@ -3669,13 +3721,12 @@
                     }
                 });
 
-                let classesVoti = officialVotiScrutinio.classi[colName] || {};
-                let sortedClasses = Object.keys(classesVoti).sort();
+                let sortedClasses = Object.keys(officialVotiScrutinio.classDetail[colName] || {}).sort();
 
                 container.innerHTML = `
                     <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200 animate-fade-in w-full font-semibold max-w-5xl mx-auto space-y-6">
                         <div class="text-center border-b border-slate-100 pb-4">
-                            <img src="levi.png" class="h-14 w-auto mx-auto mb-2 object-contain">
+                            <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" class="h-14 w-auto mx-auto mb-2 object-contain" onerror="this.style.display='none'">
                             <span class="text-[9px] uppercase tracking-wider font-bold text-slate-400">ITSCG Primo Levi Seregno</span>
                             <h2 class="text-xl font-black text-slate-800">Portale Pubblico di Trasparenza Elettorale</h2>
                             <p class="text-[11px] text-slate-500 mt-0.5">Risultati in tempo reale dall'Urna Cloud</p>
@@ -3702,13 +3753,13 @@
                         </div>
 
                         <div class="grid lg:grid-cols-2 gap-6">
-                            <!-- Eletti e liste -->
+                            <!-- Eletti e liste generali -->
                             <div class="space-y-4">
                                 <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
                                     <h4 class="text-xs font-black text-blue-900 uppercase mb-3 flex items-center gap-1.5"><i data-lucide="crown"></i> Candidati Proclamati Eletti</h4>
                                     <div class="space-y-2">
                                         ${candidatiEletti.map((cand, i) => `
-                                            <div class="p-3 bg-white border border-blue-100 rounded-xl flex items-center justify-between">
+                                            <div class="p-3 bg-white border border-blue-100 rounded-xl flex items-center justify-between shadow-sm">
                                                 <div>
                                                     <span class="text-[8px] bg-emerald-600 text-white font-black px-1.5 py-0.5 rounded">PROCLAMATO</span>
                                                     <h5 class="font-black text-slate-800 text-xs mt-1 uppercase">${cand.name}</h5>
@@ -3737,28 +3788,60 @@
                                 </div>
                             </div>
 
-                            <!-- Voti divisi per classi -->
+                            <!-- Voti divisi per classi e preferenze specifiche -->
                             <div class="bg-slate-50 p-4 rounded-2xl border">
-                                <h4 class="text-xs font-black text-slate-800 uppercase mb-3 flex items-center gap-1.5"><i data-lucide="users"></i> Afflusso dei Voti per Classe</h4>
-                                <div class="max-h-[380px] overflow-y-auto pr-1 custom-scrollbar space-y-3">
+                                <h4 class="text-xs font-black text-slate-800 uppercase mb-3 flex items-center gap-1.5"><i data-lucide="users"></i> Afflusso dei Voti e Preferenze per Classe</h4>
+                                <div class="max-h-[500px] overflow-y-auto pr-1 custom-scrollbar space-y-3">
                                     ${sortedClasses.map(cl => {
-                                        let classData = classesVoti[cl] || {};
+                                        let classData = officialVotiScrutinio.classDetail[colName][cl];
+                                        
+                                        let listsClassHTML = Object.entries(subListe).map(([lKey, lVal]) => {
+                                            let lVotes = classData.liste[lKey] || 0;
+                                            
+                                            // Filtriamo i candidati di questa lista che hanno preso almeno una preferenza in questa classe
+                                            let candWithPrefs = lVal.candidati.map(cand => {
+                                                let pCount = classData.preferenze[`${lKey}_${cand}`] || 0;
+                                                return { name: cand, count: pCount };
+                                            }).filter(c => c.count > 0);
+
+                                            let prefsListHTML = '';
+                                            if (candWithPrefs.length > 0) {
+                                                prefsListHTML = `
+                                                    <div class="pl-3 mt-1.5 space-y-1 border-l-2 border-slate-200">
+                                                        ${candWithPrefs.map(c => `
+                                                            <div class="flex justify-between items-center text-[10px] text-slate-500 font-medium">
+                                                                <span>• ${c.name}</span>
+                                                                <span class="font-bold text-slate-700">${c.count} pref.</span>
+                                                            </div>
+                                                        `).join('')}
+                                                    </div>
+                                                `;
+                                            }
+
+                                            return `
+                                                <div class="py-1.5">
+                                                    <div class="flex justify-between items-center text-xs font-bold text-slate-700">
+                                                        <span class="truncate max-w-[200px]" title="${lVal.nome}">${lVal.nome}</span>
+                                                        <span class="bg-blue-50 text-blue-900 px-2 py-0.5 rounded text-[10px] font-black">${lVotes} voti</span>
+                                                    </div>
+                                                    ${prefsListHTML}
+                                                </div>
+                                            `;
+                                        }).join('');
+
                                         return `
-                                            <div class="bg-white p-3 rounded-xl border border-slate-200">
-                                                <h5 class="font-black text-slate-800 text-[10px] uppercase mb-1.5 border-b pb-1">Sezione: ${cl}</h5>
-                                                <div class="space-y-1 text-xs">
-                                                    ${Object.entries(classData).map(([name, count]) => `
-                                                        <div class="flex justify-between items-center text-[11px]">
-                                                            <span class="text-slate-600 font-bold uppercase truncate max-w-[180px]">${name}</span>
-                                                            <span class="font-black text-slate-800">${count} pref.</span>
-                                                        </div>
-                                                    `).join('')}
-                                                    ${Object.keys(classData).length === 0 ? `<p class="text-[9px] text-slate-400 italic">Solo voti di lista.</p>` : ''}
+                                            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm space-y-2">
+                                                <div class="flex justify-between items-center border-b pb-1.5 mb-1">
+                                                    <h5 class="font-black text-slate-800 text-[11px] uppercase">Classe: ${cl}</h5>
+                                                    <span class="text-[9px] bg-slate-100 text-slate-600 px-2.5 py-0.5 rounded-full font-bold">Votanti: ${classData.totali.votanti}</span>
+                                                </div>
+                                                <div class="divide-y divide-slate-100 space-y-1">
+                                                    ${listsClassHTML}
                                                 </div>
                                             </div>
                                         `;
                                     }).join('')}
-                                    ${sortedClasses.length === 0 ? `<p class="text-xs text-slate-400 italic text-center py-6">Nessun dato per classe.</p>` : ''}
+                                    ${sortedClasses.length === 0 ? `<p class="text-xs text-slate-400 italic text-center py-6">Nessun dato per classe registrato nell'urna.</p>` : ''}
                                 </div>
                             </div>
                         </div>
