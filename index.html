@@ -121,18 +121,17 @@
         </div>
         <div class="delicate-bubble w-24 h-24" style="top: 50%; left: 48%; animation-delay: 4s; animation-duration: 26s;">
             <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" alt="Levi Logo" onerror="this.style.display='none'">
-            <span>20831 ,SEREGNO</span>
+            <span>20831, SEREGNO</span>
         </div>
     </div>
 
     <header class="bg-gradient-header text-white shadow-xl relative border-b-4 border-yellow-500 z-20">
         <div class="container mx-auto p-4 flex flex-col lg:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-4">
-                <img src="levi.png" 
+                <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" 
                      id="school-logo" 
                      alt="Logo ITSCG Primo Levi" 
-                     class="h-14 w-14 rounded-xl shadow-md border border-yellow-400 object-contain p-1 bg-white transition-all hover:scale-105"
-                     onerror="this.src='"levi.png"'/>
+                     class="h-14 w-14 rounded-xl shadow-md border border-yellow-400 object-contain p-1 bg-white transition-all hover:scale-105"/>
                 <div>
                     <h1 class="text-lg md:text-xl font-black tracking-tight uppercase leading-tight">Piattaforma Elettorale Unificata</h1>
                     <p class="text-yellow-400 font-extrabold tracking-wider text-[11px] uppercase">ITSCG PRIMO LEVI DI SEREGNO</p>
@@ -165,7 +164,6 @@
         <!-- Contenuto dinamico iniettato via Javascript -->
     </main>
 
-    <!-- Modale Informativa Ministeriale -->
     <div id="informativa-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-2xl w-full mx-4 border border-slate-150 transform scale-95 transition-all flex flex-col max-h-[90vh]">
             <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
@@ -203,7 +201,6 @@
         </div>
     </div>
 
-    <!-- Alert Custom -->
     <div id="custom-alert-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full mx-4 border border-slate-100 transform scale-95 transition-all">
             <div class="flex items-center space-x-3 mb-4">
@@ -219,7 +216,6 @@
         </div>
     </div>
 
-    <!-- Modale Conferma Generica -->
     <div id="generic-confirm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full mx-4 border border-slate-100 transform scale-95 transition-all">
             <div class="flex items-center space-x-3 mb-4 text-slate-800">
@@ -236,7 +232,6 @@
         </div>
     </div>
 
-    <!-- Modale Svuota Urna -->
     <div id="custom-confirm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full mx-4 border border-red-100 transform scale-95 transition-all">
             <div class="flex items-center space-x-3 mb-4 text-red-600">
@@ -245,16 +240,15 @@
                 </div>
                 <h3 class="text-lg font-bold">Inizializzazione Distruttiva - Voti</h3>
             </div>
-            <p class="text-slate-600 text-sm mb-4 leading-relaxed">Attenzione: questa azione cancellerà in via definitiva tutti i voti espressi e riabiliterà tutti i token di voto registrati.</p>
+            <p class="text-slate-600 text-sm mb-4 leading-relaxed">Attenzione: questa azione cancellerà in via definitiva tutti i voti espressi nell'urna cloud e riabiliterà tutti i token di voto registrati.</p>
             <input type="password" id="confirmWipePassword" placeholder="Password Amministratore" class="w-full p-3 border rounded-xl mb-6 text-center text-xs outline-none focus:ring-2 focus:ring-red-200 focus:border-red-500 font-semibold uppercase">
             <div class="flex justify-end space-x-3">
                 <button onclick="closeConfirmModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-5 rounded-xl text-xs transition-colors">Annulla</button>
-                <button onclick="executeDatabaseWipe()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs shadow transition-colors">Svuota Urna Cloud</button>
+                <button onclick="executeDatabaseWipe()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs shadow transition-colors">Cancella Tutti i Voti</button>
             </div>
         </div>
     </div>
 
-    <!-- Modale Elimina Tutte le Credenziali (Token) -->
     <div id="custom-purge-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full mx-4 border border-red-100 transform scale-95 transition-all">
             <div class="flex items-center space-x-3 mb-4 text-red-600">
@@ -263,11 +257,11 @@
                 </div>
                 <h3 class="text-lg font-bold text-red-900">Eliminazione Totale Credenziali</h3>
             </div>
-            <p class="text-slate-600 text-sm mb-4 leading-relaxed">Attenzione: questa azione eliminerà completamente tutti i token memorizzati nel database per tutte le componenti.</p>
+            <p class="text-slate-600 text-sm mb-4 leading-relaxed">Attenzione: questa azione eliminerà completamente tutti i token e le credenziali memorizzate nel database per tutte le componenti.</p>
             <input type="password" id="confirmPurgePassword" placeholder="Password Amministratore" class="w-full p-3 border rounded-xl mb-6 text-center text-xs outline-none focus:ring-2 focus:ring-red-250 focus:border-red-500 font-semibold uppercase">
             <div class="flex justify-end space-x-3">
                 <button onclick="closePurgeModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 px-5 rounded-xl text-xs transition-colors">Annulla</button>
-                <button onclick="executeDatabasePurge()" class="bg-red-700 hover:bg-red-850 text-white font-bold py-2.5 px-5 rounded-xl text-xs shadow transition-colors">Elimina Tutto</button>
+                <button onclick="executeDatabasePurge()" class="bg-red-750 hover:bg-red-900 text-white font-bold py-2.5 px-5 rounded-xl text-xs shadow transition-colors">Elimina Tutto</button>
             </div>
         </div>
     </div>
@@ -317,7 +311,6 @@
         let firebaseStateConnected = false;
         let adminSettingsEditEnabled = false; 
 
-        // Registro dei dati elettorali REALI importati dall'urna (Immutabili)
         let officialVotiScrutinio = {
             liste: {},      
             preferenze: {}, 
@@ -519,7 +512,7 @@
                 snapshot.forEach(doc => {
                     activeTokensList.push({ id: doc.id, ...doc.data() });
                 });
-                if (auth.currentUser && activeAdminTab && activeAdminTab.startsWith('cred_')) {
+                if (auth.currentUser && activeAdminTab && (activeAdminTab.startsWith('cred_') || activeAdminTab === 'condivisione')) {
                     renderActiveAdminTab();
                 }
             }, (error) => {
@@ -586,6 +579,7 @@
                 case 'classMasterDashboard': renderClassMasterDashboard(container); break;
                 case 'adminLogin': renderAdminLogin(container); break;
                 case 'adminPanel': renderAdminPanel(container); break;
+                case 'publicResults': renderPublicResults(container); break;
             }
             updateHeaderActions();
             lucide.createIcons();
@@ -622,8 +616,8 @@
             container.innerHTML = `
                 <div class="w-full max-w-md mx-auto bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-slate-200 text-center animate-fade-in mt-4 font-semibold">
                     <div class="mb-6 flex flex-col items-center">
-                        <img src="levi.png" alt="Primo Levi Logo" class="w-16 h-16 object-contain mb-4" onerror="this.style.display='none'">
-                        <h2 class="text-xl font-black text-slate-800">Entra in Cabina</h2>
+                        <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" alt="Primo Levi Logo" class="w-16 h-16 object-contain mb-4" onerror="this.style.display='none'">
+                        <h2 class="text-xl font-black text-slate-800">Entra in Cabina Elettorale</h2>
                         <p class="text-slate-500 text-xs mt-1">Digita il codice segreto (Token) per votare dal tuo dispositivo.</p>
                     </div>
                     <div class="space-y-4">
@@ -863,7 +857,7 @@
         function getCardHeaderHTML(title) {
             return `
                 <div class="flex flex-col items-center mb-6 text-center border-b border-slate-100 pb-4 font-semibold">
-                    <img src="levi.png" onerror="this.src='levi.png'" class="h-12 w-auto mb-2 object-contain" />
+                    <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" onerror="this.src='https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI'" class="h-12 w-auto mb-2 object-contain" />
                     <span class="text-[10px] uppercase tracking-widest text-slate-400 font-extrabold">ITSCG PRIMO LEVI DI SEREGNO</span>
                     <h2 class="text-lg font-black text-slate-800 mt-1 uppercase">${title}</h2>
                 </div>
@@ -1683,7 +1677,7 @@
                 <div class="max-w-md mx-auto bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-xl border border-slate-200 mt-10 animate-fade-in w-full font-semibold">
                     <div class="text-center mb-6">
                         <i data-lucide="shield-alert" class="mx-auto w-12 h-12 text-red-600 mb-2"></i>
-                        <h2 class="text-xl font-black text-slate-800">Area Commissione</h2>
+                        <h2 class="text-xl font-black text-slate-800">Area Commissione Elettorale</h2>
                         <p class="text-slate-500 text-xs mt-1">Accesso protetto per i componenti elettorali.</p>
                     </div>
                     <div class="space-y-4">
@@ -1717,7 +1711,8 @@
                 { id: 'cred_DOCENTE', label: '5. Registro Docenti' },
                 { id: 'cred_ATA', label: '6. Registro ATA' },
                 { id: 'scrutinio', label: '7. Scrutinio & Proclamazione' },
-                { id: 'grafici', label: '8. Grafici & Affluenza' }
+                { id: 'grafici', label: '8. Grafici & Affluenza' },
+                { id: 'condivisione', label: '9. Condivisione Pubblica & QR' }
             ];
 
             let navTabsHTML = tabs.map(tab => `
@@ -1767,6 +1762,7 @@
             
             if(activeAdminTab === 'config') renderConfigTab(content);
             else if(activeAdminTab === 'liste') renderListeTab(content);
+            else if(activeAdminTab === 'condivisione') renderCondivisioneTab(content);
             else if(activeAdminTab.startsWith('cred_')) {
                 const tipo = activeAdminTab.replace('cred_', '');
                 renderRegisterTab(tipo, content);
@@ -1839,7 +1835,6 @@
                             </div>
                         </div>
 
-                        <!-- REGOLE E PREFERENZE DI VOTO -->
                         <div class="bg-white p-6 rounded-2xl shadow border border-slate-200">
                             <h3 class="text-sm font-extrabold text-slate-800 mb-4 flex items-center gap-1.5"><i data-lucide="sliders" class="text-blue-900"></i> Regole & Preferenze di Voto</h3>
                             <div class="space-y-4 text-xs font-semibold ${!adminSettingsEditEnabled ? 'opacity-50 pointer-events-none' : ''}">
@@ -1855,23 +1850,23 @@
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
                                         <label class="block text-[10px] uppercase text-slate-500 mb-1 font-bold">Max Pref. Consiglio</label>
-                                        <input type="number" value="${configElezioni.maxPrefConsiglio}" onchange="configElezioni.maxPrefConsiglio = parseInt(this.value); saveConfigToDB();" min="0" max="10" class="w-full p-2 border rounded-lg font-bold">
+                                        <input type="number" value="${configElezioni.maxPrefConsiglio}" onchange="configElezioni.maxPrefConsiglio = parseInt(this.value); saveConfigToDB();" min="0" max="10" class="w-full p-2 border rounded-lg font-bold text-slate-800">
                                     </div>
                                     <div>
                                         <label class="block text-[10px] uppercase text-slate-500 mb-1 font-bold">Max Pref. Istituto</label>
-                                        <input type="number" value="${configElezioni.maxPrefIstituto}" onchange="configElezioni.maxPrefIstituto = parseInt(this.value); saveConfigToDB();" min="0" max="10" class="w-full p-2 border rounded-lg font-bold">
+                                        <input type="number" value="${configElezioni.maxPrefIstituto}" onchange="configElezioni.maxPrefIstituto = parseInt(this.value); saveConfigToDB();" min="0" max="10" class="w-full p-2 border rounded-lg font-bold text-slate-800">
                                     </div>
                                     <div>
                                         <label class="block text-[10px] uppercase text-slate-500 mb-1 font-bold">Max Pref. Consulta</label>
-                                        <input type="number" value="${configElezioni.maxPrefConsulta}" onchange="configElezioni.maxPrefConsulta = parseInt(this.value); saveConfigToDB();" min="0" max="10" class="w-full p-2 border rounded-lg font-bold">
+                                        <input type="number" value="${configElezioni.maxPrefConsulta}" onchange="configElezioni.maxPrefConsulta = parseInt(this.value); saveConfigToDB();" min="0" max="10" class="w-full p-2 border rounded-lg font-bold text-slate-800">
                                     </div>
                                     <div>
                                         <label class="block text-[10px] uppercase text-slate-500 mb-1 font-bold">Max Pref. Classe Studenti</label>
-                                        <input type="number" value="${configElezioni.maxPrefClasseStudenti}" onchange="configElezioni.maxPrefClasseStudenti = parseInt(this.value); saveConfigToDB();" min="1" max="10" class="w-full p-2 border rounded-lg font-bold">
+                                        <input type="number" value="${configElezioni.maxPrefClasseStudenti}" onchange="configElezioni.maxPrefClasseStudenti = parseInt(this.value); saveConfigToDB();" min="1" max="10" class="w-full p-2 border rounded-lg font-bold text-slate-800">
                                     </div>
                                     <div>
                                         <label class="block text-[10px] uppercase text-slate-500 mb-1 font-bold">Max Pref. Classe Genitori</label>
-                                        <input type="number" value="${configElezioni.maxPrefClasseGenitori}" onchange="configElezioni.maxPrefClasseGenitori = parseInt(this.value); saveConfigToDB();" min="1" max="10" class="w-full p-2 border rounded-lg font-bold">
+                                        <input type="number" value="${configElezioni.maxPrefClasseGenitori}" onchange="configElezioni.maxPrefClasseGenitori = parseInt(this.value); saveConfigToDB();" min="1" max="10" class="w-full p-2 border rounded-lg font-bold text-slate-800">
                                     </div>
                                 </div>
                             </div>
@@ -1897,7 +1892,7 @@
                     <p class="text-slate-600 text-[11px] mt-1">Operazioni amministrative distruttive sul database.</p>
                     <div class="flex flex-wrap gap-3 mt-4">
                         <button onclick="openConfirmWipe()" class="bg-red-600 hover:bg-red-700 text-white font-extrabold py-2.5 px-5 rounded-xl text-xs shadow-md transition-colors flex items-center gap-1.5">
-                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Svuota Urna (Conserva Token)
+                            <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Svuota Urna (Cancella Tutti i Voti)
                         </button>
                         <button onclick="openConfirmPurge()" class="bg-red-850 hover:bg-red-955 text-white font-extrabold py-2.5 px-5 rounded-xl text-xs shadow-md transition-colors flex items-center gap-1.5">
                             <i data-lucide="trash-2" class="w-4 h-4"></i> Elimina Tutte le Credenziali (Token)
@@ -1928,7 +1923,7 @@
             if (pwd !== ADMIN_PWD) { showNotification("Errore", "Password non corretta.", "error"); return; }
 
             const modal = document.getElementById('custom-confirm-modal');
-            modal.innerHTML = `<div class="bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full mx-4 text-center"><div class="spinner border-red-600 border-t-transparent mx-auto mb-3"></div> Eliminazione dati...</div>`;
+            modal.innerHTML = `<div class="bg-white rounded-2xl p-8 shadow-2xl max-w-sm w-full mx-4 text-center"><div class="spinner border-red-600 border-t-transparent mx-auto mb-3"></div> Cancellazione voti in corso...</div>`;
 
             try {
                 const tokenSnap = await getDocs(getCollectionRef('tokens'));
@@ -1951,7 +1946,7 @@
                 }
                 
                 await batch.commit();
-                showNotification("Successo", "Il database è stato ripulito ed i token sono stati riabilitati.", "success");
+                showNotification("Successo", "Tutti i voti sono stati cancellati dall'urna cloud e i token sono stati ripristinati.", "success");
                 window.location.reload();
             } catch (err) {
                 showNotification("Errore", err.message, "error");
@@ -2162,7 +2157,7 @@
                     <div class="mt-4 bg-white p-4 rounded-xl border border-slate-200 font-semibold shadow-sm">
                         <label class="block text-[10px] uppercase text-slate-500 mb-1.5 font-bold">Stampa Ricevute e Registro Classe (Studenti/Token con Firma)</label>
                         <div class="flex gap-2">
-                            <select id="pdfClassSelect_${componentType}" class="p-2 border rounded-lg text-xs flex-grow font-bold uppercase bg-slate-50">
+                            <select id="pdfClassSelect_${componentType}" class="p-2 border rounded-lg text-xs flex-grow font-bold uppercase bg-slate-50 text-slate-800">
                                 ${uniqueClasses.map(c => `<option value="${c}">${c}</option>`).join('')}
                             </select>
                             <button onclick="generateClassTokensPDF('${componentType}')" class="bg-blue-900 hover:bg-blue-850 text-white font-extrabold text-[10px] rounded-lg px-4 flex items-center gap-1.5 shadow transition-colors">
@@ -2182,7 +2177,6 @@
                 `;
             }
 
-            // Excel Upload Integration
             let excelUploaderHTML = `
                 <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-xs font-semibold shadow-sm mb-4">
                     <div class="flex items-center justify-between mb-2">
@@ -2214,7 +2208,7 @@
                         <div>
                             <label class="block text-[10px] uppercase text-slate-500 mb-1 font-bold">Quantità Token</label>
                             <div class="flex gap-2">
-                                <input type="number" id="bulkQty" value="25" min="1" max="100" class="w-20 p-2 border rounded-lg text-center font-bold">
+                                <input type="number" id="bulkQty" value="25" min="1" max="100" class="w-20 p-2 border rounded-lg text-center font-bold text-slate-800">
                                 <button onclick="generateBulkTokens('${componentType}')" class="flex-grow bg-blue-900 text-white font-bold rounded-lg hover:bg-blue-850 px-3 transition-all">Genera</button>
                             </div>
                         </div>
@@ -2228,7 +2222,7 @@
                             <p class="text-[9px] text-slate-400 mb-2">I token non richiederanno l'associazione a una classe specifica.</p>
                         </div>
                         <div class="flex gap-2 items-end">
-                            <input type="number" id="bulkQty" value="10" min="1" max="100" class="w-24 p-2 border rounded-lg text-center font-bold">
+                            <input type="number" id="bulkQty" value="10" min="1" max="100" class="w-24 p-2 border rounded-lg text-center font-bold text-slate-800">
                             <button onclick="generateBulkTokens('${componentType}')" class="flex-grow bg-blue-900 text-white font-bold rounded-lg hover:bg-blue-850 py-2.5 transition-all">Genera Token ${componentType}</button>
                         </div>
                     </div>
@@ -2241,7 +2235,7 @@
                         <div>
                             <span class="text-[9px] bg-blue-900 text-white font-black px-2 py-0.5 rounded uppercase">REGISTRO ELETTORALE</span>
                             <h3 class="text-base font-extrabold text-slate-800 mt-0.5">Componente: ${componentType}</h3>
-                            <p class="text-[11px] text-slate-500">Gestione credenziali, codici cabina e stato delle singole votazioni.</p>
+                            <p class="text-[11px] text-slate-500">Gestione credenziali, codici cabina e sblocco asincrono granulare delle singole votazioni.</p>
                         </div>
                         <div class="flex gap-2">
                             <button onclick="purgeComponentTokens('${componentType}')" class="bg-red-655 hover:bg-red-700 text-white font-bold py-1.5 px-3 rounded-lg text-[10px] flex items-center gap-1.5">
@@ -2275,7 +2269,7 @@
 
                         <div>
                             <div class="flex justify-between items-center mb-3">
-                                <h4 class="text-xs font-black text-slate-800 uppercase font-bold text-slate-700">Dettaglio e Sblocco Voti</h4>
+                                <h4 class="text-xs font-black text-slate-700 uppercase">Dettaglio e Sblocco Voti</h4>
                                 <input type="text" id="tokenSearchInput" oninput="filterRegisterTable()" placeholder="Cerca token o classe..." class="p-1.5 border rounded-lg text-[10px] w-48 outline-none">
                             </div>
                             <div class="max-h-[380px] overflow-y-auto border rounded-xl custom-scrollbar shadow-sm">
@@ -2388,7 +2382,6 @@
                 const generatedClasses = new Set();
 
                 for (let row of jsonData) {
-                    // Estrazione robusta di Cognome e Nome combinati
                     let cognome = row.Cognome || row.cognome || row.COGNOME || "";
                     let nome = row.Nome || row.nome || row.NOME || "";
                     let nomeCompleto = "";
@@ -2470,7 +2463,6 @@
                     return;
                 }
 
-                // Sorting alphabetical by Cognome Nome
                 filteredTokens.sort((a, b) => (a.nome || "").localeCompare(b.nome || ""));
 
                 const refDocRef = getDocumentRef('config', 'referenti_keys');
@@ -2548,7 +2540,6 @@
                     }
                 });
 
-                // subsequent pages: actual cutout slips with student names, code, and signatures
                 doc.addPage();
                 doc.setFillColor(15, 23, 42);
                 doc.rect(0, 0, 210, 20, 'F');
@@ -2989,7 +2980,6 @@
                     ${mainNavHTML}
                     ${subNavConsiglioHTML}
 
-                    <!-- Riepilogo Urna Reale -->
                     <div class="grid grid-cols-3 gap-4 mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200 font-semibold text-center text-xs">
                         <div>
                             <span class="text-slate-450 uppercase text-[9px] block">Votanti Totali</span>
@@ -3006,7 +2996,6 @@
                     </div>
 
                     <div class="grid lg:grid-cols-12 gap-6">
-                        <!-- COLONNA SINISTRA: Base Dati dei Voti -->
                         <div class="lg:col-span-5 bg-slate-50 p-4 rounded-2xl border border-slate-200">
                             <div class="flex justify-between items-center mb-3 pb-1 border-b">
                                 <h4 class="text-xs font-black text-slate-800 uppercase">📁 Registro Urna Cloud</h4>
@@ -3017,7 +3006,6 @@
                             </div>
                         </div>
 
-                        <!-- COLONNA DESTRA: Elaborazione Matematica e Proclamazione -->
                         <div class="lg:col-span-7 bg-white p-4 rounded-2xl border border-slate-200" id="panel-eletti-calcolati">
                             <!-- Popolato dinamicamente -->
                         </div>
@@ -3536,9 +3524,274 @@
             lucide.createIcons();
         }
 
-        window.onload = () => {
-            showPage('studentLogin'); 
+        function renderCondivisioneTab(container) {
+            const publicLink = window.location.origin + window.location.pathname + '?view=public';
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(publicLink)}`;
+
+            container.innerHTML = `
+                <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 animate-fade-in w-full font-semibold max-w-4xl mx-auto">
+                    <div class="border-b border-slate-100 pb-3 mb-6">
+                        <span class="text-[9px] bg-emerald-600 text-white font-black px-2 py-0.5 rounded uppercase">PAGINA 9</span>
+                        <h3 class="text-lg font-black text-slate-800 mt-0.5">Trasparenza Elettorale & Portale Pubblico Risultati</h3>
+                        <p class="text-xs text-slate-500">Genera i canali pubblici di consultazione per gli studenti e la bacheca scolastica.</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-8 items-center">
+                        <div class="space-y-5">
+                            <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl text-xs text-emerald-900 leading-relaxed">
+                                <h4 class="font-bold flex items-center gap-1.5"><i data-lucide="eye" class="w-4 h-4 text-emerald-600"></i> Scrutinio Pubblico e Trasparente</h4>
+                                <p class="mt-1.5">Come da disposizioni di legge, lo scrutinio per la **Consulta Provinciale** e per i **Rappresentanti d'Istituto** è pubblico.</p>
+                                <p class="mt-1 font-medium">Attraverso questo link o QR code, gli studenti potranno consultare l'esito elettorale in tempo reale (eletti, ripartizione D'Hondt e dettagli per classe) senza bisogno di alcuna credenziale o login.</p>
+                            </div>
+
+                            <div class="space-y-2">
+                                <label class="block text-[10px] uppercase text-slate-500 font-bold">Link Pubblico per gli Studenti</label>
+                                <div class="flex gap-2">
+                                    <input type="text" readonly id="publicSharingUrl" value="${publicLink}" class="p-2.5 border rounded-xl text-xs bg-slate-50 font-mono flex-grow outline-none text-slate-600">
+                                    <button onclick="window.copyPublicLink()" class="bg-blue-900 hover:bg-blue-850 text-white font-extrabold text-xs px-4 rounded-xl flex items-center gap-1.5 shadow">
+                                        <i data-lucide="copy" class="w-4 h-4"></i> Copia Link
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3">
+                                <button onclick="window.printLocandinaQR()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-black py-2.5 px-4 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow">
+                                    <i data-lucide="printer" class="w-4 h-4 text-yellow-400"></i> Stampa Locandina Poster QR
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col items-center justify-center bg-slate-50 p-6 rounded-2xl border border-slate-150">
+                            <span class="text-[9px] uppercase tracking-wider font-bold text-slate-400 mb-3">Scansiona con lo Smartphone</span>
+                            <div class="bg-white p-4 rounded-xl shadow-md border border-slate-200">
+                                <img src="${qrApiUrl}" alt="QR Code Risultati Pubblici" class="w-48 h-48">
+                            </div>
+                            <span class="text-[10px] font-bold text-blue-900 mt-4 uppercase">ITSCG "PRIMO LEVI" DI SEREGNO</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        window.copyPublicLink = function() {
+            const input = document.getElementById('publicSharingUrl');
+            if (input) {
+                input.select();
+                document.execCommand('copy');
+                showNotification("Copiato", "Il link pubblico è stato copiato negli appunti. Invialo ai rappresentanti studenti o pubblicalo sul sito d'Istituto.", "success");
+            }
+        };
+
+        window.printLocandinaQR = function() {
+            const publicLink = window.location.origin + window.location.pathname + '?view=public';
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(publicLink)}`;
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>ITSCG Primo Levi Seregno - Elezioni Locandina QR</title>
+                    <style>
+                        body { font-family: 'Helvetica', sans-serif; text-align: center; color: #1e293b; padding: 40px; }
+                        .container { max-width: 600px; margin: 0 auto; border: 4px solid #1e3a8a; padding: 40px; border-radius: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+                        h1 { color: #1e3a8a; font-size: 24px; text-transform: uppercase; margin-bottom: 5px; }
+                        p { font-size: 14px; color: #64748b; margin-bottom: 25px; }
+                        img { margin: 20px 0; border: 1px solid #cbd5e1; padding: 10px; border-radius: 12px; }
+                        .footer { margin-top: 30px; font-weight: bold; font-size: 12px; color: #1e3a8a; }
+                    </style>
+                </head>
+                <body onload="window.print()">
+                    <div class="container">
+                        <h1>ITSCG "PRIMO LEVI" SEREGNO</h1>
+                        <p style="color:#d97706; font-weight:bold; letter-spacing:1px; margin-top:0;">ELEZIONI SCOLASTICHE 2026</p>
+                        <h2 style="font-size:18px; margin-top:20px;">PORTALE DI TRASPARENZA ELETTORALE</h2>
+                        <p>Scansiona il codice QR sottostante per accedere in tempo reale ai risultati, alla proclamazione degli eletti e ai voti divisi per classe della Consulta Provinciale e dei Rappresentanti d'Istituto.</p>
+                        <img src="${qrApiUrl}" alt="QR">
+                        <p class="footer">Elezioni Digitali Certificate • Sede Unica Via Briantina 68</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+        };
+
+        async function renderPublicResults(container) {
+            container.innerHTML = `
+                <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200 animate-fade-in w-full font-semibold max-w-5xl mx-auto">
+                    <div class="text-center p-12">
+                        <div class="spinner border-blue-900 border-t-transparent mx-auto mb-3"></div>
+                        <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Caricamento risultanze dell'Urna Cloud...</p>
+                    </div>
+                </div>
+            `;
+
+            let publicSection = 'istituto'; 
+            let colName = 'voti_istituto';
+            let titleLabel = 'Rappresentanti d\'Istituto (STUDENTI)';
+
+            async function drawContent() {
+                if (publicSection === 'consulta') {
+                    colName = 'voti_consulta';
+                    titleLabel = 'Consulta Provinciale (STUDENTI)';
+                } else {
+                    colName = 'voti_istituto';
+                    titleLabel = 'Rappresentanti d\'Istituto (STUDENTI)';
+                }
+
+                await fetchScrutinioData(colName);
+
+                let subListe = publicSection === 'consulta' ? configElezioni.listeConsulta : configElezioni.listeIstituto;
+                let listVotes = {};
+                Object.keys(subListe).forEach(lKey => {
+                    listVotes[lKey] = (officialVotiScrutinio.liste[colName]?.[lKey] || 0);
+                });
+
+                let seggiDisponibili = publicSection === 'consulta' ? 2 : 4;
+                let { quotients, seatsAllocated } = calculateDHondtSteps(listVotes, seggiDisponibili, subListe);
+
+                let candidatiEletti = [];
+                Object.entries(seatsAllocated).forEach(([lKey, seats]) => {
+                    if (seats <= 0) return;
+                    let listVal = subListe[lKey];
+                    let listCandidates = listVal.candidati.map((cand, presentationIndex) => {
+                        let prefs = (officialVotiScrutinio.preferenze[colName]?.[`${lKey}_${cand}`] || 0);
+                        return { name: cand, listName: listVal.nome, listKey: lKey, prefs, presentationIndex };
+                    });
+
+                    listCandidates.sort((a,b) => {
+                        if (b.prefs === a.prefs) return a.presentationIndex - b.presentationIndex;
+                        return b.prefs - a.prefs;
+                    });
+
+                    for (let s = 0; s < Math.min(seats, listCandidates.length); s++) {
+                        candidatiEletti.push({ ...listCandidates[s] });
+                    }
+                });
+
+                let classesVoti = officialVotiScrutinio.classi[colName] || {};
+                let sortedClasses = Object.keys(classesVoti).sort();
+
+                container.innerHTML = `
+                    <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200 animate-fade-in w-full font-semibold max-w-5xl mx-auto space-y-6">
+                        <div class="text-center border-b border-slate-100 pb-4">
+                            <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" class="h-14 w-auto mx-auto mb-2 object-contain">
+                            <span class="text-[9px] uppercase tracking-wider font-bold text-slate-400">ITSCG Primo Levi Seregno</span>
+                            <h2 class="text-xl font-black text-slate-800">Portale Pubblico di Trasparenza Elettorale</h2>
+                            <p class="text-[11px] text-slate-500 mt-0.5">Risultati in tempo reale dall'Urna Cloud</p>
+                        </div>
+
+                        <div class="flex justify-center gap-2 border-b pb-4">
+                            <button id="btnPublicIsti" class="py-1.5 px-4 rounded-xl text-xs font-bold transition-all uppercase ${publicSection === 'istituto' ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-700'}" onclick="window.switchPublicSec('istituto')">Rappr. Istituto</button>
+                            <button id="btnPublicCons" class="py-1.5 px-4 rounded-xl text-xs font-bold transition-all uppercase ${publicSection === 'consulta' ? 'bg-blue-900 text-white' : 'bg-slate-100 text-slate-700'}" onclick="window.switchPublicSec('consulta')">Consulta Prov.</button>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-4 mb-6 bg-slate-50 p-4 rounded-xl border border-slate-150 text-center text-xs">
+                            <div>
+                                <span class="text-slate-450 uppercase text-[9px] block">Affluenza Elettori</span>
+                                <strong class="text-lg text-slate-800">${officialVotiScrutinio.totali.votanti}</strong>
+                            </div>
+                            <div>
+                                <span class="text-slate-450 uppercase text-[9px] block">Schede Bianche</span>
+                                <strong class="text-lg text-slate-800">${officialVotiScrutinio.totali.bianche}</strong>
+                            </div>
+                            <div>
+                                <span class="text-slate-450 uppercase text-[9px] block">Voti Validi Liste</span>
+                                <strong class="text-lg text-blue-900">${officialVotiScrutinio.totali.validi}</strong>
+                            </div>
+                        </div>
+
+                        <div class="grid lg:grid-cols-2 gap-6">
+                            <!-- Eletti e liste -->
+                            <div class="space-y-4">
+                                <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-100">
+                                    <h4 class="text-xs font-black text-blue-900 uppercase mb-3 flex items-center gap-1.5"><i data-lucide="crown"></i> Candidati Proclamati Eletti</h4>
+                                    <div class="space-y-2">
+                                        ${candidatiEletti.map((cand, i) => `
+                                            <div class="p-3 bg-white border border-blue-100 rounded-xl flex items-center justify-between">
+                                                <div>
+                                                    <span class="text-[8px] bg-emerald-600 text-white font-black px-1.5 py-0.5 rounded">PROCLAMATO</span>
+                                                    <h5 class="font-black text-slate-800 text-xs mt-1 uppercase">${cand.name}</h5>
+                                                    <p class="text-[9px] text-slate-400 mt-0.5">${cand.listName}</p>
+                                                </div>
+                                                <span class="text-xs font-black text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg">${cand.prefs} preferenze</span>
+                                            </div>
+                                        `).join('')}
+                                        ${candidatiEletti.length === 0 ? `<p class="text-xs text-slate-400 italic">Scrutinio parziale.</p>` : ''}
+                                    </div>
+                                </div>
+
+                                <div class="bg-white p-4 rounded-2xl border">
+                                    <h4 class="text-xs font-black text-slate-800 uppercase mb-3">Voti Ricevuti dalle Liste</h4>
+                                    <div class="space-y-3">
+                                        ${Object.entries(subListe).map(([lKey, lVal]) => {
+                                            let votes = listVotes[lKey] || 0;
+                                            return `
+                                                <div class="flex items-center justify-between text-xs py-1 border-b last:border-0">
+                                                    <span class="font-bold text-slate-700">${lVal.nome}</span>
+                                                    <strong class="text-blue-900 bg-blue-50 px-3 py-1 rounded-lg">${votes} voti</strong>
+                                                </div>
+                                            `;
+                                        }).join('')}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Voti divisi per classi -->
+                            <div class="bg-slate-50 p-4 rounded-2xl border">
+                                <h4 class="text-xs font-black text-slate-800 uppercase mb-3 flex items-center gap-1.5"><i data-lucide="users"></i> Afflusso dei Voti per Classe</h4>
+                                <div class="max-h-[380px] overflow-y-auto pr-1 custom-scrollbar space-y-3">
+                                    ${sortedClasses.map(cl => {
+                                        let classData = classesVoti[cl] || {};
+                                        return `
+                                            <div class="bg-white p-3 rounded-xl border border-slate-200">
+                                                <h5 class="font-black text-slate-800 text-[10px] uppercase mb-1.5 border-b pb-1">Sezione: ${cl}</h5>
+                                                <div class="space-y-1 text-xs">
+                                                    ${Object.entries(classData).map(([name, count]) => `
+                                                        <div class="flex justify-between items-center text-[11px]">
+                                                            <span class="text-slate-600 font-bold uppercase truncate max-w-[180px]">${name}</span>
+                                                            <span class="font-black text-slate-800">${count} pref.</span>
+                                                        </div>
+                                                    `).join('')}
+                                                    ${Object.keys(classData).length === 0 ? `<p class="text-[9px] text-slate-400 italic">Solo voti di lista.</p>` : ''}
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                    ${sortedClasses.length === 0 ? `<p class="text-xs text-slate-400 italic text-center py-6">Nessun dato per classe.</p>` : ''}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t text-center text-[9px] text-slate-400">
+                            ITSCG Primo Levi Seregno • Sistema Elettorale Digitale Certificato
+                        </div>
+                    </div>
+                `;
+                lucide.createIcons();
+            }
+
+            window.switchPublicSec = function(sec) {
+                publicSection = sec;
+                drawContent();
+            };
+
+            await drawContent();
+        }
+
+        window.onload = async () => {
+            const params = new URLSearchParams(window.location.search);
             
+            if (params.get('view') === 'public') {
+                signInAnonymously(auth).then(() => {
+                    showPage('publicResults');
+                }).catch((e) => {
+                    console.error("Errore di sessione anonima pubblica:", e);
+                });
+            } else {
+                showPage('studentLogin');
+            }
+
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
                     try {
