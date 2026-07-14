@@ -114,19 +114,19 @@
 
     <div class="bubble-bg">
         <div class="delicate-bubble w-28 h-28" style="top: 10%; left: 5%; animation-delay: 0s; animation-duration: 22s;">
-            <img src="levi.png" alt="Levi Logo" onerror="this.style.display='none'">
+            <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" alt="Levi Logo" onerror="this.style.display='none'">
             <span>VOTAZIONI ELETTRONICHE</span>
         </div>
         <div class="delicate-bubble w-20 h-20" style="top: 65%; left: 10%; animation-delay: 3s; animation-duration: 28s;">
-            <img src="levi.png" alt="Levi Logo" onerror="this.style.display='none'">
+            <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" alt="Levi Logo" onerror="this.style.display='none'">
             <span>ITSCG "PRIMO LEVI"</span>
         </div>
         <div class="delicate-bubble w-32 h-32" style="top: 25%; left: 80%; animation-delay: 1s; animation-duration: 25s;">
-            <img src="levi.png" alt="Levi Logo" onerror="this.style.display='none'">
+            <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" alt="Levi Logo" onerror="this.style.display='none'">
             <span>MBTD430001</span>
         </div>
         <div class="delicate-bubble w-24 h-24" style="top: 50%; left: 48%; animation-delay: 4s; animation-duration: 26s;">
-            <img src="levi.png" alt="Levi Logo" onerror="this.style.display='none'">
+            <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" alt="Levi Logo" onerror="this.style.display='none'">
             <span>20831, SEREGNO</span>
         </div>
     </div>
@@ -134,7 +134,7 @@
     <header class="bg-gradient-header text-white shadow-xl relative border-b-4 border-yellow-500 z-20">
         <div class="container mx-auto p-4 flex flex-col lg:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-4">
-                <img src="levi.png" 
+                <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" 
                      id="school-logo" 
                      alt="Logo ITSCG Primo Levi" 
                      class="h-14 w-14 rounded-xl shadow-md border border-yellow-400 object-contain p-1 bg-white transition-all hover:scale-105"/>
@@ -638,7 +638,7 @@
             container.innerHTML = `
                 <div class="w-full max-w-md mx-auto bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-slate-200 text-center animate-fade-in mt-4 font-semibold">
                     <div class="mb-6 flex flex-col items-center">
-                        <img src="levi.png" alt="Primo Levi Logo" class="w-16 h-16 object-contain mb-4" onerror="this.style.display='none'">
+                        <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" alt="Primo Levi Logo" class="w-16 h-16 object-contain mb-4" onerror="this.style.display='none'">
                         <h2 class="text-xl font-black text-slate-800">Entra in Cabina Elettorale</h2>
                         <p class="text-slate-500 text-xs mt-1">Digita il codice segreto (Token) per votare dal tuo dispositivo.</p>
                     </div>
@@ -879,7 +879,7 @@
         function getCardHeaderHTML(title) {
             return `
                 <div class="flex flex-col items-center mb-6 text-center border-b border-slate-100 pb-4 font-semibold">
-                    <img src="levi.png" onerror="this.src='levi.png'" class="h-12 w-auto mb-2 object-contain" />
+                    <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" onerror="this.src='https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI'" class="h-12 w-auto mb-2 object-contain" />
                     <span class="text-[10px] uppercase tracking-widest text-slate-400 font-extrabold">ITSCG PRIMO LEVI DI SEREGNO</span>
                     <h2 class="text-lg font-black text-slate-800 mt-1 uppercase">${title}</h2>
                 </div>
@@ -1439,7 +1439,11 @@
             btn.disabled = true;
 
             const token = currentUserData.id;
-            const uuid = 'vote_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const uuidConsiglio = 'vote_cons_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const uuidIstituto = 'vote_ist_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const uuidConsulta = 'vote_consul_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const uuidClasseStu = 'vote_cl_stu_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const uuidClasseGen = 'vote_cl_gen_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 
             try {
                 const batch = writeBatch(db);
@@ -1447,33 +1451,38 @@
                 const tokenUpdates = {};
 
                 if (configElezioni.consiglioAttivo && cartVotes.consiglio && currentUserData.tipo !== 'STUDENTE') {
-                    const voteRef = doc(getCollectionRef('voti_consiglio'), uuid);
+                    const voteRef = doc(getCollectionRef('voti_consiglio'), uuidConsiglio);
                     batch.set(voteRef, { ...cartVotes.consiglio, classe: currentUserData.classe, tipo: currentUserData.tipo, dataVoto: "12 Luglio 2026" });
                     tokenUpdates.voted_consiglio = true;
+                    tokenUpdates.vote_id_consiglio = uuidConsiglio;
                 }
                 
                 if (configElezioni.rappresentantiIstitutoAttivo && cartVotes.istituto && currentUserData.tipo === 'STUDENTE') {
-                    const voteRef = doc(getCollectionRef('voti_istituto'), uuid);
+                    const voteRef = doc(getCollectionRef('voti_istituto'), uuidIstituto);
                     batch.set(voteRef, { ...cartVotes.istituto, classe: currentUserData.classe, tipo: currentUserData.tipo, dataVoto: "12 Luglio 2026" });
                     tokenUpdates.voted_istituto = true;
+                    tokenUpdates.vote_id_istituto = uuidIstituto;
                 }
                 
                 if (configElezioni.consultaAttiva && cartVotes.consulta && currentUserData.tipo === 'STUDENTE') {
-                    const voteRef = doc(getCollectionRef('voti_consulta'), uuid);
+                    const voteRef = doc(getCollectionRef('voti_consulta'), uuidConsulta);
                     batch.set(voteRef, { ...cartVotes.consulta, classe: currentUserData.classe, tipo: currentUserData.tipo, dataVoto: "12 Luglio 2026" });
                     tokenUpdates.voted_consulta = true;
+                    tokenUpdates.vote_id_consulta = uuidConsulta;
                 }
                 
                 if (configElezioni.rappresentantiClasseStudentiAttivo && cartVotes.classeStudente && currentUserData.tipo === 'STUDENTE') {
-                    const voteRef = doc(getCollectionRef('voti_classe_studenti'), uuid);
+                    const voteRef = doc(getCollectionRef('voti_classe_studenti'), uuidClasseStu);
                     batch.set(voteRef, { ...cartVotes.classeStudente, classe: currentUserData.classe, tipo: currentUserData.tipo, dataVoto: "12 Luglio 2026" });
-                    tokenUpdates.voted_classe_studente = true;
+                    tokenUpdates.voted_classe_studenti = true;
+                    tokenUpdates.vote_id_classe_studente = uuidClasseStu;
                 }
                 
                 if (configElezioni.rappresentantiClasseGenitoriAttivo && cartVotes.classeGenitore && currentUserData.tipo === 'GENITORE') {
-                    const voteRef = doc(getCollectionRef('voti_classe_genitori'), uuid);
+                    const voteRef = doc(getCollectionRef('voti_classe_genitori'), uuidClasseGen);
                     batch.set(voteRef, { ...cartVotes.classeGenitore, classe: currentUserData.classe, tipo: currentUserData.tipo, dataVoto: "12 Luglio 2026" });
                     tokenUpdates.voted_classe_genitore = true;
+                    tokenUpdates.vote_id_classe_genitore = uuidClasseGen;
                 }
 
                 tokenUpdates.hasVoted = true;
@@ -2621,14 +2630,46 @@
         };
 
         window.resetSingleBallotFlag = async function(tokenId, flagFieldName) {
-            showGenericConfirm("Sbloccare Votazione", `Vuoi annullare lo stato di voto per la scheda '${flagFieldName}' del token ${tokenId}? L'elettore potrà riesprimere solo questa preferenza.`, async () => {
+            showGenericConfirm("Sbloccare Votazione", `Sei sicuro? Ripristinando lo stato di questo voto, la scheda precedentemente inserita nell'urna cloud verrà eliminata in modo automatico e definitivo per garantire la sincronizzazione dei conteggi.`, async () => {
                 try {
                     const tokenRef = getDocumentRef('tokens', tokenId);
+                    const tokenSnap = await getDoc(tokenRef);
+                    if (!tokenSnap.exists()) throw new Error("Token non trovato.");
+                    const tokenData = tokenSnap.data();
+
+                    let voteIdField = '';
+                    let colName = '';
+                    if (flagFieldName === 'voted_consiglio') {
+                        voteIdField = 'vote_id_consiglio';
+                        colName = 'voti_consiglio';
+                    } else if (flagFieldName === 'voted_istituto') {
+                        voteIdField = 'vote_id_istituto';
+                        colName = 'voti_istituto';
+                    } else if (flagFieldName === 'voted_consulta') {
+                        voteIdField = 'vote_id_consulta';
+                        colName = 'voti_consulta';
+                    } else if (flagFieldName === 'voted_classe_studente') {
+                        voteIdField = 'vote_id_classe_studente';
+                        colName = 'voti_classe_studenti';
+                    } else if (flagFieldName === 'voted_classe_genitore') {
+                        voteIdField = 'vote_id_classe_genitore';
+                        colName = 'voti_classe_genitori';
+                    }
+
+                    const voteId = tokenData[voteIdField];
+                    if (voteId) {
+                        const voteDocRef = doc(getCollectionRef(colName), voteId);
+                        await deleteDoc(voteDocRef);
+                    }
+
                     const updates = {};
                     updates[flagFieldName] = false;
                     updates.hasVoted = false; 
+                    if (voteIdField) {
+                        updates[voteIdField] = null;
+                    }
                     await updateDoc(tokenRef, updates);
-                    showNotification("Sbloccato", "La votazione specifica è stata sbloccata nel cloud.", "success");
+                    showNotification("Sbloccato con Successo", "La votazione specifica è stata sbloccata e la vecchia scheda è stata epurata dall'urna.", "success");
                     startTokensListener();
                 } catch (e) {
                     showNotification("Errore", e.message, "error");
@@ -2637,18 +2678,46 @@
         };
 
         window.resetEntireToken = async function(tokenId) {
-            showGenericConfirm("Ripristinare Token", `Vuoi riabilitare completamente il token ${tokenId} resettando tutte le schede espresse?`, async () => {
+            showGenericConfirm("Ripristinare Token", `Sei sicuro? Questa azione eliminerà simultaneamente e in modo automatico tutte le schede inserite da questo token in tutte le urne cloud, riportando la credenziale allo stato originario.`, async () => {
                 try {
                     const tokenRef = getDocumentRef('tokens', tokenId);
-                    await updateDoc(tokenRef, {
+                    const tokenSnap = await getDoc(tokenRef);
+                    if (!tokenSnap.exists()) throw new Error("Token non trovato.");
+                    const tokenData = tokenSnap.data();
+
+                    const batch = writeBatch(db);
+
+                    const pairs = [
+                        { id: tokenData.vote_id_consiglio, col: 'voti_consiglio' },
+                        { id: tokenData.vote_id_istituto, col: 'voti_istituto' },
+                        { id: tokenData.vote_id_consulta, col: 'voti_consulta' },
+                        { id: tokenData.vote_id_classe_studente, col: 'voti_classe_studenti' },
+                        { id: tokenData.vote_id_classe_genitore, col: 'voti_classe_genitori' }
+                    ];
+
+                    pairs.forEach(p => {
+                        if (p.id) {
+                            const voteDocRef = doc(getCollectionRef(p.col), p.id);
+                            batch.delete(voteDocRef);
+                        }
+                    });
+
+                    batch.update(tokenRef, {
                         hasVoted: false,
                         voted_consiglio: false,
                         voted_istituto: false,
                         voted_consulta: false,
                         voted_classe_studente: false,
-                        voted_classe_genitore: false
+                        voted_classe_genitore: false,
+                        vote_id_consiglio: null,
+                        vote_id_istituto: null,
+                        vote_id_consulta: null,
+                        vote_id_classe_studente: null,
+                        vote_id_classe_genitore: null
                     });
-                    showNotification("Token Ripristinato", "La credenziale è stata riabilitata interamente.", "success");
+
+                    await batch.commit();
+                    showNotification("Token Ripristinato", "La credenziale è stata riabilitata e i relativi voti espressi sono stati rimossi dall'urna cloud.", "success");
                     startTokensListener();
                 } catch (e) {
                     showNotification("Errore", e.message, "error");
@@ -3784,7 +3853,7 @@
                 container.innerHTML = `
                     <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200 animate-fade-in w-full font-semibold max-w-5xl mx-auto space-y-6">
                         <div class="text-center border-b border-slate-100 pb-4">
-                            <img src="levi.png" class="h-14 w-auto mx-auto mb-2 object-contain" onerror="this.style.display='none'">
+                            <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" class="h-14 w-auto mx-auto mb-2 object-contain" onerror="this.style.display='none'">
                             <span class="text-[9px] uppercase tracking-wider font-bold text-slate-400">ITSCG Primo Levi Seregno</span>
                             <h2 class="text-xl font-black text-slate-800">Portale Pubblico di Trasparenza Elettorale</h2>
                             <p class="text-[11px] text-slate-500 mt-0.5">Risultati in tempo reale dall'Urna Cloud</p>
