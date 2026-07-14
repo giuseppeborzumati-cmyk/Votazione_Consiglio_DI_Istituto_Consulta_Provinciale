@@ -5,13 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Piattaforma Elettorale Unificata - ITSCG Primo Levi</title>
     
-    <!-- Tailwind CSS per lo styling responsive e moderno -->
+    <!-- -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- SheetJS per esportazione ed importazione Excel nativa con supporto Blob -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- Lucide Icons per icone pulite ed eleganti -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- jsPDF e jsPDF AutoTable per generazione PDF nativa e robusta -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
@@ -108,19 +105,19 @@
 
     <div class="bubble-bg">
         <div class="delicate-bubble w-28 h-28" style="top: 10%; left: 5%; animation-delay: 0s; animation-duration: 22s;">
-            <img src="levi.png" alt="Levi Logo" onerror="this.style.display='none'">
+            <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" alt="Levi Logo" onerror="this.style.display='none'">
             <span>VOTAZIONI ELETTRONICHE</span>
         </div>
         <div class="delicate-bubble w-20 h-20" style="top: 65%; left: 10%; animation-delay: 3s; animation-duration: 28s;">
-            <img src="levi.png" alt="Levi Logo" onerror="this.style.display='none'">
+            <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" alt="Levi Logo" onerror="this.style.display='none'">
             <span>ITSCG "PRIMO LEVI"</span>
         </div>
         <div class="delicate-bubble w-32 h-32" style="top: 25%; left: 80%; animation-delay: 1s; animation-duration: 25s;">
-            <img src="levi.png" alt="Levi Logo" onerror="this.style.display='none'">
+            <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" alt="Levi Logo" onerror="this.style.display='none'">
             <span>MBTD430001</span>
         </div>
         <div class="delicate-bubble w-24 h-24" style="top: 50%; left: 48%; animation-delay: 4s; animation-duration: 26s;">
-            <img src="levi.png" alt="Levi Logo" onerror="this.style.display='none'">
+            <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" alt="Levi Logo" onerror="this.style.display='none'">
             <span>20831, SEREGNO</span>
         </div>
     </div>
@@ -128,7 +125,7 @@
     <header class="bg-gradient-header text-white shadow-xl relative border-b-4 border-yellow-500 z-20">
         <div class="container mx-auto p-4 flex flex-col lg:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-4">
-                <img src="levi.png" 
+                <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" 
                      id="school-logo" 
                      alt="Logo ITSCG Primo Levi" 
                      class="h-14 w-14 rounded-xl shadow-md border border-yellow-400 object-contain p-1 bg-white transition-all hover:scale-105"/>
@@ -143,7 +140,7 @@
             
             <div class="flex flex-wrap items-center justify-center gap-1.5 bg-slate-900/40 p-2 rounded-xl border border-white/10 w-full lg:w-auto text-[10px]">
                 <button onclick="window.openInformativaModal()" class="bg-blue-800/80 hover:bg-blue-700 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5">
-                    <i data-lucide="scale" class="w-3.5 h-3.5 text-yellow-450"></i> Norme & Commissione
+                    <i data-lucide="scale" class="w-3.5 h-3.5"></i> Norme & Commissione
                 </button>
                 <button onclick="window.showClassMasterLogin('STUDENTE')" class="bg-slate-800 hover:bg-slate-700 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5">
                     <i data-lucide="users" class="w-3.5 h-3.5 text-sky-400"></i> Referenti Studenti
@@ -266,7 +263,6 @@
         </div>
     </div>
 
-    <!-- Piè di Pagina Istituzionale -->
     <footer class="bg-slate-900 text-slate-400 p-4 text-center text-[10px] border-t border-slate-800 z-10">
         <div class="container mx-auto space-y-1">
             <p class="font-bold text-slate-300">Sistema Elettorale Digitale ITSCG "Primo Levi" Seregno</p>
@@ -315,7 +311,7 @@
             liste: {},      
             preferenze: {}, 
             classi: {},
-            classDetail: {}, // Struttura dati per archiviare il dettaglio multi-dimensionale per classe
+            classDetail: {}, 
             totali: { votanti: 0, bianche: 0, validi: 0 }
         };
 
@@ -617,7 +613,7 @@
             container.innerHTML = `
                 <div class="w-full max-w-md mx-auto bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-slate-200 text-center animate-fade-in mt-4 font-semibold">
                     <div class="mb-6 flex flex-col items-center">
-                        <img src="levi.png" alt="Primo Levi Logo" class="w-16 h-16 object-contain mb-4" onerror="this.style.display='none'">
+                        <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" alt="Primo Levi Logo" class="w-16 h-16 object-contain mb-4" onerror="this.style.display='none'">
                         <h2 class="text-xl font-black text-slate-800">Entra in Cabina Elettorale</h2>
                         <p class="text-slate-500 text-xs mt-1">Digita il codice segreto (Token) per votare dal tuo dispositivo.</p>
                     </div>
@@ -858,7 +854,7 @@
         function getCardHeaderHTML(title) {
             return `
                 <div class="flex flex-col items-center mb-6 text-center border-b border-slate-100 pb-4 font-semibold">
-                    <img src="levi.png" onerror="this.src='levi.png'" class="h-12 w-auto mb-2 object-contain" />
+                    <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" onerror="this.src='https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI'" class="h-12 w-auto mb-2 object-contain" />
                     <span class="text-[10px] uppercase tracking-widest text-slate-400 font-extrabold">ITSCG PRIMO LEVI DI SEREGNO</span>
                     <h2 class="text-lg font-black text-slate-800 mt-1 uppercase">${title}</h2>
                 </div>
@@ -869,7 +865,8 @@
             let headerHTML = getCardHeaderHTML("Consiglio d'Istituto (" + currentUserData.tipo + ")");
             const subListe = configElezioni.listeConsiglio[currentUserData.tipo] || {};
 
-            let listeHTML = Object.entries(subListe).map(([key, value]) => `
+            let listsCount = Object.keys(subListe).length;
+            let listsHTML = Object.entries(subListe).map(([key, value]) => `
                 <div class="border border-slate-200 rounded-2xl p-4 bg-slate-50 hover:bg-slate-100/50 transition-colors font-semibold">
                     <label class="flex items-center space-x-3 cursor-pointer">
                         <input type="radio" name="listaConsiglio" value="${key}" ${cartVotes.consiglio?.lista === key ? 'checked' : ''} onchange="updateConsiglioPreferenzeOptions('${key}')" class="w-5 h-5 text-blue-900 border-slate-300 focus:ring-blue-900">
@@ -884,10 +881,10 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full font-semibold">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4 font-semibold text-slate-600">Esprimi il voto per una lista e fino a un massimo di ${configElezioni.maxPrefConsiglio} preferenze nominali in base alle impostazioni elettorali vigenti.</p>
+                    <p class="text-xs text-slate-500 mb-4 font-semibold text-slate-600">Esprimi il voto per una lista e fino a un massimo di **${configElezioni.maxPrefConsiglio} preferenze nominali** in base alle impostazioni elettorali vigenti.</p>
                     
                     <div class="space-y-4">
-                        ${listeHTML}
+                        ${listsHTML}
                     </div>
 
                     <div class="mt-8 flex justify-between">
@@ -988,7 +985,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full font-semibold">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4 font-semibold text-slate-600">Scegli una lista ed esprimi fino a un massimo di ${configElezioni.maxPrefIstituto} preferenze nominali.</p>
+                    <p class="text-xs text-slate-500 mb-4 font-semibold text-slate-600">Scegli una lista ed esprimi fino a un massimo di **${configElezioni.maxPrefIstituto} preferenze nominali**.</p>
                     
                     <div class="space-y-4">
                         ${listelst}
@@ -1091,7 +1088,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full font-semibold">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4 font-semibold text-slate-600">Scegli la lista ed esprimi fino a un massimo di ${configElezioni.maxPrefConsulta} preferenze nominali.</p>
+                    <p class="text-xs text-slate-500 mb-4 font-semibold text-slate-600">Scegli la lista ed esprimi fino a un massimo di **${configElezioni.maxPrefConsulta} preferenze nominali**.</p>
                     
                     <div class="space-y-4">
                         ${listacon}
@@ -1567,9 +1564,13 @@
                 }
             });
 
+            // Ordinamento primario per voti, secondario alfabetico per garantire consistenza
             let sortedCandidates = Object.entries(nameCounts)
                 .map(([name, count]) => ({ name, count }))
-                .sort((a, b) => b.count - a.count);
+                .sort((a, b) => {
+                    if (b.count === a.count) return a.name.localeCompare(b.name);
+                    return b.count - a.count;
+                });
 
             let eletti = [];
             let rigaSorteggioHTML = '';
@@ -1589,15 +1590,13 @@
                 let tieCandidates = sortedCandidates.slice(1).filter(c => c.count === secondVal);
                 
                 if (tieCandidates.length > 1) {
-                    let seed = currentClassMasterData.classe.charCodeAt(0) + (currentClassMasterData.classe.charCodeAt(1) || 0);
-                    let randomIndex = seed % tieCandidates.length;
-                    let sortedWinner = tieCandidates[randomIndex];
-                    
-                    eletti.push({ name: sortedWinner.name, count: sortedWinner.count, status: "ELETTO 2 (A Sorte)" });
+                    // Risoluzione ex-aequo deterministica alfabetica
+                    let sortedWinner = tieCandidates[0]; 
+                    eletti.push({ name: sortedWinner.name, count: sortedWinner.count, status: "ELETTO 2 (Ex-Aequo)" });
                     rigaSorteggioHTML = `
                         <div class="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl text-[11px] leading-relaxed space-y-1 font-semibold">
                             <p class="font-bold">⚡ Riscontro di Parità (Ex-Aequo):</p>
-                            <p>I candidati ${tieCandidates.map(c => `<strong>${c.name}</strong> (${c.count} voti)`).join(', ')} hanno lo stesso numero di voti. Estratto deterministico scolastico: <strong>${sortedWinner.name}</strong>.</p>
+                            <p>I candidati ${tieCandidates.map(c => `<strong>${c.name}</strong> (${c.count} voti)`).join(', ')} hanno ottenuto pari voti. Criterio alfabetico applicato: <strong>${sortedWinner.name}</strong>.</p>
                         </div>
                     `;
                 } else {
@@ -2750,8 +2749,12 @@
                 }
             });
 
+            // Ordinamento primario quoziente, secondario voti di lista (O.M. 215/1991), terziario alfabetico
             quotients.sort((a, b) => {
                 if (Math.abs(a.quotient - b.quotient) < 0.0001) {
+                    if (a.votes === b.votes) {
+                        return a.listName.localeCompare(b.listName);
+                    }
                     return b.votes - a.votes; 
                 }
                 return b.quotient - a.quotient;
@@ -2832,7 +2835,7 @@
                     }
                 }
 
-                // Inizializzazione ed elaborazione del dettaglio granulare per classe
+                // Segmentazione dei dati per classe e preferenze per visualizzazione trasparente
                 let cl = v.classe || "SENZA CLASSE";
                 if (!officialVotiScrutinio.classDetail[colName][cl]) {
                     officialVotiScrutinio.classDetail[colName][cl] = {
@@ -3081,9 +3084,13 @@
             if (isClasse) {
                 let classesVoti = officialVotiScrutinio.classi[colName] || {};
                 outputHTML = Object.keys(classesVoti).sort().map(cl => {
+                    // Ex-aequo deterministico alfabetico in parità di voto
                     let candidates = Object.entries(classesVoti[cl])
                         .map(([name, v]) => ({ name, v }))
-                        .sort((a,b) => b.v - a.v);
+                        .sort((a,b) => {
+                            if (b.v === a.v) return a.name.localeCompare(b.name);
+                            return b.v - a.v;
+                        });
 
                     let eletti = candidates.slice(0, currentSeats);
 
@@ -3170,6 +3177,7 @@
                         };
                     });
 
+                    // Ex-aequo ministeriale: prioritá a chi ha piú preferenze, poi a chi compare prima in lista (O.M. 215/1991)
                     listCandidates.sort((a,b) => {
                         if (b.prefs === a.prefs) { return a.presentationIndex - b.presentationIndex; }
                         return b.prefs - a.prefs;
@@ -3374,9 +3382,13 @@
                 if (isClasse) {
                     let classesVoti = officialVotiScrutinio.classi[colName] || {};
                     Object.entries(classesVoti).forEach(([cl, cand]) => {
+                        // Applicazione coerente dell'Ex-Aequo deterministico alfabetico
                         let sortedC = Object.entries(cand)
                             .map(([name, v]) => ({ name, v }))
-                            .sort((a,b) => b.v - a.v)
+                            .sort((a,b) => {
+                                if (b.v === a.v) return a.name.localeCompare(b.name);
+                                return b.v - a.v;
+                            })
                             .slice(0, 2);
 
                         sortedC.forEach((c, idx) => {
@@ -3420,6 +3432,7 @@
                             return { name: cand, listName: listVal.nome, listKey: lKey, prefs, presentationIndex };
                         });
 
+                        // Coerenza totale ex-aequo O.M. 215/1991
                         listCandidates.sort((a,b) => {
                             if (b.prefs === a.prefs) return a.presentationIndex - b.presentationIndex;
                             return b.prefs - a.prefs;
@@ -3590,7 +3603,7 @@
                         <div class="space-y-5">
                             <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl text-xs text-emerald-900 leading-relaxed">
                                 <h4 class="font-bold flex items-center gap-1.5"><i data-lucide="eye" class="w-4 h-4 text-emerald-600"></i> Scrutinio Pubblico e Trasparente</h4>
-                                <p class="mt-1.5">Come da disposizioni di legge, lo scrutinio per la Consulta Provinciale e per i Rappresentanti d'Istituto è pubblico.</p>
+                                <p class="mt-1.5">Come da disposizioni di legge, lo scrutinio per la **Consulta Provinciale** e per i **Rappresentanti d'Istituto** è pubblico.</p>
                                 <p class="mt-1 font-medium">Attraverso questo link o QR code, gli studenti potranno consultare l'esito elettorale in tempo reale (eletti, ripartizione D'Hondt e dettagli per classe) senza bisogno di alcuna credenziale o login.</p>
                             </div>
 
@@ -3711,6 +3724,7 @@
                         return { name: cand, listName: listVal.nome, listKey: lKey, prefs, presentationIndex };
                     });
 
+                    // Ex-Aequo coerente applicato nel Portale Pubblico
                     listCandidates.sort((a,b) => {
                         if (b.prefs === a.prefs) return a.presentationIndex - b.presentationIndex;
                         return b.prefs - a.prefs;
@@ -3726,7 +3740,7 @@
                 container.innerHTML = `
                     <div class="bg-white p-6 rounded-2xl shadow-xl border border-slate-200 animate-fade-in w-full font-semibold max-w-5xl mx-auto space-y-6">
                         <div class="text-center border-b border-slate-100 pb-4">
-                            <img src="levi.png" class="h-14 w-auto mx-auto mb-2 object-contain" onerror="this.style.display='none'">
+                            <img src="https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI" class="h-14 w-auto mx-auto mb-2 object-contain" onerror="this.style.display='none'">
                             <span class="text-[9px] uppercase tracking-wider font-bold text-slate-400">ITSCG Primo Levi Seregno</span>
                             <h2 class="text-xl font-black text-slate-800">Portale Pubblico di Trasparenza Elettorale</h2>
                             <p class="text-[11px] text-slate-500 mt-0.5">Risultati in tempo reale dall'Urna Cloud</p>
@@ -3788,7 +3802,7 @@
                                 </div>
                             </div>
 
-                            <!-- Voti divisi per classi e preferenze specifiche -->
+                            <!-- Voti divisi per classi e preferenze specifiche con Ex-Aequo applicato -->
                             <div class="bg-slate-50 p-4 rounded-2xl border">
                                 <h4 class="text-xs font-black text-slate-800 uppercase mb-3 flex items-center gap-1.5"><i data-lucide="users"></i> Afflusso dei Voti e Preferenze per Classe</h4>
                                 <div class="max-h-[500px] overflow-y-auto pr-1 custom-scrollbar space-y-3">
@@ -3798,11 +3812,14 @@
                                         let listsClassHTML = Object.entries(subListe).map(([lKey, lVal]) => {
                                             let lVotes = classData.liste[lKey] || 0;
                                             
-                                            // Filtriamo i candidati di questa lista che hanno preso almeno una preferenza in questa classe
+                                            // Filtriamo e ordiniamo con Ex-Aequo alfabetico locale
                                             let candWithPrefs = lVal.candidati.map(cand => {
                                                 let pCount = classData.preferenze[`${lKey}_${cand}`] || 0;
                                                 return { name: cand, count: pCount };
-                                            }).filter(c => c.count > 0);
+                                            }).filter(c => c.count > 0).sort((a,b) => {
+                                                if (b.count === a.count) return a.name.localeCompare(b.name);
+                                                return b.count - a.count;
+                                            });
 
                                             let prefsListHTML = '';
                                             if (candWithPrefs.length > 0) {
@@ -3847,7 +3864,7 @@
                         </div>
 
                         <div class="pt-4 border-t text-center text-[9px] text-slate-400">
-                            ITSCG Primo Levi Seregno • Sistema Elettorale Digitale Certificato
+                            ITSCG Primo Levi Seregno • Portale Pubblico di Trasparenza Certificato
                         </div>
                     </div>
                 `;
@@ -3862,7 +3879,7 @@
             await drawContent();
         }
 
-        window.onload = async () => {
+                window.onload = async () => {
             const params = new URLSearchParams(window.location.search);
             
             if (params.get('view') === 'public') {
