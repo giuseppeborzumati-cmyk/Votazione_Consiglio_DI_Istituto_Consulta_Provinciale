@@ -36,17 +36,23 @@
         
         .delicate-bubble {
             position: absolute;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(241, 245, 249, 0.5) 70%, rgba(226, 232, 240, 0.3) 100%);
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.85) 0%, rgba(241, 245, 249, 0.6) 70%, rgba(226, 232, 240, 0.4) 100%);
             border: 1px solid rgba(30, 58, 138, 0.08);
             border-radius: 50%;
             pointer-events: none;
-            backdrop-filter: blur(1px);
+            backdrop-filter: blur(2px);
             animation: casualDrift 24s infinite ease-in-out;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             box-shadow: inset 0 0 12px rgba(255,255,255,0.8), 0 4px 12px rgba(0,0,0,0.03);
+            transition: all 0.5s ease-in-out;
+        }
+
+        .delicate-bubble:hover {
+            transform: scale(1.05);
+            border-color: rgba(30, 58, 138, 0.2);
         }
 
         .delicate-bubble img {
@@ -142,7 +148,7 @@
             </div>
             
             <div class="flex flex-wrap items-center justify-center gap-1.5 bg-slate-900/40 p-2 rounded-xl border border-white/10 w-full lg:w-auto text-[10px]">
-                <button onclick="window.openInformativaModal()" class="bg-blue-800/80 hover:bg-blue-700 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5">
+                <button onclick="window.openInformativaModal()" class="bg-blue-850 hover:bg-blue-700 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5">
                     <i data-lucide="scale" class="w-3.5 h-3.5"></i> Norme & Commissione
                 </button>
                 <button onclick="window.showClassMasterLogin('STUDENTE')" class="bg-slate-800 hover:bg-slate-700 text-white font-extrabold py-1.5 px-3 rounded-lg shadow transition-all flex items-center gap-1.5">
@@ -1608,9 +1614,9 @@
                     </div>
                 `;
             } else if (sortedCandidates.length === 1) {
-                eletti.push({ name: sortedCandidates[0].display, count: sortedCandidates[0].count, status: "ELETTO 1" });
+                eletti.push({ name: sortedCandidates[0].display, count: sortedCandidates[0].count, status: "ELETTO 1 (Cognome e Nome)" });
             } else {
-                eletti.push({ name: sortedCandidates[0].display, count: sortedCandidates[0].count, status: "ELETTO 1" });
+                eletti.push({ name: sortedCandidates[0].display, count: sortedCandidates[0].count, status: "ELETTO 1 (Cognome e Nome)" });
                 
                 let secondVal = sortedCandidates[1].count;
                 let tieCandidates = sortedCandidates.slice(1).filter(c => c.count === secondVal);
@@ -1622,11 +1628,11 @@
                     rigaSorteggioHTML = `
                         <div class="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl text-[11px] leading-relaxed space-y-1 font-semibold">
                             <p class="font-bold">⚡ Riscontro di Parità (Ex-Aequo):</p>
-                            <p>I candidati ${tieCandidates.map(c => `<strong>${c.display}</strong> (${c.count} voti)`).join(', ')} hanno ottenuto pari voti. Criterio alfabetico applicato: <strong>${sortedWinner.display}</strong>.</p>
+                            <p>I candidati ${tieCandidates.map(c => `<strong>${c.display}</strong> (${c.count} voti)`).join(', ')} hanno ottenuto pari voti. Criterio alfabetico applicato per la proclamazione: <strong>${sortedWinner.display}</strong>.</p>
                         </div>
                     `;
                 } else {
-                    eletti.push({ name: sortedCandidates[1].display, count: sortedCandidates[1].count, status: "ELETTO 2" });
+                    eletti.push({ name: sortedCandidates[1].display, count: sortedCandidates[1].count, status: "ELETTO 2 (Cognome e Nome)" });
                 }
             }
 
@@ -1634,7 +1640,7 @@
                 <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl flex items-center justify-between font-semibold">
                     <div>
                         <span class="text-[9px] bg-emerald-650 text-white font-black px-2 py-0.5 rounded uppercase">${el.status}</span>
-                        <h4 class="font-black text-slate-800 text-xs mt-1">${el.name}</h4>
+                        <h4 class="font-black text-slate-800 text-xs mt-1 uppercase">${el.name}</h4>
                     </div>
                     <span class="text-sm font-black text-emerald-800">${el.count} pref.</span>
                 </div>
@@ -3139,7 +3145,7 @@
                                     <div class="flex justify-between items-center text-xs py-1.5 border-b last:border-0 border-slate-100 font-bold">
                                         <span class="text-slate-850 flex items-center gap-1.5">
                                             <span class="w-5 h-5 bg-emerald-600 text-white rounded text-[10px] font-black flex items-center justify-center">E${i+1}</span>
-                                            ${el.display}
+                                            <span class="uppercase font-bold">${el.display}</span>
                                         </span>
                                         <span class="text-emerald-800">${el.count} voti</span>
                                     </div>
@@ -3330,13 +3336,13 @@
                     let rows = [];
                     Object.entries(classesVoti).forEach(([cl, candMap]) => {
                         Object.values(candMap).forEach(candObj => { 
-                            rows.push([cl, candObj.display, candObj.count]); 
+                            rows.push([cl, candObj.display.toUpperCase(), candObj.count]); 
                         });
                     });
 
                     doc.autoTable({
                         startY: startY,
-                        head: [["Classe/Sezione", "Candidato Unico (Nome Unificato)", "Preferenze Ricevute"]],
+                        head: [["Classe/Sezione", "Cognome e Nome Candidato (Unificato)", "Preferenze Ricevute"]],
                         body: rows,
                         theme: 'grid',
                         headStyles: { fillColor: [30, 58, 138] }
@@ -3357,13 +3363,13 @@
                         rows.push([`Lista: ${lVal.nome}`, `VOTI TOTALI DI LISTA: ${lVotes}`, ""]);
                         lVal.candidati.forEach(cand => {
                             let pref = officialVotiScrutinio.preferenze[colName][`${lKey}_${cand}`] || 0;
-                            rows.push(["", cand, `${pref} pref.`]);
+                            rows.push(["", cand.toUpperCase(), `${pref} pref.`]);
                         });
                     });
 
                     doc.autoTable({
                         startY: startY,
-                        head: [["Raggruppamento / Lista", "Nominativo Candidato", "Preferenze Nominali"]],
+                        head: [["Raggruppamento / Lista", "Cognome e Nome Candidato", "Preferenze Nominali"]],
                         body: rows,
                         theme: 'grid',
                         headStyles: { fillColor: [30, 58, 138] },
@@ -3430,13 +3436,13 @@
                             .slice(0, 2);
 
                         sortedC.forEach((c, idx) => {
-                            rows.push([cl, `Eletto ${idx+1}`, c.display, `${c.count} voti`]);
+                            rows.push([cl, `Eletto ${idx+1}`, c.display.toUpperCase(), `${c.count} voti`]);
                         });
                     });
 
                     doc.autoTable({
                         startY: startY,
-                        head: [["Classe/Sezione", "Grado", "Eletto Proclamato", "Consenso Registrato"]],
+                        head: [["Classe/Sezione", "Grado", "Cognome e Nome Eletto Proclamato", "Consenso Registrato"]],
                         body: rows,
                         theme: 'grid',
                         headStyles: { fillColor: [30, 58, 138] }
@@ -3478,13 +3484,13 @@
 
                         for (let s = 0; s < Math.min(seats, listCandidates.length); s++) {
                             let cand = listCandidates[s];
-                            rows.push([cand.name, cand.listName, `${cand.prefs} pref.`, "ELETTO PROCLAMATO"]);
+                            rows.push([cand.name.toUpperCase(), cand.listName, `${cand.prefs} pref.`, "ELETTO PROCLAMATO"]);
                         }
                     });
 
                     doc.autoTable({
                         startY: startY,
-                        head: [["Candidato Eletto", "Appartenenza Lista", "Voti Preferenza", "Stato Proclamazione"]],
+                        head: [["Cognome e Nome Eletto Proclamato", "Appartenenza Lista", "Voti Preferenza", "Stato Proclamazione"]],
                         body: rows,
                         theme: 'grid',
                         headStyles: { fillColor: [30, 58, 138] },
