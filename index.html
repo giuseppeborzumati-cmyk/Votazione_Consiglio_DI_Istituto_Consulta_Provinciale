@@ -1812,7 +1812,6 @@
                                 <option value="2027/2028" ${configElezioni.annoScolastico === '2027/2028' ? 'selected' : ''}>2027/2028</option>
                                 <option value="2028/2029" ${configElezioni.annoScolastico === '2028/2029' ? 'selected' : ''}>2028/2029</option>
                                 <option value="2029/2030" ${configElezioni.annoScolastico === '2029/2030' ? 'selected' : ''}>2029/2030</option>
-
                             </select>
                         </div>
                     </div>
@@ -2008,43 +2007,158 @@
         window.openConfirmPurge = function() { document.getElementById('custom-purge-modal').classList.remove('hidden'); };
         window.closePurgeModal = function() { document.getElementById('custom-purge-modal').classList.add('hidden'); };
 
+        // Helper per la generazione dei fogli report HTML interattivi dentro lo ZIP
+        function getHtmlReportTemplate(title, subtitle, contentHtml) {
+            return `<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>${title}</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f5f9; color: #1e293b; padding: 40px; margin: 0; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 40px; border-radius: 16px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); border-top: 8px solid #1e3a8a; }
+        .header { text-align: center; margin-bottom: 30px; border-b: 2px solid #e2e8f0; padding-bottom: 20px; }
+        .header h1 { color: #1e3a8a; margin: 5px 0 0 0; font-size: 24px; text-transform: uppercase; }
+        .header p { margin: 5px 0 0 0; color: #64748b; font-size: 14px; font-weight: 500; }
+        h2 { color: #0f172a; font-size: 16px; border-bottom: 2px solid #cbd5e1; padding-bottom: 6px; margin-top: 30px; text-transform: uppercase; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th { background-color: #1e3a8a; color: white; padding: 12px; text-align: left; font-weight: bold; border: 1px solid #e2e8f0; }
+        td { padding: 12px; border: 1px solid #e2e8f0; }
+        tr:nth-child(even) { background-color: #f8fafc; }
+        .badge { display: inline-block; padding: 4px 8px; font-size: 10px; font-weight: bold; border-radius: 6px; text-transform: uppercase; }
+        .badge-green { background-color: #d1fae5; color: #065f46; }
+        .badge-red { background-color: #fee2e2; color: #991b1b; }
+        .badge-blue { background-color: #dbeafe; color: #1e40af; }
+        .footer { margin-top: 50px; border-top: 1px solid #e2e8f0; padding-top: 20px; text-align: center; font-size: 11px; color: #94a3b8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span style="font-size: 11px; font-weight: 800; color: #d97706; letter-spacing: 1.5px;">ITSCG PRIMO LEVI DI SEREGNO</span>
+            <h1>${title}</h1>
+            <p>${subtitle}</p>
+        </div>
+        ${contentHtml}
+        <div class="footer">
+            Generato ed esportato dal Sistema Elettorale Digitale ITSCG "Primo Levi" Seregno - Conservazione Registro Digitale a Norma di Legge
+        </div>
+    </div>
+</body>
+</html>`;
+        }
+
         window.downloadEntireYearArchive = async function() {
             const btn = document.querySelector('button[onclick="window.downloadEntireYearArchive()"]');
             const originalContent = btn.innerHTML;
-            btn.innerHTML = `<div class="spinner mr-2 inline-block align-middle"></div> Esportazione in corso...`;
+            btn.innerHTML = `<div class="spinner mr-2 inline-block align-middle"></div> Esportazione Archivio in corso...`;
             btn.disabled = true;
 
             try {
                 const zip = new JSZip();
                 const activeYearLabel = (configElezioni.annoScolastico || "2025_2026").replace('/', '_');
 
-                // 1. Configurazione anno
-                zip.file("config_settings.json", JSON.stringify(configElezioni, null, 2));
+                // 1. Configurazione Elezioni & Commissione Elettorale (HTML)
+                let rulesContentHtml = `<h2>Parametri ed Abilitazioni Attive</h2>
+                <ul>
+                    <li><strong>Anno Scolastico:</strong> A.S. ${configElezioni.annoScolastico}</li>
+                    <li><strong>Elezioni Consiglio Attive:</strong> ${configElezioni.consiglioAttivo ? "SI" : "NO"}</li>
+                    <li><strong>Elezioni Rappresentanti Istituto Attive:</strong> ${configElezioni.rappresentantiIstitutoAttivo ? "SI" : "NO"}</li>
+                    <li><strong>Elezioni Consulta Provinciale Attive:</strong> ${configElezioni.consultaAttiva ? "SI" : "NO"}</li>
+                    <li><strong>Rappresentanti di Classe Studenti Attive:</strong> ${configElezioni.rappresentantiClasseStudentiAttivo ? "SI" : "NO"}</li>
+                    <li><strong>Rappresentanti di Classe Genitori Attive:</strong> ${configElezioni.rappresentantiClasseGenitoriAttivo ? "SI" : "NO"}</li>
+                    <li><strong>Divieto di Voto Disgiunto:</strong> ${configElezioni.divietoVotoDisgiunto ? "ATTIVO" : "DISATTIVATO"}</li>
+                </ul>
+                <h2>Membri della Commissione Elettorale</h2>
+                <table>
+                    <thead>
+                        <tr><th>Nominativo</th><th>Ruolo Confermato</th></tr>
+                    </thead>
+                    <tbody>
+                        ${configElezioni.commissione.map(c => `<tr><td><strong>${c.nome}</strong></td><td>${c.ruolo}</td></tr>`).join('')}
+                    </tbody>
+                </table>`;
+                zip.file("1_Informativa_e_Regole.html", getHtmlReportTemplate("Configurazione e Regole Elettorali", `A.S. ${configElezioni.annoScolastico}`, rulesContentHtml));
 
-                // 2. Token registrati
+                // 2. Registro Credenziali Generati (HTML)
                 const tokensSnap = await getDocs(getCollectionRef('tokens'));
                 let tokensData = [];
                 tokensSnap.forEach(docSnap => {
                     tokensData.push({ id: docSnap.id, ...docSnap.data() });
                 });
-                zip.file("tokens_register.json", JSON.stringify(tokensData, null, 2));
+                
+                let tokensContentHtml = `<h2>Elenco Completo delle Credenziali Rilasciate</h2>
+                <p>Totale Token Generati: <strong>${tokensData.length}</strong>. Di seguito lo stato di espressione del voto (In Urna / Non Espresso).</p>
+                <table>
+                    <thead>
+                        <tr><th>Nome Elettore</th><th>Token ID</th><th>Componente</th><th>Classe</th><th>Stato Operazioni</th></tr>
+                    </thead>
+                    <tbody>
+                        ${tokensData.map(t => `<tr>
+                            <td><strong>${t.nome || "Elettore Anonimo"}</strong></td>
+                            <td style="font-family: monospace; font-weight: bold;">${t.id}</td>
+                            <td>${t.tipo}</td>
+                            <td>${t.classe || "-"}</td>
+                            <td><span class="badge ${t.hasVoted ? 'badge-green' : 'badge-red'}">${t.hasVoted ? "CONCLUSO" : "NON ESPRESSO"}</span></td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>`;
+                zip.file("2_Registro_Token_Elettori.html", getHtmlReportTemplate("Registro Generale Consegne e Token", `A.S. ${configElezioni.annoScolastico}`, tokensContentHtml));
 
-                // 3. Archivio storico delle urne
-                const collectionsToFetch = ['voti_consiglio', 'voti_istituto', 'voti_consulta', 'voti_classe_studenti', 'voti_classe_genitori'];
+                // 3. Archivio Urne Elettorali (HTML)
+                const collectionsToFetch = [
+                    { id: 'voti_consiglio', label: 'Urna_Consiglio_Istituto' },
+                    { id: 'voti_istituto', label: 'Urna_Rappresentanti_Istituto' },
+                    { id: 'voti_consulta', label: 'Urna_Consulta_Provinciale' },
+                    { id: 'voti_classe_studenti', label: 'Urna_Classe_Studenti' },
+                    { id: 'voti_classe_genitori', label: 'Urna_Classe_Genitori' }
+                ];
+
                 for (let col of collectionsToFetch) {
-                    const snap = await getDocs(getCollectionRef(col));
+                    const snap = await getDocs(getCollectionRef(col.id));
                     let votes = [];
                     snap.forEach(d => votes.push({ id: d.id, ...d.data() }));
-                    zip.file(`${col}.json`, JSON.stringify(votes, null, 2));
+
+                    let votesContentHtml = `<h2>Schede Depositate nell'Urna (In forma Anonima e Asincrona)</h2>
+                    <p>Totale Schede nell'Urna: <strong>${votes.length}</strong>.</p>
+                    <table>
+                        <thead>
+                            <tr><th>Urna ID Interno</th><th>Scelta / Lista</th><th>Classe</th><th>Componente / Preferenze</th></tr>
+                        </thead>
+                        <tbody>
+                            ${votes.map(v => {
+                                let prefStr = [];
+                                if(v.isBianca) {
+                                    prefStr.push("SCHEDA BIANCA");
+                                } else {
+                                    for(let i=1; i<=6; i++) {
+                                        if(v[`p${i}`]) prefStr.push(v[`p${i}`]);
+                                        if(v[`candidate${i}`]) prefStr.push(v[`candidate${i}`]);
+                                    }
+                                }
+                                return `<tr>
+                                    <td style="font-family: monospace; font-size: 11px;">${v.id}</td>
+                                    <td><strong>${v.lista || (v.isBianca ? "BIANCA" : "Preferenza Nominale")}</strong></td>
+                                    <td>${v.classe || "-"}</td>
+                                    <td>${prefStr.join(', ') || "-"}</td>
+                                </tr>`;
+                            }).join('')}
+                            ${votes.length === 0 ? `<tr><td colspan="4" style="text-align: center; font-style: italic; color: #94a3b8;">Nessun voto presente in questa urna.</td></tr>` : ''}
+                        </tbody>
+                    </table>`;
+
+                    zip.file(`3_${col.label}.html`, getHtmlReportTemplate(`Registro Urna - ${col.label.replace(/_/g, ' ')}`, `A.S. ${configElezioni.annoScolastico}`, votesContentHtml));
                 }
 
-                const readmeContent = `ITSCG PRIMO LEVI DI SEREGNO - ELEZIONI SCOLASTICHE DIGITALI
+                // README di sicurezza
+                const readmeContent = `ITSCG PRIMO LEVI DI SEREGNO - ARCHIVIO SCOLASTICO DIGITALE CERTIFICATO
 Anno Scolastico: A.S. ${configElezioni.annoScolastico}
-Data Esportazione: ${new Date().toLocaleString()}
+Data di Esportazione: ${new Date().toLocaleString()}
 
-I file JSON rappresentano l'estratto autenticato delle urne crittografate cloud.
-La conformità e segretezza costituzionale sono garantite dal sistema di dissociazione asincrona dei Token.`;
-                zip.file("README_Conformita_Elettorale.txt", readmeContent);
+I file HTML generati all'interno di questo pacchetto ZIP sono pagine interattive offline.
+Possono essere aperte su qualsiasi computer cliccandoci due volte sopra, per permettere una consultazione chiara e formale del registro dei voti, senza l'uso di linguaggi di programmazione JSON.
+I dati rispecchiano fedelmente il database cloud protetto dell'Istituto.`;
+                zip.file("README_Consultazione.txt", readmeContent);
 
                 const content = await zip.generateAsync({ type: "blob" });
                 const url = window.URL.createObjectURL(content);
@@ -2409,7 +2523,7 @@ La conformità e segretezza costituzionale sono garantite dal sistema di dissoci
                         </div>
                         <div class="p-3 bg-amber-50 border border-amber-100 rounded-xl">
                             <span class="text-amber-700 uppercase text-[9px] block">Non Espressi</span>
-                            <strong class="text-base text-amber-800">${remaining}</strong>
+                            <strong class="text-base text-emerald-800">${remaining}</strong>
                         </div>
                     </div>
 
