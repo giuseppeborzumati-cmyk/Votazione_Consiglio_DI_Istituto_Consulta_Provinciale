@@ -116,19 +116,19 @@
 
     <div class="bubble-bg">
         <div class="delicate-bubble w-28 h-28" style="top: 10%; left: 5%; animation-delay: 0s; animation-duration: 22s;">
-            <img src="levi.png" alt="Levi Logo" onerror="this.style.display='none'">
+            <img src="levi.png" alt="Levi Logo" onerror="this.src='https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI'">
             <span>VOTAZIONI ELETTRONICHE</span>
         </div>
         <div class="delicate-bubble w-20 h-20" style="top: 65%; left: 10%; animation-delay: 3s; animation-duration: 28s;">
-            <img src="levi.png" alt="Levi Logo" onerror="this.style.display='none'">
+            <img src="levi.png" alt="Levi Logo" onerror="this.src='https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI'">
             <span>ITSCG "PRIMO LEVI"</span>
         </div>
         <div class="delicate-bubble w-32 h-32" style="top: 25%; left: 80%; animation-delay: 1s; animation-duration: 25s;">
-            <img src="levi.png" alt="Levi Logo" onerror="this.style.display='none'">
+            <img src="levi.png" alt="Levi Logo" onerror="this.src='https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI'">
             <span>MBTD430001</span>
         </div>
         <div class="delicate-bubble w-24 h-24" style="top: 50%; left: 48%; animation-delay: 4s; animation-duration: 26s;">
-            <img src="levi.png" alt="Levi Logo" onerror="this.style.display='none'">
+            <img src="levi.png" alt="Levi Logo" onerror="this.src='https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI'">
             <span>20831, SEREGNO</span>
         </div>
     </div>
@@ -139,6 +139,7 @@
                 <img src="levi.png" 
                      id="school-logo" 
                      alt="Logo ITSCG Primo Levi" 
+                     onerror="this.src='https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI'"
                      class="h-14 w-14 rounded-xl shadow-md border border-yellow-400 object-contain p-1 bg-white transition-all hover:scale-105"/>
                 <div>
                     <h1 class="text-lg md:text-xl font-black tracking-tight uppercase leading-tight">Piattaforma Elettorale Unificata</h1>
@@ -209,7 +210,7 @@
         </div>
     </div>
 
-    <!-- Alert personalizzato che sostituisce l'alert del browser -->
+    <!-- Alert personalizzato -->
     <div id="custom-alert-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full mx-4 border border-slate-100 transform scale-95 transition-all">
             <div class="flex items-center space-x-3 mb-4">
@@ -242,7 +243,7 @@
         </div>
     </div>
 
-    <!-- Modale di ripristino/svuotamento database dei Voti -->
+    <!-- Modale di ripristino database dei Voti -->
     <div id="custom-confirm-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-2xl p-6 shadow-2xl max-w-md w-full mx-4 border border-red-100 transform scale-95 transition-all">
             <div class="flex items-center space-x-3 mb-4 text-red-600">
@@ -305,7 +306,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Password d'ufficio per Commissione Elettorale e sblocco operazioni critiche
+        // Password d'ufficio per Commissione Elettorale
         const ADMIN_PWD = "docenti2026levi";
 
         let configElezioni = {
@@ -330,28 +331,28 @@
             ],
             listeConsiglio: {
                 "GENITORE": {
-                    "lista_gen_1": { nome: "Famiglia & Scuola Unita", candidati: ["Rossi Mario", "Bianchi Elena", "Verdi Giuseppe"] },
-                    "lista_gen_2": { nome: "Insieme per i Nostri Figli", candidati: ["Neri Anna", "Gialli Roberto"] }
+                    "lista_gen_1": { nome: "Famiglia & Scuola Unita", candidati: ["ROSSI MARIO", "BIANCHI ELENA", "VERDI GIUSEPPE"] },
+                    "lista_gen_2": { nome: "Insieme per i Nostri Figli", candidati: ["NERI ANNA", "GIALLI ROBERTO"] }
                 },
                 "DOCENTE": {
-                    "lista_doc_1": { nome: "Partecipazione Docenti", candidati: ["Terrana Angela", "Iavarone Laura", "Borzumati Giuseppe"] }
+                    "lista_doc_1": { nome: "Partecipazione Docenti", candidati: ["TERRANA ANGELA", "IAVARONE LAURA", "BORZUMATI GIUSEPPE"] }
                 },
                 "ATA": {
-                    "lista_ata_1": { nome: "Personale ATA in Azione", candidati: ["Del Vecchio Rosaria", "De Ponti Chiara"] }
+                    "lista_ata_1": { nome: "Personale ATA in Azione", candidati: ["DEL VECCHIO ROSARIA", "DE PONTI CHIARA"] }
                 }
             },
             listeIstituto: {
-                "listai1": { nome: "Studenti per il Futuro", candidati: ["Diano Alex", "Boscolo Riccardo", "Forte Alice Anna"] },
-                "listai2": { nome: "Rinnovamento Briantina", candidati: ["Pellicano Alfredo", "Cervone Giacomo", "Colanero Michele"] }
+                "listai1": { nome: "Studenti per il Futuro", candidati: ["DIANO ALEX", "BOSCOLO RICCARDO", "FORTE ALICE ANNA"] },
+                "listai2": { nome: "Rinnovamento Briantina", candidati: ["PELLICANO ALFREDO", "CERVONE GIACOMO", "COLANERO MICHELE"] }
             },
             listeConsulta: {
-                "lista_unica": { nome: "Make Brianza Great Again", candidati: ["Boscolo Riccardo", "Cervone Giacomo"] }
+                "lista_unica": { nome: "Make Brianza Great Again", candidati: ["BOSCOLO RICCARDO", "CERVONE GIACOMO"] }
             }
         };
 
         window.configElezioni = configElezioni;
 
-        // Metodo dinamico per recuperare riferimenti isolati in base all'Anno Scolastico corrente
+        // Generazione riferimenti cloud Firebase dinamicamente basati sull'anno scolastico selezionato
         function getCollectionRef(colName) { 
             const yearSuffix = (configElezioni.annoScolastico || "2025_2026").replace('/', '_');
             return collection(db, 'artifacts', appId, 'public', 'data', `${colName}_${yearSuffix}`); 
@@ -361,7 +362,7 @@
             return doc(db, 'artifacts', appId, 'public', 'data', `${colName}_${yearSuffix}`, docId); 
         }
 
-        // Recupero documento di configurazione globale (utilizzato per memorizzare la selezione dell'anno attivo)
+        // Recupero documento di configurazione globale
         function getGlobalConfigRef() {
             return doc(db, 'artifacts', appId, 'public', 'data', 'config', 'settings_v3');
         }
@@ -393,7 +394,6 @@
             totali: { votanti: 0, bianche: 0, validi: 0 }
         };
 
-        // Seggi predefiniti assegnati secondo normativa d'Istituto
         let localVotiScrutinio = {
             seggiDisponibili: {
                 'istituto': 4,
@@ -414,7 +414,7 @@
             return result;
         }
 
-        // Assicura la presenza del mapping segreto del Referente per visualizzare gli scrutini di classe
+        // Assicura la presenza del mapping segreto del Referente
         async function ensureReferentiKeysForClasses(classes, tipo) {
             const refDocRef = getDocumentRef('config', 'referenti_keys');
             let currentKeys = {};
@@ -454,7 +454,6 @@
         let activeTokensList = [];
         let unsubscribeTokens = null;
 
-        // Normalizzazione testo standard
         function normalizeName(name) {
             if (!name) return "";
             return name.trim().toUpperCase().replace(/\s+/g, ' ');
@@ -463,6 +462,7 @@
         function getCanonicalName(name) {
             if (!name) return "";
             const clean = normalizeName(name);
+            // Splitta, ordina alfabeticamente le parole e le ricompone per contare "COGNOME NOME" e "NOME COGNOME" nello stesso paniere
             return clean.split(' ').filter(Boolean).sort().join(' ');
         }
 
@@ -527,7 +527,6 @@
 
         async function syncConfigFromDB() {
             try {
-                // Leggi prima il config globale per sapere quale anno scolastico è attivo
                 const globalSnap = await getDoc(getGlobalConfigRef());
                 let activeYear = "2025/2026";
                 if (globalSnap.exists()) {
@@ -537,14 +536,12 @@
                 }
                 configElezioni.annoScolastico = activeYear;
 
-                // Carica la configurazione specifica dell'anno scolastico selezionato
                 const yearlySnap = await getDoc(getYearlyConfigRef());
                 if (yearlySnap.exists()) {
                     const yearlyData = yearlySnap.data();
                     configElezioni = { ...configElezioni, ...yearlyData, annoScolastico: activeYear };
                     window.configElezioni = configElezioni;
                 } else {
-                    // Se non esiste la configurazione per quest'anno, salva quella di default
                     await setDoc(getYearlyConfigRef(), configElezioni);
                 }
                 firebaseStateConnected = true;
@@ -571,9 +568,7 @@
 
         window.saveConfigToDB = async function() {
             try {
-                // Salva l'anno scolastico nel config globale
                 await setDoc(getGlobalConfigRef(), { annoScolastico: configElezioni.annoScolastico });
-                // Salva il resto delle impostazioni nel config dell'anno specifico
                 await setDoc(getYearlyConfigRef(), configElezioni);
                 showNotification("Sincronizzazione Riuscita", `Configurazione elettorale salvata per l'A.S. ${configElezioni.annoScolastico}`, "success");
             } catch (err) {
@@ -677,7 +672,7 @@
             container.innerHTML = `
                 <div class="w-full max-w-md mx-auto bg-white/95 backdrop-blur-md p-8 rounded-2xl shadow-2xl border border-slate-200 text-center animate-fade-in mt-4 font-semibold">
                     <div class="mb-6 flex flex-col items-center">
-                        <img src="levi.png" alt="Primo Levi Logo" class="w-16 h-16 object-contain mb-4" onerror="this.style.display='none'">
+                        <img src="levi.png" alt="Primo Levi Logo" onerror="this.src='https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI'" class="w-16 h-16 object-contain mb-4">
                         <h2 class="text-xl font-black text-slate-800">Entra in Cabina Elettorale</h2>
                         <p class="text-slate-500 text-xs mt-1">Digita il codice segreto (Token) per votare dal tuo dispositivo.</p>
                         <p class="text-[10px] text-blue-900 bg-blue-50 px-2 py-0.5 rounded mt-2 font-bold">Anno Scolastico Attivo: A.S. ${configElezioni.annoScolastico}</p>
@@ -919,7 +914,7 @@
         function getCardHeaderHTML(title) {
             return `
                 <div class="flex flex-col items-center mb-6 text-center border-b border-slate-100 pb-4 font-semibold">
-                    <img src="levi.png" onerror="this.src='levi.png'" class="h-12 w-auto mb-2 object-contain" />
+                    <img src="levi.png" onerror="this.src='https://placehold.co/100x100/1e3a8a/ffffff?text=LEVI'" class="h-12 w-auto mb-2 object-contain" />
                     <span class="text-[10px] uppercase tracking-widest text-slate-400 font-extrabold">ITSCG PRIMO LEVI DI SEREGNO</span>
                     <h2 class="text-lg font-black text-slate-800 mt-1 uppercase">${title}</h2>
                 </div>
@@ -945,7 +940,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full font-semibold">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4 font-semibold text-slate-650">Esprimi il voto per una lista e fino a un massimo di **${configElezioni.maxPrefConsiglio} preferenze nominali** della medesima lista.</p>
+                    <p class="text-xs text-slate-500 mb-4 font-semibold">Esprimi il voto per una lista e fino a un massimo di **${configElezioni.maxPrefConsiglio} preferenze nominali** della medesima lista.</p>
                     
                     <div class="space-y-4">
                         ${listsHTML}
@@ -1049,7 +1044,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full font-semibold">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4 font-semibold text-slate-650">Scegli una lista ed esprimi fino a un massimo di **${configElezioni.maxPrefIstituto} preferenze nominali**.</p>
+                    <p class="text-xs text-slate-500 mb-4 font-semibold">Scegli una lista ed esprimi fino a un massimo di **${configElezioni.maxPrefIstituto} preferenze nominali**.</p>
                     
                     <div class="space-y-4">
                         ${listelst}
@@ -1152,7 +1147,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full font-semibold">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4 font-semibold text-slate-650">Scegli la lista ed esprimi fino a un max di **${configElezioni.maxPrefConsulta} preferenze nominali**.</p>
+                    <p class="text-xs text-slate-500 mb-4 font-semibold">Scegli la lista ed esprimi fino a un max di **${configElezioni.maxPrefConsulta} preferenze nominali**.</p>
                     
                     <div class="space-y-4">
                         ${listacon}
@@ -1247,7 +1242,7 @@
                 inputsHTML += `
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Candidato ${i}</label>
-                        <input type="text" id="stuCandidate${i}" value="${val}" placeholder="Inserisci in ordine COGNOME e NOME" class="w-full p-3 border rounded-xl font-bold uppercase tracking-wider text-slate-800 text-xs outline-none focus:border-blue-900 bg-slate-50">
+                        <input type="text" id="stuCandidate${i}" value="${val}" placeholder="COGNOME NOME" class="w-full p-3 border rounded-xl font-bold uppercase tracking-wider text-slate-800 text-xs outline-none focus:border-blue-900 bg-slate-50">
                     </div>
                 `;
             }
@@ -1255,7 +1250,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-xl mx-auto animate-fade-in w-full font-semibold">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-6 font-semibold text-slate-650">Digita il cognome e il nome del candidato studente per la classe <strong>${currentUserData.classe}</strong> (Max ${maxPref} preferenze).</p>
+                    <p class="text-xs text-slate-500 mb-6">Digita il cognome e il nome del candidato studente per la classe <strong>${currentUserData.classe}</strong> (Max ${maxPref} preferenze).</p>
 
                     <div class="space-y-4 font-semibold">
                         ${inputsHTML}
@@ -1274,7 +1269,8 @@
             const maxPref = parseInt(configElezioni.maxPrefClasseStudenti) || 1;
             let votesData = { isBianca: true };
             for (let i = 1; i <= maxPref; i++) {
-                let val = normalizeName(document.getElementById(`stuCandidate${i}`)?.value);
+                let rawVal = document.getElementById(`stuCandidate${i}`)?.value;
+                let val = normalizeName(rawVal);
                 if (val) {
                     votesData.isBianca = false;
                     votesData[`candidate${i}`] = val;
@@ -1293,7 +1289,7 @@
                 inputsHTML += `
                     <div>
                         <label class="block text-[10px] font-bold text-rose-900 uppercase mb-1">Candidato ${i}</label>
-                        <input type="text" id="genCandidate${i}" value="${val}" placeholder="Inserisci in ordine COGNOME e NOME" class="w-full p-3 border rounded-xl font-bold uppercase tracking-wider text-slate-800 text-xs outline-none focus:border-rose-900 bg-slate-50">
+                        <input type="text" id="genCandidate${i}" value="${val}" placeholder="COGNOME NOME" class="w-full p-3 border rounded-xl font-bold uppercase tracking-wider text-slate-800 text-xs outline-none focus:border-rose-900 bg-slate-50">
                     </div>
                 `;
             }
@@ -1301,7 +1297,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-rose-200 max-w-xl mx-auto animate-fade-in w-full font-semibold">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-6 font-semibold text-slate-650">Digita il cognome e il nome del candidato genitore per la classe <strong>${currentUserData.classe}</strong> (Max ${maxPref} preferenze).</p>
+                    <p class="text-xs text-slate-500 mb-6">Digita il cognome e il nome del candidato genitore per la classe <strong>${currentUserData.classe}</strong> (Max ${maxPref} preferenze).</p>
 
                     <div class="space-y-4 font-semibold">
                         ${inputsHTML}
@@ -1320,7 +1316,8 @@
             const maxPref = parseInt(configElezioni.maxPrefClasseGenitori) || 1;
             let votesData = { isBianca: true };
             for (let i = 1; i <= maxPref; i++) {
-                let val = normalizeName(document.getElementById(`genCandidate${i}`)?.value);
+                let rawVal = document.getElementById(`genCandidate${i}`)?.value;
+                let val = normalizeName(rawVal);
                 if (val) {
                     votesData.isBianca = false;
                     votesData[`candidate${i}`] = val;
@@ -1628,7 +1625,6 @@
             const votiClasseUrna = await getVotiUrna(colUrna);
             const votiClasseFiltrati = votiClasseUrna.filter(v => v.classe === currentClassMasterData.classe);
             
-            // Struttura di conteggio: mappa canonico -> { display: "Original Name", count: X }
             let nameCounts = {};
             votiClasseFiltrati.forEach(v => {
                 if (v.isBianca) return;
@@ -1646,7 +1642,7 @@
                 }
             });
 
-            // Ordinamento decrescente dei voti, in subordine alfabetico per garantire consistenza d'ufficio
+            // Ordinamento decrescente, ex-aequo gestito alfabeticamente
             let sortedCandidates = Object.values(nameCounts)
                 .sort((a, b) => {
                     if (b.count === a.count) return a.display.localeCompare(b.display);
@@ -1671,7 +1667,6 @@
                 let tieCandidates = sortedCandidates.slice(1).filter(c => c.count === secondVal);
                 
                 if (tieCandidates.length > 1) {
-                    // Risoluzione ex-aequo deterministica alfabetica
                     let sortedWinner = tieCandidates.sort((a,b) => a.display.localeCompare(b.display))[0]; 
                     eletti.push({ name: sortedWinner.display, count: sortedWinner.count, status: "ELETTO 2 (Ex-Aequo)" });
                     rigaSorteggioHTML = `
@@ -1810,13 +1805,14 @@
                             <p class="text-slate-500 text-xs">Gestione in tempo reale e riscontro asincrono dei registri</p>
                         </div>
                         
-                        <!-- Selettore dell'Anno Scolastico Attivo -->
                         <div class="flex items-center space-x-2 bg-slate-100 p-2 rounded-xl border">
                             <span class="text-[10px] font-bold text-slate-500 uppercase">A.S. Attivo:</span>
                             <select onchange="window.changeActiveSchoolYear(this.value)" class="text-xs font-black bg-white border rounded-lg p-1 text-blue-900 focus:outline-none">
-                                <option value="2025/2026" ${configElezioni.annoScolastico === '2025/2026' ? 'selected' : ''}>2025/2026</option>
                                 <option value="2026/2027" ${configElezioni.annoScolastico === '2026/2027' ? 'selected' : ''}>2026/2027</option>
                                 <option value="2027/2028" ${configElezioni.annoScolastico === '2027/2028' ? 'selected' : ''}>2027/2028</option>
+                                <option value="2028/2029" ${configElezioni.annoScolastico === '2028/2029' ? 'selected' : ''}>2028/2029</option>
+                                <option value="2029/2030" ${configElezioni.annoScolastico === '2029/2030' ? 'selected' : ''}>2029/2030</option>
+
                             </select>
                         </div>
                     </div>
@@ -1979,8 +1975,8 @@
                 </div>
 
                 <div class="mt-6 bg-red-50 border border-red-200 p-6 rounded-2xl animate-fade-in w-full font-semibold">
-                    <h4 class="text-red-950 font-black text-xs flex items-center gap-1.5 uppercase tracking-wider"><i data-lucide="shield-alert" class="w-4 h-4"></i> Danger Zone & Archiviazione Storica</h4>
-                    <p class="text-slate-600 text-[11px] mt-1">Operazioni amministrative per la pulizia del database e il download dello storico scolastico dell'A.S. attivo in formato ZIP.</p>
+                    <h4 class="text-red-950 font-black text-xs flex items-center gap-1.5 uppercase tracking-wider"><i data-lucide="shield-alert" class="w-4 h-4"></i> Pagina 10 - Archivio Storico (Danger Zone)</h4>
+                    <p class="text-slate-600 text-[11px] mt-1">Esporta e scarica in tempo reale il registro completo delle urne cloud attive per l'Anno Scolastico di riferimento in conformità con la conservazione digitale.</p>
                     <div class="flex flex-wrap gap-3 mt-4">
                         <button onclick="window.downloadEntireYearArchive()" class="bg-blue-900 hover:bg-blue-800 text-white font-extrabold py-2.5 px-5 rounded-xl text-xs shadow-md transition-colors flex items-center gap-1.5">
                             <i data-lucide="file-archive" class="w-4 h-4 text-yellow-400"></i> Scarica Archivio Storico ZIP (A.S. ${configElezioni.annoScolastico})
@@ -2022,10 +2018,10 @@
                 const zip = new JSZip();
                 const activeYearLabel = (configElezioni.annoScolastico || "2025_2026").replace('/', '_');
 
-                // 1. Esporta le impostazioni e le liste elettorali
+                // 1. Configurazione anno
                 zip.file("config_settings.json", JSON.stringify(configElezioni, null, 2));
 
-                // 2. Esporta i token
+                // 2. Token registrati
                 const tokensSnap = await getDocs(getCollectionRef('tokens'));
                 let tokensData = [];
                 tokensSnap.forEach(docSnap => {
@@ -2033,7 +2029,7 @@
                 });
                 zip.file("tokens_register.json", JSON.stringify(tokensData, null, 2));
 
-                // 3. Esporta tutti i database delle urne
+                // 3. Archivio storico delle urne
                 const collectionsToFetch = ['voti_consiglio', 'voti_istituto', 'voti_consulta', 'voti_classe_studenti', 'voti_classe_genitori'];
                 for (let col of collectionsToFetch) {
                     const snap = await getDocs(getCollectionRef(col));
@@ -2042,16 +2038,14 @@
                     zip.file(`${col}.json`, JSON.stringify(votes, null, 2));
                 }
 
-                // 4. Aggiungi un manuale descrittivo offline per conformità legale
                 const readmeContent = `ITSCG PRIMO LEVI DI SEREGNO - ELEZIONI SCOLASTICHE DIGITALI
 Anno Scolastico: A.S. ${configElezioni.annoScolastico}
 Data Esportazione: ${new Date().toLocaleString()}
 
-I file JSON contenuti in questo archivio rappresentano l'estratto autenticato delle urne crittografate cloud.
-Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei Token.`;
+I file JSON rappresentano l'estratto autenticato delle urne crittografate cloud.
+La conformità e segretezza costituzionale sono garantite dal sistema di dissociazione asincrona dei Token.`;
                 zip.file("README_Conformita_Elettorale.txt", readmeContent);
 
-                // Generazione e download del file ZIP
                 const content = await zip.generateAsync({ type: "blob" });
                 const url = window.URL.createObjectURL(content);
                 const a = document.createElement("a");
@@ -2248,7 +2242,7 @@ Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei 
         };
         window.updateCandidateName = function(section, listKey, cIdx, newName) {
             let target = section === 'istituto' ? configElezioni.listeIstituto : configElezioni.listeConsulta;
-            if(target[listKey]) target[listKey].candidati[cIdx] = newName;
+            if(target[listKey]) target[listKey].candidati[cIdx] = newName.toUpperCase();
         };
         window.deleteCandidate = function(section, listKey, cIdx) {
             let target = section === 'istituto' ? configElezioni.listeIstituto : configElezioni.listeConsulta;
@@ -2256,7 +2250,7 @@ Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei 
         };
         window.addCandidate = function(section, listKey) {
             let target = section === 'istituto' ? configElezioni.listeIstituto : configElezioni.listeConsulta;
-            if(target[listKey]) { target[listKey].candidati.push("Nuovo Candidato"); renderListeTab(document.getElementById('admin-tab-content')); }
+            if(target[listKey]) { target[listKey].candidati.push("NUOVO CANDIDATO"); renderListeTab(document.getElementById('admin-tab-content')); }
         };
         window.deleteList = function(section, listKey) {
             let target = section === 'istituto' ? configElezioni.listeIstituto : configElezioni.listeConsulta;
@@ -2274,7 +2268,7 @@ Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei 
             if(configElezioni.listeConsiglio[role]?.[listKey]) configElezioni.listeConsiglio[role][listKey].nome = newName;
         };
         window.updateConsiglioCandidateName = function(role, listKey, cIdx, newName) {
-            if(configElezioni.listeConsiglio[role]?.[listKey]) configElezioni.listeConsiglio[role][listKey].candidati[cIdx] = newName;
+            if(configElezioni.listeConsiglio[role]?.[listKey]) configElezioni.listeConsiglio[role][listKey].candidati[cIdx] = newName.toUpperCase();
         };
         window.deleteConsiglioCandidate = function(role, listKey, cIdx) {
             if(configElezioni.listeConsiglio[role]?.[listKey]) {
@@ -2284,7 +2278,7 @@ Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei 
         };
         window.addConsiglioCandidate = function(role, listKey) {
             if(configElezioni.listeConsiglio[role]?.[listKey]) {
-                configElezioni.listeConsiglio[role][listKey].candidati.push("Nuovo Candidato");
+                configElezioni.listeConsiglio[role][listKey].candidati.push("NUOVO CANDIDATO");
                 renderListeTab(document.getElementById('admin-tab-content'));
             }
         };
@@ -2395,7 +2389,7 @@ Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei 
                         <div>
                             <span class="text-[9px] bg-blue-900 text-white font-black px-2 py-0.5 rounded uppercase">REGISTRO ELETTORALE</span>
                             <h3 class="text-base font-extrabold text-slate-800 mt-0.5">Componente: ${componentType}</h3>
-                            <p class="text-[11px] text-slate-500">Gestione credenziali, codici cabina e sblocco asincrono granulare delle singole votazioni per l'anno scolastico in corso.</p>
+                            <p class="text-[11px] text-slate-500">Gestione credenziali, codici cabina e sblocco asincrono granulare delle singole votazioni.</p>
                         </div>
                         <div class="flex gap-2">
                             <button onclick="purgeComponentTokens('${componentType}')" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1.5 px-3 rounded-lg text-[10px] flex items-center gap-1.5">
@@ -2469,7 +2463,7 @@ Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei 
                                             }
                                             if (configElezioni.rappresentantiClasseStudentiAttivo && componentType === 'STUDENTE') {
                                                 detailStatusHTML += `
-                                                    <span onclick="window.resetSingleBallotFlag('${t.id}', 'voted_classe_studente')" title="Clicca per sbloccare Rappresentanti di Classe Studenti" class="cursor-pointer inline-flex items-center gap-1 mr-1 mb-1 px-1.5 py-0.5 rounded text-[8px] font-extrabold ${t.voted_classe_studente ? 'bg-emerald-150 text-emerald-850 hover:bg-red-100 hover:text-red-800' : 'bg-slate-100 text-slate-600'} transition-colors">
+                                                    <span onclick="window.resetSingleBallotFlag('${t.id}', 'voted_classe_studente')" title="Clicca per sbloccare Rappresentanti di Classe Studenti" class="cursor-pointer inline-flex items-center gap-1 mr-1 mb-1 px-1.5 py-0.5 rounded text-[8px] font-extrabold ${t.voted_classe_studente ? 'bg-emerald-150 text-emerald-855 hover:bg-red-100 hover:text-red-800' : 'bg-slate-100 text-slate-600'} transition-colors">
                                                         Classe: ${t.voted_classe_studente ? 'SI' : 'NO'}
                                                     </span>
                                                 `;
@@ -2741,7 +2735,7 @@ Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei 
                 });
 
                 doc.save(`Cedolini_Elettorali_${componentType}_Classe_${selectedClass}_Levi.pdf`);
-                showNotification("Successo", "Il file PDF con i cedolini completi di Cognome Nome è stato scaricato.", "success");
+                showNotification("Successo", "Il file PDF con i cedolini completi è stato scaricato.", "success");
             } catch (err) {
                 console.error(err);
                 showNotification("Errore PDF", "Impossibile generare il PDF: " + err.message, "error");
@@ -2969,9 +2963,7 @@ Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei 
                 }
             });
 
-            // Ordinamento prioritario decrescente per quoziente.
-            // In caso di parità del quoziente (ex-aequo), la precedenza va alla lista che ha ottenuto la maggiore cifra elettorale generale.
-            // In caso di ulteriore parità (stessi voti di lista), si applica il criterio alfabetico deterministico come proxy.
+            // Ordinamento decrescente, con priorità di voto in caso di quoziente identico
             quotients.sort((a, b) => {
                 if (Math.abs(a.quotient - b.quotient) < 0.0001) {
                     if (a.votes === b.votes) {
@@ -2998,6 +2990,7 @@ Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei 
             return { quotients, seatsAllocated };
         }
 
+        // Aggregazione asincrona e robusta del database dei voti
         async function fetchScrutinioData(colName) {
             const votiDb = await getVotiUrna(colName);
             
@@ -3057,7 +3050,7 @@ Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei 
                     }
                 }
 
-                // Segmentazione dei dati per classe e preferenze per visualizzazione trasparente
+                // Generazione del dettaglio asincrono per classe
                 let cl = v.classe || "SENZA CLASSE";
                 if (!officialVotiScrutinio.classDetail[colName][cl]) {
                     officialVotiScrutinio.classDetail[colName][cl] = {
@@ -3251,7 +3244,7 @@ Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei 
                         <div>
                             <span class="text-[9px] bg-blue-900 text-white font-black px-2 py-0.5 rounded uppercase">SCRUTINIO</span>
                             <h3 class="text-base font-extrabold text-slate-800 mt-0.5">${titleLabel}</h3>
-                            <p class="text-[11px] text-slate-500">Sistema di conteggio elettronico con validazione integrata D'Hondt.</p>
+                            <p class="text-[11px] text-slate-500">Sistema di conteggio elettronico con validazione proporzionale.</p>
                         </div>
                         <div class="flex flex-wrap gap-2">
                             <button onclick="window.downloadVerbaleVotiPDF('${currentScrutinioSection}', '${currentScrutinioSubComponent}')" class="bg-slate-800 hover:bg-slate-700 text-white font-extrabold py-2 px-3 rounded-xl text-xs flex items-center gap-1.5 shadow">
@@ -3317,7 +3310,6 @@ Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei 
             if (isClasse) {
                 let classesVoti = officialVotiScrutinio.classi[colName] || {};
                 outputHTML = Object.keys(classesVoti).sort().map(cl => {
-                    // Ex-aequo deterministico alfabetico in parità di voto per i nominativi unificati
                     let candidates = Object.values(classesVoti[cl])
                         .sort((a,b) => {
                             if (b.count === a.count) return a.display.localeCompare(b.display);
@@ -3409,8 +3401,7 @@ Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei 
                         };
                     });
 
-                    // Ex-aequo ministeriale (O.M. 215/1991): priorità a chi ha più preferenze.
-                    // In caso di parità di preferenze, la precedenza va all'ordine di presentazione dei candidati nella lista.
+                    // Risoluzione ex-aequo formale: preferenze, poi ordine di presentazione in lista
                     listCandidates.sort((a,b) => {
                         if (b.prefs === a.prefs) { return a.presentationIndex - b.presentationIndex; }
                         return b.prefs - a.prefs;
@@ -3617,7 +3608,6 @@ Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei 
                 if (isClasse) {
                     let classesVoti = officialVotiScrutinio.classi[colName] || {};
                     Object.entries(classesVoti).forEach(([cl, candMap]) => {
-                        // Applicazione coerente dell'Ex-Aequo deterministico alfabetico su base canonica
                         let sortedC = Object.values(candMap)
                             .sort((a,b) => {
                                 if (b.count === a.count) return a.display.localeCompare(b.display);
@@ -3666,7 +3656,6 @@ Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei 
                             return { name: cand, listName: listVal.nome, listKey: lKey, prefs, presentationIndex };
                         });
 
-                        // Coerenza totale ex-aequo O.M. 215/1991 (priorità a chi ha più preferenze, poi ordine di lista)
                         listCandidates.sort((a,b) => {
                             if (b.prefs === a.prefs) return a.presentationIndex - b.presentationIndex;
                             return b.prefs - a.prefs;
@@ -3771,11 +3760,11 @@ Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei 
                     <div class="border-b border-slate-100 pb-3 mb-6">
                         <span class="text-[9px] bg-indigo-100 text-indigo-800 font-black px-2 py-0.5 rounded uppercase">STATISTICHE</span>
                         <h3 class="text-base font-extrabold text-slate-800 mt-0.5">Partecipazione & Affluenza in Tempo Reale</h3>
-                        <p class="text-[11px] text-slate-500">Monitoraggio asincrono dei flussi elettorali totali per l'anno scolastico attivo.</p>
+                        <p class="text-[11px] text-slate-500">Monitoraggio asincrono dei flussi elettorali totali.</p>
                     </div>
 
                     <div class="grid lg:grid-cols-12 gap-6 mb-6">
-                        <div class="lg:col-span-5 bg-gradient-to-br from-blue-900 to-slate-900 text-white p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between shadow">
+                        <div class="bg-gradient-to-br from-blue-900 to-slate-900 text-white p-6 rounded-2xl flex flex-col md:flex-row items-center justify-between shadow">
                             <div class="space-y-2">
                                 <h4 class="text-yellow-400 font-black text-xs uppercase tracking-wider">Affluenza Generale</h4>
                                 <div class="text-4xl font-black mt-2">${globalPercent}%</div>
@@ -3829,7 +3818,7 @@ Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei 
                 <div class="bg-white p-6 rounded-2xl shadow border border-slate-200 animate-fade-in w-full font-semibold max-w-4xl mx-auto">
                     <div class="border-b border-slate-100 pb-3 mb-6">
                         <span class="text-[9px] bg-emerald-650 text-white font-black px-2 py-0.5 rounded uppercase">PORTALE PUBBLICO</span>
-                         <h3 class="text-lg font-black text-slate-800 mt-0.5">Trasparenza Elettorale & Portale Pubblico Risultati</h3>
+                         <h3 class="text-lg font-black text-slate-800 mt-0.5">Pagina 9 - Trasparenza Elettorale & Portale Pubblico Risultati</h3>
                         <p class="text-xs text-slate-500">Genera i canali pubblici di consultazione per gli studenti e la bacheca scolastica.</p>
                     </div>
 
@@ -3845,7 +3834,7 @@ Conformità Costituzionale garantita dal sistema di dissociazione asincrona dei 
                                 <label class="block text-[10px] uppercase text-slate-500 font-bold">Link Pubblico per gli Studenti</label>
                                 <div class="flex gap-2">
                                     <input type="text" readonly id="publicSharingUrl" value="${publicLink}" class="p-2.5 border rounded-xl text-xs bg-slate-50 font-mono flex-grow outline-none text-slate-600">
-                                    <button onclick="window.copyPublicLink()" class="bg-blue-900 hover:bg-blue-850 text-white font-extrabold text-xs px-4 rounded-xl flex items-center gap-1.5 shadow">
+  <button onclick="window.copyPublicLink()" class="bg-blue-900 hover:bg-blue-850 text-white font-extrabold text-xs px-4 rounded-xl flex items-center gap-1.5 shadow">
                                         <i data-lucide="copy" class="w-4 h-4"></i> Copia Link
                                     </button>
                                 </div>
