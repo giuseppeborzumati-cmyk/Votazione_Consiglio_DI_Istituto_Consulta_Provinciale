@@ -309,7 +309,7 @@
         const ADMIN_PWD = "docenti2026levi";
 
         let configElezioni = {
-            annoScolastico: "2025/2026",
+            annoScolastico: "2026/2027",
             consiglioAttivo: true,
             consultaAttiva: true,
             rappresentantiIstitutoAttivo: true,
@@ -521,9 +521,9 @@
         async function syncConfigFromDB() {
             try {
                 const globalSnap = await getDoc(getGlobalConfigRef());
-                let activeYear = "2025/2026";
+                let activeYear = "2026/2027";
                 if (globalSnap.exists()) {
-                    activeYear = globalSnap.data().annoScolastico || "2025/2026";
+                    activeYear = globalSnap.data().annoScolastico || "2026/2027";
                 } else {
                     await setDoc(getGlobalConfigRef(), { annoScolastico: activeYear });
                 }
