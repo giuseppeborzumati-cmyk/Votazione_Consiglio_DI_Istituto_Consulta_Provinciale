@@ -610,7 +610,7 @@
             lucide.createIcons();
         }
 
-        window.showPage = function(pageId) {
+        window.showPage = function(pageId, extraParam) {
             const container = document.getElementById('app-container');
             container.innerHTML = '';
             
@@ -623,7 +623,7 @@
                 case 'votoClasseStudenti': renderVotoClasseStudenti(container); break;
                 case 'votoClasseGenitori': renderVotoClasseGenitori(container); break;
                 case 'riepilogo': renderRiepilogo(container); break;
-                case 'success': renderSuccess(container); break;
+                case 'success': renderSuccess(container, extraParam); break;
                 case 'classMasterLogin': renderClassMasterLogin(container); break;
                 case 'classMasterDashboard': renderClassMasterDashboard(container); break;
                 case 'adminLogin': renderAdminLogin(container); break;
@@ -729,7 +729,8 @@
                     if (data.voted_classe_genitore) activeBallotsVoted++;
                 }
 
-                if (data.hasVoted || (maxEligibleBallots > 0 && activeBallotsVoted >= maxEligibleBallots)) {
+                // Un token si definisce esaurito solo se l'elettore ha espresso il voto in TUTTE le schede disponibili per il suo profilo
+                if (maxEligibleBallots > 0 && activeBallotsVoted >= maxEligibleBallots) {
                     throw new Error("Tutte le votazioni associate a questo Token per oggi sono state già concluse.");
                 }
 
@@ -933,7 +934,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full font-semibold">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4 font-semibold">Esprimi il voto per una lista e fino a un massimo di ${configElezioni.maxPrefConsiglio} preferenze nominali della medesima lista.</p>
+                    <p class="text-xs text-slate-500 mb-4 font-semibold">Esprimi il voto per una lista e fino a un massimo di **${configElezioni.maxPrefConsiglio} preferenze nominali** della medesima lista.</p>
                     
                     <div class="space-y-4">
                         ${listsHTML}
@@ -1037,7 +1038,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full font-semibold">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4 font-semibold">Scegli una lista ed esprimi fino a un massimo di ${configElezioni.maxPrefIstituto} preferenze nominali.</p>
+                    <p class="text-xs text-slate-500 mb-4 font-semibold">Scegli una lista ed esprimi fino a un massimo di **${configElezioni.maxPrefIstituto} preferenze nominali**.</p>
                     
                     <div class="space-y-4">
                         ${listelst}
@@ -1140,7 +1141,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full font-semibold">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4 font-semibold">Scegli la lista ed esprimi fino a un max di ${configElezioni.maxPrefConsulta} preferenze nominali.</p>
+                    <p class="text-xs text-slate-500 mb-4 font-semibold">Scegli la lista ed esprimi fino a un max di **${configElezioni.maxPrefConsulta} preferenze nominali**.</p>
                     
                     <div class="space-y-4">
                         ${listacon}
@@ -1480,6 +1481,37 @@
                 const tokenRef = getDocumentRef('tokens', token);
                 const tokenUpdates = {};
 
+                // Analisi e unione tra votazioni storiche effettuate e quelle correnti del carrello
+                const willBeVotedConsiglio = currentUserData.voted_consiglio || (configElezioni.consiglioAttivo && cartVotes.consiglio && currentUserData.tipo !== 'STUDENTE');
+                const willBeVotedIstituto = currentUserData.voted_istituto || (configElezioni.rappresentantiIstitutoAttivo && cartVotes.istituto && currentUserData.tipo === 'STUDENTE');
+                const willBeVotedConsulta = currentUserData.voted_consulta || (configElezioni.consultaAttiva && cartVotes.consulta && currentUserData.tipo === 'STUDENTE');
+                const willBeVotedClasseStu = currentUserData.voted_classe_studente || (configElezioni.rappresentantiClasseStudentiAttivo && cartVotes.classeStudente && currentUserData.tipo === 'STUDENTE');
+                const willBeVotedClasseGen = currentUserData.voted_classe_genitore || (configElezioni.rappresentantiClasseGenitoriAttivo && cartVotes.classeGenitore && currentUserData.tipo === 'GENITORE');
+
+                let totalEligible = 0;
+                let totalVoted = 0;
+
+                if (configElezioni.consiglioAttivo && currentUserData.tipo !== 'STUDENTE') {
+                    totalEligible++;
+                    if (willBeVotedConsiglio) totalVoted++;
+                }
+                if (configElezioni.rappresentantiIstitutoAttivo && currentUserData.tipo === 'STUDENTE') {
+                    totalEligible++;
+                    if (willBeVotedIstituto) totalVoted++;
+                }
+                if (configElezioni.consultaAttiva && currentUserData.tipo === 'STUDENTE') {
+                    totalEligible++;
+                    if (willBeVotedConsulta) totalVoted++;
+                }
+                if (configElezioni.rappresentantiClasseStudentiAttivo && currentUserData.tipo === 'STUDENTE') {
+                    totalEligible++;
+                    if (willBeVotedClasseStu) totalVoted++;
+                }
+                if (configElezioni.rappresentantiClasseGenitoriAttivo && currentUserData.tipo === 'GENITORE') {
+                    totalEligible++;
+                    if (willBeVotedClasseGen) totalVoted++;
+                }
+
                 if (configElezioni.consiglioAttivo && cartVotes.consiglio && currentUserData.tipo !== 'STUDENTE') {
                     const voteRef = doc(getCollectionRef('voti_consiglio'), uuidConsiglio);
                     batch.set(voteRef, { ...cartVotes.consiglio, classe: currentUserData.classe, tipo: currentUserData.tipo, dataVoto: "12 Luglio 2026" });
@@ -1515,13 +1547,15 @@
                     tokenUpdates.vote_id_classe_genitore = uuidClasseGen;
                 }
 
-                tokenUpdates.hasVoted = true;
+                // Il token è bruciato (hasVoted = true) SOLO se l'elettore ha espresso tutte le preferenze ammissibili
+                const isFullyCompleted = (totalVoted >= totalEligible);
+                tokenUpdates.hasVoted = isFullyCompleted;
                 batch.update(tokenRef, tokenUpdates);
                 await batch.commit();
 
                 currentUserData = null; 
                 cartVotes = { consiglio: null, istituto: null, consulta: null, classeStudente: null, classeGenitore: null };
-                showPage('success');
+                showPage('success', isFullyCompleted);
             } catch (err) {
                 console.error(err);
                 showNotification("Errore di rete", "Si è verificato un errore nell'invio del voto.", "error");
@@ -1531,14 +1565,19 @@
             }
         };
 
-        function renderSuccess(container) {
+        function renderSuccess(container, isFullyCompleted = true) {
+            const titleText = isFullyCompleted ? "Scheda Registrata!" : "Voto Parziale Registrato!";
+            const descText = isFullyCompleted 
+                ? "Il tuo voto è stato depositato in modo anonimo nell'urna digitale d'Istituto."
+                : "Le schede che hai compilato sono state salvate con successo nell'urna cloud. Potrai accedere nuovamente in cabina usando lo stesso identico Token per completare le altre schede elettorali.";
+
             container.innerHTML = `
                 <div class="bg-white p-8 rounded-2xl shadow-xl border border-emerald-100 max-w-md mx-auto text-center animate-fade-in mt-10 font-semibold">
                     <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i data-lucide="check" class="w-7 h-7"></i>
+                        <i data-lucide="${isFullyCompleted ? 'check' : 'alert-circle'}" class="w-7 h-7"></i>
                     </div>
-                    <h2 class="text-xl font-black text-slate-800">Scheda Registrata!</h2>
-                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">Il tuo voto è stato depositato in modo anonimo nell'urna digitale d'Istituto.</p>
+                    <h2 class="text-xl font-black text-slate-800">${titleText}</h2>
+                    <p class="text-xs text-slate-500 mt-2 leading-relaxed">${descText}</p>
                     <button onclick="showPage('studentLogin')" class="mt-6 w-full bg-blue-900 hover:bg-blue-850 text-white font-extrabold py-3 rounded-xl shadow transition-all text-xs">
                         Lascia la Cabina Elettorale
                     </button>
