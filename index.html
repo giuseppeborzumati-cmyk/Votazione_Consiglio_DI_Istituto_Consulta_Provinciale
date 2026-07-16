@@ -2020,7 +2020,8 @@
         .header h1 { color: #1e3a8a; margin: 5px 0 0 0; font-size: 24px; text-transform: uppercase; }
         .header p { margin: 5px 0 0 0; color: #64748b; font-size: 14px; font-weight: 500; }
         h2 { color: #0f172a; font-size: 16px; border-bottom: 2px solid #cbd5e1; padding-bottom: 6px; margin-top: 30px; text-transform: uppercase; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        h3 { color: #1e3a8a; font-size: 14px; margin-top: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; text-transform: uppercase; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; margin-bottom: 15px; }
         th { background-color: #1e3a8a; color: white; padding: 12px; text-align: left; font-weight: bold; border: 1px solid #e2e8f0; }
         td { padding: 12px; border: 1px solid #e2e8f0; }
         tr:nth-child(even) { background-color: #f8fafc; }
@@ -2445,13 +2446,265 @@
                 `;
                 zip.file("4_conformita_normativa_e_regolamento.html", getHtmlReportTemplate("Conformità Tecnica e Giuridica", `Anno Scolastico ${configElezioni.annoScolastico}`, conformitaContent));
 
+                // -------------------------------------------------------------
+                // NUOVI DOCUMENTI EXTRA: REPORT DETTAGLIATI SINGOLE VOTAZIONI E REGISTRO TOKEN
+                // -------------------------------------------------------------
+                const buildListElectionsReportHtml = (title, subListe, colVotes, totalSeats, isConsiglio = false, comp = '') => {
+                    let listVotes = {};
+                    Object.keys(subListe).forEach(k => {
+                        listVotes[k] = colVotes.filter(v => (!isConsiglio || v.tipo === comp) && v.lista === k).length;
+                    });
+                    let { quotients, seatsAllocated } = calculateDHondtSteps(listVotes, totalSeats, subListe);
+                    
+                    let candEletti = [];
+                    Object.entries(seatsAllocated).forEach(([lKey, sQty]) => {
+                        if (sQty <= 0) return;
+                        let val = subListe[lKey];
+                        let cList = val.candidati.map((cand, presentationIndex) => {
+                            let prCount = colVotes.filter(v => {
+                                if (isConsiglio && v.tipo !== comp) return false;
+                                if (v.lista !== lKey) return false;
+                                for (let i = 1; i <= 10; i++) {
+                                    let p = v[`p${i}`];
+                                    if (p && (p === cand || p.split(":")[1] === cand)) return true;
+                                }
+                                return false;
+                            }).length;
+                            return { name: cand, listName: val.nome, prefs: prCount, presentationIndex };
+                        });
+                        cList.sort((a,b) => b.prefs === a.prefs ? a.presentationIndex - b.presentationIndex : b.prefs - a.prefs);
+                        for(let s=0; s < Math.min(sQty, cList.length); s++) candEletti.push(cList[s]);
+                    });
+
+                    let html = `
+                        <h2>1. Voti Ricevuti dalle Liste e Preferenze Candidati</h2>
+                        <div style="margin-bottom: 30px;">
+                    `;
+                    Object.entries(subListe).forEach(([lKey, lVal]) => {
+                        let v = listVotes[lKey] || 0;
+                        html += `
+                            <div style="margin-bottom: 20px; border-left: 4px solid #1e3a8a; padding-left: 15px; background: #f8fafc; padding-top: 10px; padding-bottom: 10px; border-radius: 0 8px 8px 0;">
+                                <strong style="font-size: 14px; color: #1e3a8a;">Lista: ${lVal.nome}</strong> (Voti Totali: <strong>${v}</strong>)
+                                <table>
+                                    <thead><tr><th>Candidato</th><th>Voti Preferenza Nominativi</th></tr></thead>
+                                    <tbody>
+                                        ${lVal.candidati.map(cand => {
+                                            let cVotes = colVotes.filter(v => {
+                                                if (isConsiglio && v.tipo !== comp) return false;
+                                                if (v.lista !== lKey) return false;
+                                                for (let i = 1; i <= 10; i++) {
+                                                    let p = v[`p${i}`];
+                                                    if (p && (p === cand || p.split(":")[1] === cand)) return true;
+                                                }
+                                                return false;
+                                            }).length;
+                                            return `<tr><td>${cand}</td><td><strong>${cVotes}</strong></td></tr>`;
+                                        }).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `</div><h2>2. Assegnazione Proporzionale Seggi (Algoritmo D'Hondt)</h2>`;
+                    html += `
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Lista</th>
+                                    <th>Voti Totali</th>
+                                    ${Array.from({ length: totalSeats }, (_, i) => `<th>Quoziente / ${i+1}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Object.entries(subListe).map(([lKey, lVal]) => {
+                                    let v = listVotes[lKey] || 0;
+                                    return `
+                                        <tr>
+                                            <td><strong>${lVal.nome}</strong></td>
+                                            <td>${v}</td>
+                                            ${Array.from({ length: totalSeats }, (_, idx) => {
+                                                let q = v / (idx + 1);
+                                                let isWin = quotients.find(qo => qo.listKey === lKey && qo.divisor === (idx + 1))?.isWinner;
+                                                return `<td class="${isWin ? 'badge-green' : ''}">${q.toFixed(2)}${isWin ? ' *' : ''}</td>`;
+                                            }).join('')}
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                        <p style="font-size: 11px; color: #64748b;">* Indica il quoziente vincente che ha determinato l'assegnazione del seggio.</p>
+                        
+                        <h2>3. Esito - Candidati Proclamati Eletti</h2>
+                        <table>
+                            <thead>
+                                <tr><th>Candidato Proclamato Eletto</th><th>Lista di Appartenenza</th><th>Preferenze Totali</th></tr>
+                            </thead>
+                            <tbody>
+                                ${candEletti.map(c => `
+                                    <tr>
+                                        <td><strong style="color: #065f46; text-transform: uppercase;">${c.name}</strong></td>
+                                        <td>${c.listName}</td>
+                                        <td><strong>${c.prefs} preferenze</strong></td>
+                                    </tr>
+                                `).join('')}
+                                ${candEletti.length === 0 ? `<tr><td colspan="3" style="text-align: center; color: #94a3b8; font-style: italic;">Nessun candidato eletto o voti assenti.</td></tr>` : ''}
+                            </tbody>
+                        </table>
+                    `;
+                    return html;
+                };
+
+                const buildClassElectionsReportHtml = (title, colVotes, maxPref, limitSeats) => {
+                    let clObj = {};
+                    colVotes.forEach(v => {
+                        if (v.isBianca || !v.classe) return;
+                        if (!clObj[v.classe]) clObj[v.classe] = {};
+                        for(let i=1; i<=maxPref; i++) {
+                            let name = v[`candidate${i}`];
+                            if (name) {
+                                let canon = getCanonicalName(name);
+                                let norm = normalizeName(name);
+                                if (!clObj[v.classe][canon]) clObj[v.classe][canon] = { display: norm, count: 0 };
+                                clObj[v.classe][canon].count++;
+                            }
+                        }
+                    });
+
+                    let html = `
+                        <h2>1. Preferenze Totali Riscontrate per Classe</h2>
+                        <p>Elenco completo di tutti i voti nominali scrutinati classe per classe:</p>
+                    `;
+
+                    Object.keys(clObj).sort().forEach(cl => {
+                        let sCands = Object.values(clObj[cl]).sort((a,b) => b.count === a.count ? a.display.localeCompare(b.display) : b.count - a.count);
+                        html += `
+                            <div style="margin-bottom: 20px; border-left: 4px solid #0f172a; padding-left: 15px; background: #f8fafc; padding-top: 10px; padding-bottom: 10px; border-radius: 0 8px 8px 0;">
+                                <h3 style="margin: 0 0 10px 0; color: #0f172a;">Classe: ${cl}</h3>
+                                <table>
+                                    <thead><tr><th>Nominativo Candidato</th><th>Voti Preferenza Ricevuti</th></tr></thead>
+                                    <tbody>
+                                        ${sCands.map(c => `<tr><td>${c.display}</td><td><strong>${c.count}</strong></td></tr>`).join('')}
+                                        ${sCands.length === 0 ? `<tr><td colspan="2" style="color: #94a3b8; font-style: italic;">Nessuna preferenza espressa in questa sezione.</td></tr>` : ''}
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                    });
+
+                    html += `<h2>2. Proclamazione Ufficiale degli Eletti</h2>
+                    <table>
+                        <thead><tr><th>Classe</th><th>Rappresentanti Proclamati Eletti (Preferenze)</th></tr></thead>
+                        <tbody>`;
+                    Object.keys(clObj).sort().forEach(cl => {
+                        let sCands = Object.values(clObj[cl]).sort((a,b) => b.count === a.count ? a.display.localeCompare(b.display) : b.count - a.count).slice(0, limitSeats);
+                        let displayStr = sCands.map(c => `<strong>${c.display}</strong> (${c.count} voti)`).join(', ');
+                        html += `<tr><td><strong>${cl}</strong></td><td>${displayStr || "Nessun rappresentante eletto"}</td></tr>`;
+                    });
+                    html += `</tbody></table>`;
+                    return html;
+                };
+
+                const buildTokenRegisterReportHtml = (tokensData) => {
+                    tokensData.sort((a,b) => {
+                        if(a.tipo === b.tipo) {
+                            if(a.classe === b.classe) {
+                                return (a.nome || "").localeCompare(b.nome || "");
+                            }
+                            return (a.classe || "").localeCompare(b.classe || "");
+                        }
+                        return (a.tipo || "").localeCompare(b.tipo || "");
+                    });
+
+                    let html = `
+                        <h2>Registro Completo delle Credenziali Rilasciate</h2>
+                        <p>Elenco generale dei Token registrati d'Istituto. In conformità con le linee di anonimato asincrono, è registrato lo stato logico di utilizzo e sblocco della cabina senza memorizzare i dettagli della preferenza espressa.</p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>N°</th>
+                                    <th>Codice Token</th>
+                                    <th>Elettore Associato</th>
+                                    <th>Tipo Componente</th>
+                                    <th>Classe / Sezione</th>
+                                    <th>Indirizzo</th>
+                                    <th>Stato Esercizio Voto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${tokensData.map((t, idx) => {
+                                    let statusText = t.hasVoted ? 'VOTO CONCLUSO' : 'NON UTILIZZATO / PARZIALE';
+                                    let badgeClass = t.hasVoted ? 'badge badge-green' : 'badge badge-red';
+                                    return `
+                                        <tr>
+                                            <td>${idx + 1}</td>
+                                            <td><strong style="font-family: monospace; font-size: 13px;">${t.id}</strong></td>
+                                            <td style="text-transform: uppercase;">${t.nome || "Elettore Anonimo"}</td>
+                                            <td><span class="badge badge-blue">${t.tipo}</span></td>
+                                            <td>${t.classe || "-"}</td>
+                                            <td>${t.indirizzo || "-"}</td>
+                                            <td><span class="${badgeClass}">${statusText}</span></td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    `;
+                    return html;
+                };
+
+                // 1. Elezione d'Istituto
+                const detailedIstiHtml = buildListElectionsReportHtml("Rappresentanti d'Istituto (STUDENTI)", configElezioni.listeIstituto, votiIstituto, 4);
+                zip.file("dettaglio_elezione_istituto.html", getHtmlReportTemplate("Dettaglio Scrutinio - Rappresentanti d'Istituto", `Anno Scolastico ${configElezioni.annoScolastico}`, detailedIstiHtml));
+
+                // 2. Consulta Provinciale
+                const detailedConsulHtml = buildListElectionsReportHtml("Consulta Provinciale (STUDENTI)", configElezioni.listeConsulta, votiConsulta, 2);
+                zip.file("dettaglio_elezione_consulta.html", getHtmlReportTemplate("Dettaglio Scrutinio - Consulta Provinciale", `Anno Scolastico ${configElezioni.annoScolastico}`, detailedConsulHtml));
+
+                // 3. Consiglio d'Istituto - Genitori
+                const subGenLists = configElezioni.listeConsiglio["GENITORE"] || {};
+                const detailedConsiglioGenHtml = buildListElectionsReportHtml("Consiglio d'Istituto - Componente GENITORI", subGenLists, votiConsiglio, 4, true, 'GENITORE');
+                zip.file("dettaglio_elezione_consiglio_genitori.html", getHtmlReportTemplate("Dettaglio Scrutinio - Consiglio d'Istituto (Genitori)", `Anno Scolastico ${configElezioni.annoScolastico}`, detailedConsiglioGenHtml));
+
+                // 4. Consiglio d'Istituto - Docenti
+                const subDocLists = configElezioni.listeConsiglio["DOCENTE"] || {};
+                const detailedConsiglioDocHtml = buildListElectionsReportHtml("Consiglio d'Istituto - Componente DOCENTI", subDocLists, votiConsiglio, 8, true, 'DOCENTE');
+                zip.file("dettaglio_elezione_consiglio_docenti.html", getHtmlReportTemplate("Dettaglio Scrutinio - Consiglio d'Istituto (Docenti)", `Anno Scolastico ${configElezioni.annoScolastico}`, detailedConsiglioDocHtml));
+
+                // 5. Consiglio d'Istituto - ATA
+                const subAtaLists = configElezioni.listeConsiglio["ATA"] || {};
+                const detailedConsiglioAtaHtml = buildListElectionsReportHtml("Consiglio d'Istituto - Componente ATA", subAtaLists, votiConsiglio, 2, true, 'ATA');
+                zip.file("dettaglio_elezione_consiglio_ata.html", getHtmlReportTemplate("Dettaglio Scrutinio - Consiglio d'Istituto (ATA)", `Anno Scolastico ${configElezioni.annoScolastico}`, detailedConsiglioAtaHtml));
+
+                // 6. Classe Studenti
+                const detailedClasseStuHtml = buildClassElectionsReportHtml("Rappresentanti di Classe - STUDENTI", votiClasseStudenti, configElezioni.maxPrefClasseStudenti || 1, 2);
+                zip.file("dettaglio_elezione_classe_studenti.html", getHtmlReportTemplate("Dettaglio Scrutinio - Rappresentanti di Classe (Studenti)", `Anno Scolastico ${configElezioni.annoScolastico}`, detailedClasseStuHtml));
+
+                // 7. Classe Genitori
+                const detailedClasseGenHtml = buildClassElectionsReportHtml("Rappresentanti di Classe - GENITORI", votiClasseGenitori, configElezioni.maxPrefClasseGenitori || 1, 4);
+                zip.file("dettaglio_elezione_classe_genitori.html", getHtmlReportTemplate("Dettaglio Scrutinio - Rappresentanti di Classe (Genitori)", `Anno Scolastico ${configElezioni.annoScolastico}`, detailedClasseGenHtml));
+
+                // 8. Registro Completo Token
+                const detailedTokensHtml = buildTokenRegisterReportHtml(tokensData);
+                zip.file("registro_completo_token.html", getHtmlReportTemplate("Registro Generale Credenziali Token", `Anno Scolastico ${configElezioni.annoScolastico}`, detailedTokensHtml));
+
                 // File README per le istruzioni d'uso
                 const readmeContent = `ITSCG PRIMO LEVI DI SEREGNO - REGISTRO ELETTRONICO DIGITALE CERTIFICATO
 Anno Scolastico di Riferimento: A.S. ${configElezioni.annoScolastico}
 Data Esportazione Archivio: ${new Date().toLocaleString()}
 
 Questo archivio ZIP contiene la documentazione ufficiale in formato HTML autonomo per la conservazione a norma e per l'affissione dei risultati.
-I file sono pronti per essere stampati, aperti offline senza connessione ad Internet su qualsiasi computer e sono completi di tabelle per le firme olografe dei componenti della commissione elettorale d'Istituto.`;
+I file sono pronti per essere stampati, aperti offline senza connessione ad Internet su qualsiasi computer e sono completi di tabelle per le firme olografe dei componenti della commissione elettorale d'Istituto.
+
+NUOVI REPORT DETTAGLIATI INCLUSI:
+- registro_completo_token.html                     (Registro generale e stato di utilizzo di tutti i Token della scuola)
+- dettaglio_elezione_istituto.html                 (Riepilogo e calcoli D'Hondt con seggi della componente studentesca)
+- dettaglio_elezione_consulta.html                 (Riepilogo e calcoli D'Hondt con seggi della Consulta di Monza e Brianza)
+- dettaglio_elezione_consiglio_genitori.html       (Voti e preferenze D'Hondt del Consiglio d'Istituto per i Genitori)
+- dettaglio_elezione_consiglio_docenti.html        (Voti e preferenze D'Hondt del Consiglio d'Istituto per i Docenti)
+- dettaglio_elezione_consiglio_ata.html            (Voti e preferenze D'Hondt del Consiglio d'Istituto per la componente ATA)
+- dettaglio_elezione_classe_studenti.html          (Graduatorie e proclamati delle classi per gli studenti)
+- dettaglio_elezione_classe_genitori.html          (Graduatorie e proclamati delle classi per i genitori)`;
                 zip.file("LEGGIMI_Istruzioni_Conservazione.txt", readmeContent);
 
                 // Compressione e download del pacchetto ZIP
@@ -2465,7 +2718,7 @@ I file sono pronti per essere stampati, aperti offline senza connessione ad Inte
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(url);
 
-                showNotification("Successo", `Archivio storico scaricato correttamente per l'A.S. ${configElezioni.annoScolastico}. Tutti i documenti sono firmati e pronti per la conservazione scolastica.`, "success");
+                showNotification("Successo", `Archivio storico scaricato correttamente per l'A.S. ${configElezioni.annoScolastico}. Tutti i documenti e registri token extra sono stati firmati e pronti per la conservazione scolastica.`, "success");
             } catch (err) {
                 console.error(err);
                 showNotification("Errore Esportazione", "Impossibile scaricare l'archivio ZIP: " + err.message, "error");
