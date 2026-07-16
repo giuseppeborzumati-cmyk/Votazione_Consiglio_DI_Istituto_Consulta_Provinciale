@@ -933,7 +933,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full font-semibold">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4 font-semibold">Esprimi il voto per una lista e fino a un massimo di ${configElezioni.maxPrefConsiglio} preferenze nominali della medesima lista.</p>
+                    <p class="text-xs text-slate-500 mb-4 font-semibold">Esprimi il voto per una lista e fino a un massimo di **${configElezioni.maxPrefConsiglio} preferenze nominali** della medesima lista.</p>
                     
                     <div class="space-y-4">
                         ${listsHTML}
@@ -1037,7 +1037,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full font-semibold">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4 font-semibold">Scegli una lista ed esprimi fino a un massimo di ${configElezioni.maxPrefIstituto} preferenze nominali.</p>
+                    <p class="text-xs text-slate-500 mb-4 font-semibold">Scegli una lista ed esprimi fino a un massimo di **${configElezioni.maxPrefIstituto} preferenze nominali**.</p>
                     
                     <div class="space-y-4">
                         ${listelst}
@@ -1140,7 +1140,7 @@
             container.innerHTML = `
                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 max-w-2xl mx-auto animate-fade-in w-full font-semibold">
                     ${headerHTML}
-                    <p class="text-xs text-slate-500 mb-4 font-semibold">Scegli la lista ed esprimi fino a un max di ${configElezioni.maxPrefConsulta} preferenze nominali.</p>
+                    <p class="text-xs text-slate-500 mb-4 font-semibold">Scegli la lista ed esprimi fino a un max di **${configElezioni.maxPrefConsulta} preferenze nominali**.</p>
                     
                     <div class="space-y-4">
                         ${listacon}
@@ -1235,7 +1235,7 @@
                 inputsHTML += `
                     <div>
                         <label class="block text-[10px] font-bold text-slate-500 uppercase mb-1">Candidato ${i}</label>
-                        <input type="text" id="stuCandidate${i}" value="${val}" placeholder="Inserisci in ordine COGNOME e NOME" class="w-full p-3 border rounded-xl font-bold uppercase tracking-wider text-slate-800 text-xs outline-none focus:border-blue-900 bg-slate-50">
+                        <input type="text" id="stuCandidate${i}" value="${val}" placeholder="COGNOME NOME" class="w-full p-3 border rounded-xl font-bold uppercase tracking-wider text-slate-800 text-xs outline-none focus:border-blue-900 bg-slate-50">
                     </div>
                 `;
             }
@@ -1282,7 +1282,7 @@
                 inputsHTML += `
                     <div>
                         <label class="block text-[10px] font-bold text-rose-900 uppercase mb-1">Candidato ${i}</label>
-                        <input type="text" id="genCandidate${i}" value="${val}" placeholder="Inserisci in ordine COGNOME e NOME" class="w-full p-3 border rounded-xl font-bold uppercase tracking-wider text-slate-800 text-xs outline-none focus:border-rose-900 bg-slate-50">
+                        <input type="text" id="genCandidate${i}" value="${val}" placeholder="COGNOME NOME" class="w-full p-3 border rounded-xl font-bold uppercase tracking-wider text-slate-800 text-xs outline-none focus:border-rose-900 bg-slate-50">
                     </div>
                 `;
             }
@@ -1504,8 +1504,8 @@
                 if (configElezioni.rappresentantiClasseStudentiAttivo && cartVotes.classeStudente && currentUserData.tipo === 'STUDENTE') {
                     const voteRef = doc(getCollectionRef('voti_classe_studenti'), uuidClasseStu);
                     batch.set(voteRef, { ...cartVotes.classeStudente, classe: currentUserData.classe, tipo: currentUserData.tipo, dataVoto: "12 Luglio 2026" });
-                    tokenUpdates.voted_classe_studenti = true;
-                    tokenUpdates.vote_id_classe_studenti = uuidClasseStu;
+                    tokenUpdates.voted_classe_studente = true;
+                    tokenUpdates.vote_id_classe_studente = uuidClasseStu;
                 }
                 
                 if (configElezioni.rappresentantiClasseGenitoriAttivo && cartVotes.classeGenitore && currentUserData.tipo === 'GENITORE') {
@@ -1698,7 +1698,7 @@
                     <div class="grid lg:grid-cols-12 gap-6">
                         <div class="lg:col-span-5 space-y-4">
                             <div class="bg-white p-6 rounded-2xl shadow border border-slate-200">
-                                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5"><i data-lucide="crown" class="text-yellow-500 w-4 h-4"></i> Rappresentanti Eletti</h3>
+                                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-1.5"><i data-lucide="crown" class="text-yellow-500 w-4 h-4"></i> Rappresentanti Eletti</h3>
                                 <div class="space-y-3">
                                     ${elettiHTML}
                                 </div>
@@ -1999,7 +1999,6 @@
         window.openConfirmPurge = function() { document.getElementById('custom-purge-modal').classList.remove('hidden'); };
         window.closePurgeModal = function() { document.getElementById('custom-purge-modal').classList.add('hidden'); };
 
-        // Helper per la generazione dei fogli report HTML interattivi dentro lo ZIP
         function getHtmlReportTemplate(title, subtitle, contentHtml) {
             const commissioneSignatures = configElezioni.commissione.map(c => `
                 <div style="border-top: 1px dashed #cbd5e1; padding-top: 8px; margin-top: 25px; text-align: left;">
@@ -2020,8 +2019,7 @@
         .header h1 { color: #1e3a8a; margin: 5px 0 0 0; font-size: 24px; text-transform: uppercase; }
         .header p { margin: 5px 0 0 0; color: #64748b; font-size: 14px; font-weight: 500; }
         h2 { color: #0f172a; font-size: 16px; border-bottom: 2px solid #cbd5e1; padding-bottom: 6px; margin-top: 30px; text-transform: uppercase; }
-        h3 { color: #1e3a8a; font-size: 14px; margin-top: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; text-transform: uppercase; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
         th { background-color: #1e3a8a; color: white; padding: 12px; text-align: left; font-weight: bold; border: 1px solid #e2e8f0; }
         td { padding: 12px; border: 1px solid #e2e8f0; }
         tr:nth-child(even) { background-color: #f8fafc; }
@@ -2156,14 +2154,14 @@
                 // -------------------------------------------------------------
                 let votiListeContent = `
                     <h2>Risultati delle Liste e Preferenze Candidati</h2>
-                    <p>Prospetto generale delle liste elettorali registrate e dei voti nominali unificati ottenuti da ciascun candidato (unificazione automatica dell'ordine Cognome e Nome).</p>
+                    <p>Prospetto generale delle liste elettorali registrate e dei voti nominali unificati ottenuti da ciascun candidato.</p>
                 `;
 
-                // Istituto
-                votiListeContent += `<h3>Rappresentanti d'Istituto (Studenti)</h3>`;
+                // Rappresentanti Istituto
+                let istitutoReportHtml = `<h3>Rappresentanti d'Istituto (Studenti)</h3>`;
                 Object.entries(configElezioni.listeIstituto).forEach(([lKey, lVal]) => {
                     let votes = votiIstituto.filter(v => v.lista === lKey).length;
-                    votiListeContent += `
+                    istitutoReportHtml += `
                         <div style="margin-bottom: 20px; border-left: 4px solid #1e3a8a; padding-left: 15px;">
                             <strong>Lista: ${lVal.nome}</strong> - Voti complessivi di lista: <strong style="color: #1e3a8a;">${votes}</strong>
                             <table>
@@ -2185,12 +2183,14 @@
                         </div>
                     `;
                 });
+                zip.file("voti_esiti_istituto.html", getHtmlReportTemplate("Risultati Rappresentanti d'Istituto", `Anno Scolastico ${configElezioni.annoScolastico}`, istitutoReportHtml));
+                votiListeContent += istitutoReportHtml;
 
                 // Consulta
-                votiListeContent += `<h3>Consulta Provinciale (Studenti)</h3>`;
+                let consultaReportHtml = `<h3>Consulta Provinciale (Studenti)</h3>`;
                 Object.entries(configElezioni.listeConsulta).forEach(([lKey, lVal]) => {
                     let votes = votiConsulta.filter(v => v.lista === lKey).length;
-                    votiListeContent += `
+                    consultaReportHtml += `
                         <div style="margin-bottom: 20px; border-left: 4px solid #d97706; padding-left: 15px;">
                             <strong>Lista: ${lVal.nome}</strong> - Voti complessivi di lista: <strong style="color: #d97706;">${votes}</strong>
                             <table>
@@ -2212,14 +2212,16 @@
                         </div>
                     `;
                 });
+                zip.file("voti_esiti_consulta.html", getHtmlReportTemplate("Risultati Consulta Provinciale", `Anno Scolastico ${configElezioni.annoScolastico}`, consultaReportHtml));
+                votiListeContent += consultaReportHtml;
 
-                // Consiglio per Componenti
+                // Consiglio per Componenti (Genitori, Docenti, ATA)
                 ["GENITORE", "DOCENTE", "ATA"].forEach(comp => {
-                    votiListeContent += `<h3>Consiglio d'Istituto - Componente ${comp}</h3>`;
+                    let compReportHtml = `<h3>Consiglio d'Istituto - Componente ${comp}</h3>`;
                     let compLists = configElezioni.listeConsiglio[comp] || {};
                     Object.entries(compLists).forEach(([lKey, lVal]) => {
                         let votes = votiConsiglio.filter(v => v.tipo === comp && v.lista === lKey).length;
-                        votiListeContent += `
+                        compReportHtml += `
                             <div style="margin-bottom: 20px; border-left: 4px solid #10b981; padding-left: 15px;">
                                 <strong>Lista: ${lVal.nome}</strong> - Voti complessivi di lista: <strong style="color: #10b981;">${votes}</strong>
                                 <table>
@@ -2241,6 +2243,8 @@
                             </div>
                         `;
                     });
+                    zip.file(`voti_esiti_consiglio_${comp.toLowerCase()}.html`, getHtmlReportTemplate(`Risultati Consiglio d'Istituto - Componente ${comp}`, `Anno Scolastico ${configElezioni.annoScolastico}`, compReportHtml));
+                    votiListeContent += compReportHtml;
                 });
 
                 zip.file("2_voti_candidati_liste.html", getHtmlReportTemplate("Registro Voti e Preferenze Liste", `Anno Scolastico ${configElezioni.annoScolastico}`, votiListeContent));
@@ -2250,7 +2254,7 @@
                 // -------------------------------------------------------------
                 let elettiContent = `
                     <h2>Proclamazione Ufficiale degli Eletti e Algoritmi di Calcolo</h2>
-                    <p>In conformità al <strong>D.Lgs. 16 aprile 1994, n. 297</strong> e all'<strong>O.M. 215/1991</strong>, la Commissione Elettorale ha applicato l'algoritmo di ripartizione dei seggi con il metodo proporzionale dei divisori D'Hondt per le schede a base di lista, e i criteri di precedenza per preferenza nominale e ordine alfabetico per le parità in classe.</p>
+                    <p>In conformità al <strong>D.Lgs. 16 aprile 1994, n. 297</strong> e all'<strong>O.M. 215/1991</strong>, la Commissione Elettorale ha applicato l'algoritmo di ripartizione dei seggi proporzionali.</p>
                 `;
 
                 // Funzione interna per generare la sezione D'Hondt dell'HTML
@@ -2362,11 +2366,11 @@
                 // Proclamazione Eletti di Classe
                 elettiContent += `
                     <h2>Rappresentanti di Classe Proclamati Eletti</h2>
-                    <p>Si riporta l'elenco dei rappresentanti di classe (Studenti e Genitori) che hanno ottenuto il maggior numero di preferenze nominali unificate all'interno della rispettiva sezione.</p>
+                    <p>Si riporta l'elenco dei rappresentanti di classe (Studenti e Genitori).</p>
                 `;
 
                 // Classe Studenti
-                elettiContent += `<h3>Rappresentanti di Classe Studenti (Max 2 eletti per classe)</h3>`;
+                let classStuReportHtml = `<h3>Rappresentanti di Classe Studenti (Max 2 eletti per classe)</h3>`;
                 let clStuObj = {};
                 votiClasseStudenti.forEach(v => {
                     if (v.isBianca || !v.classe) return;
@@ -2382,7 +2386,7 @@
                     }
                 });
 
-                elettiContent += `<table><thead><tr><th>Classe</th><th>Primo Rappresentante (Voti)</th><th>Secondo Rappresentante (Voti)</th></tr></thead><tbody>`;
+                classStuReportHtml += `<table><thead><tr><th>Classe</th><th>Primo Rappresentante (Voti)</th><th>Secondo Rappresentante (Voti)</th></tr></thead><tbody>`;
                 Object.keys(clStuObj).sort().forEach(cl => {
                     let sCands = Object.values(clStuObj[cl]).sort((a,b) => {
                         if (b.count === a.count) return a.display.localeCompare(b.display);
@@ -2390,12 +2394,14 @@
                     });
                     let r1 = sCands[0] ? `${sCands[0].display} (${sCands[0].count} voti)` : "Non eletto";
                     let r2 = sCands[1] ? `${sCands[1].display} (${sCands[1].count} voti)` : "Non eletto";
-                    elettiContent += `<tr><td><strong>${cl}</strong></td><td>${r1}</td><td>${r2}</td></tr>`;
+                    classStuReportHtml += `<tr><td><strong>${cl}</strong></td><td>${r1}</td><td>${r2}</td></tr>`;
                 });
-                elettiContent += `</tbody></table>`;
+                classStuReportHtml += `</tbody></table>`;
+                zip.file("voti_esiti_classe_studenti.html", getHtmlReportTemplate("Risultati di Classe - Studenti", `Anno Scolastico ${configElezioni.annoScolastico}`, classStuReportHtml));
+                elettiContent += classStuReportHtml;
 
                 // Classe Genitori
-                elettiContent += `<h3>Rappresentanti di Classe Genitori (Max 4 eletti per classe ai sensi delle norme)</h3>`;
+                let classGenReportHtml = `<h3>Rappresentanti di Classe Genitori (Max 4 eletti per classe)</h3>`;
                 let clGenObj = {};
                 votiClasseGenitori.forEach(v => {
                     if (v.isBianca || !v.classe) return;
@@ -2411,16 +2417,18 @@
                     }
                 });
 
-                elettiContent += `<table><thead><tr><th>Classe</th><th>Genitori Proclamati Eletti (Preferenze nominali)</th></tr></thead><tbody>`;
+                classGenReportHtml += `<table><thead><tr><th>Classe</th><th>Genitori Proclamati Eletti (Preferenze nominali)</th></tr></thead><tbody>`;
                 Object.keys(clGenObj).sort().forEach(cl => {
                     let sCands = Object.values(clGenObj[cl]).sort((a,b) => {
                         if (b.count === a.count) return a.display.localeCompare(b.display);
                         return b.count - a.count;
                     }).slice(0, 4);
                     let displayStr = sCands.map(c => `<strong>${c.display}</strong> (${c.count} voti)`).join(', ');
-                    elettiContent += `<tr><td><strong>${cl}</strong></td><td>${displayStr || "Nessun genitore eletto"}</td></tr>`;
+                    classGenReportHtml += `<tr><td><strong>${cl}</strong></td><td>${displayStr || "Nessun genitore eletto"}</td></tr>`;
                 });
-                elettiContent += `</tbody></table>`;
+                classGenReportHtml += `</tbody></table>`;
+                zip.file("voti_esiti_classe_genitori.html", getHtmlReportTemplate("Risultati di Classe - Genitori", `Anno Scolastico ${configElezioni.annoScolastico}`, classGenReportHtml));
+                elettiContent += classGenReportHtml;
 
                 zip.file("3_eletti_proclamati_calcoli.html", getHtmlReportTemplate("Registro Eletti e Proclamazione", `Anno Scolastico ${configElezioni.annoScolastico}`, elettiContent));
 
@@ -2429,282 +2437,30 @@
                 // -------------------------------------------------------------
                 let conformitaContent = `
                     <h2>Relazione Tecnica di Conformità e Trasparenza Elettorale</h2>
-                    <p>La presente relazione attesta la conformità tecnica e giuridica della piattaforma elettorale digitale utilizzata presso l'<strong>ITSCG Primo Levi di Seregno</strong>, ai fini dell'adempimento delle operazioni elettorali dell'anno scolastico <strong>A.S. ${configElezioni.annoScolastico}</strong>.</p>
-                    
-                    <h3>1. Garanzie di Segretezza e Anonimato (Dissociazione dei Dati)</h3>
-                    <p>Il sistema garantisce l'assoluto rispetto del segreto del voto garantito costituzionalmente. Nel database dell'urna cloud (Firestore), le schede di voto sono state depositate in modo asincrono, prive di qualsiasi riferimento temporale correlabile o di identificativi legati alla persona dell'elettore.</p>
-                    <p>I Token di convalida memorizzano unicamente lo stato logico di abilitazione della cabina (Voto espresso: <em>SI / NO</em>) per escludere il doppio voto, rendendo tecnicamente impossibile invertire il processo per risalire alle preferenze espresse dall'alunno o dal genitore.</p>
-                    
-                    <h3>2. Crittografia e Protezione dei Registri Elettorali</h3>
-                    <p>Ogni transazione avvenuta tra i dispositivi di voto (cabine fisiche o personali) e l'urna centralizzata d'Istituto è stata protetta tramite cifratura SSL/TLS di livello industriale. La Commissione Elettorale di Presidio detiene la password di amministrazione esclusiva per la chiusura dei seggi, la proclamazione e l'epurazione selettiva asincrona delle schede in caso di documentata assistenza per problemi di rete.</p>
-                    
-                    <h3>3. Quadro Normativo di Riferimento Scolastico</h3>
-                    <ul>
-                        <li><strong>D.Lgs. 16 aprile 1994, n. 297</strong> - Testo Unico delle disposizioni legislative vigenti in materia di istruzione relative alle scuole di ogni ordine e grado.</li>
-                        <li><strong>Ordinanza Ministeriale n. 215 del 15 luglio 1991</strong> e successive modificazioni - Disciplina dello svolgimento delle elezioni dei rappresentanti d'Istituto, della Consulta Provinciale e dei Consigli di Classe.</li>
-                    </ul>
+                    <p>La presente relazione attesta la conformità tecnica e giuridica della piattaforma elettorale digitale utilizzata.</p>
                 `;
                 zip.file("4_conformita_normativa_e_regolamento.html", getHtmlReportTemplate("Conformità Tecnica e Giuridica", `Anno Scolastico ${configElezioni.annoScolastico}`, conformitaContent));
 
                 // -------------------------------------------------------------
-                // NUOVI DOCUMENTI EXTRA: REPORT DETTAGLIATI SINGOLE VOTAZIONI E REGISTRO TOKEN
+                // DOCUMENTI 5: REGISTRO MASTER COMPLETO TOKEN + REGISTRI SUDDIVISI
                 // -------------------------------------------------------------
-                const buildListElectionsReportHtml = (title, subListe, colVotes, totalSeats, isConsiglio = false, comp = '') => {
-                    let listVotes = {};
-                    Object.keys(subListe).forEach(k => {
-                        listVotes[k] = colVotes.filter(v => (!isConsiglio || v.tipo === comp) && v.lista === k).length;
-                    });
-                    let { quotients, seatsAllocated } = calculateDHondtSteps(listVotes, totalSeats, subListe);
-                    
-                    let candEletti = [];
-                    Object.entries(seatsAllocated).forEach(([lKey, sQty]) => {
-                        if (sQty <= 0) return;
-                        let val = subListe[lKey];
-                        let cList = val.candidati.map((cand, presentationIndex) => {
-                            let prCount = colVotes.filter(v => {
-                                if (isConsiglio && v.tipo !== comp) return false;
-                                if (v.lista !== lKey) return false;
-                                for (let i = 1; i <= 10; i++) {
-                                    let p = v[`p${i}`];
-                                    if (p && (p === cand || p.split(":")[1] === cand)) return true;
-                                }
-                                return false;
-                            }).length;
-                            return { name: cand, listName: val.nome, prefs: prCount, presentationIndex };
-                        });
-                        cList.sort((a,b) => b.prefs === a.prefs ? a.presentationIndex - b.presentationIndex : b.prefs - a.prefs);
-                        for(let s=0; s < Math.min(sQty, cList.length); s++) candEletti.push(cList[s]);
-                    });
-
-                    let html = `
-                        <h2>1. Voti Ricevuti dalle Liste e Preferenze Candidati</h2>
-                        <div style="margin-bottom: 30px;">
-                    `;
-                    Object.entries(subListe).forEach(([lKey, lVal]) => {
-                        let v = listVotes[lKey] || 0;
-                        html += `
-                            <div style="margin-bottom: 20px; border-left: 4px solid #1e3a8a; padding-left: 15px; background: #f8fafc; padding-top: 10px; padding-bottom: 10px; border-radius: 0 8px 8px 0;">
-                                <strong style="font-size: 14px; color: #1e3a8a;">Lista: ${lVal.nome}</strong> (Voti Totali: <strong>${v}</strong>)
-                                <table>
-                                    <thead><tr><th>Candidato</th><th>Voti Preferenza Nominativi</th></tr></thead>
-                                    <tbody>
-                                        ${lVal.candidati.map(cand => {
-                                            let cVotes = colVotes.filter(v => {
-                                                if (isConsiglio && v.tipo !== comp) return false;
-                                                if (v.lista !== lKey) return false;
-                                                for (let i = 1; i <= 10; i++) {
-                                                    let p = v[`p${i}`];
-                                                    if (p && (p === cand || p.split(":")[1] === cand)) return true;
-                                                }
-                                                return false;
-                                            }).length;
-                                            return `<tr><td>${cand}</td><td><strong>${cVotes}</strong></td></tr>`;
-                                        }).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
-                        `;
-                    });
-                    
-                    html += `</div><h2>2. Assegnazione Proporzionale Seggi (Algoritmo D'Hondt)</h2>`;
-                    html += `
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Lista</th>
-                                    <th>Voti Totali</th>
-                                    ${Array.from({ length: totalSeats }, (_, i) => `<th>Quoziente / ${i+1}</th>`).join('')}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${Object.entries(subListe).map(([lKey, lVal]) => {
-                                    let v = listVotes[lKey] || 0;
-                                    return `
-                                        <tr>
-                                            <td><strong>${lVal.nome}</strong></td>
-                                            <td>${v}</td>
-                                            ${Array.from({ length: totalSeats }, (_, idx) => {
-                                                let q = v / (idx + 1);
-                                                let isWin = quotients.find(qo => qo.listKey === lKey && qo.divisor === (idx + 1))?.isWinner;
-                                                return `<td class="${isWin ? 'badge-green' : ''}">${q.toFixed(2)}${isWin ? ' *' : ''}</td>`;
-                                            }).join('')}
-                                        </tr>
-                                    `;
-                                }).join('')}
-                            </tbody>
-                        </table>
-                        <p style="font-size: 11px; color: #64748b;">* Indica il quoziente vincente che ha determinato l'assegnazione del seggio.</p>
-                        
-                        <h2>3. Esito - Candidati Proclamati Eletti</h2>
-                        <table>
-                            <thead>
-                                <tr><th>Candidato Proclamato Eletto</th><th>Lista di Appartenenza</th><th>Preferenze Totali</th></tr>
-                            </thead>
-                            <tbody>
-                                ${candEletti.map(c => `
-                                    <tr>
-                                        <td><strong style="color: #065f46; text-transform: uppercase;">${c.name}</strong></td>
-                                        <td>${c.listName}</td>
-                                        <td><strong>${c.prefs} preferenze</strong></td>
-                                    </tr>
-                                `).join('')}
-                                ${candEletti.length === 0 ? `<tr><td colspan="3" style="text-align: center; color: #94a3b8; font-style: italic;">Nessun candidato eletto o voti assenti.</td></tr>` : ''}
-                            </tbody>
-                        </table>
-                    `;
-                    return html;
-                };
-
-                const buildClassElectionsReportHtml = (title, colVotes, maxPref, limitSeats) => {
-                    let clObj = {};
-                    colVotes.forEach(v => {
-                        if (v.isBianca || !v.classe) return;
-                        if (!clObj[v.classe]) clObj[v.classe] = {};
-                        for(let i=1; i<=maxPref; i++) {
-                            let name = v[`candidate${i}`];
-                            if (name) {
-                                let canon = getCanonicalName(name);
-                                let norm = normalizeName(name);
-                                if (!clObj[v.classe][canon]) clObj[v.classe][canon] = { display: norm, count: 0 };
-                                clObj[v.classe][canon].count++;
-                            }
-                        }
-                    });
-
-                    let html = `
-                        <h2>1. Preferenze Totali Riscontrate per Classe</h2>
-                        <p>Elenco completo di tutti i voti nominali scrutinati classe per classe:</p>
-                    `;
-
-                    Object.keys(clObj).sort().forEach(cl => {
-                        let sCands = Object.values(clObj[cl]).sort((a,b) => b.count === a.count ? a.display.localeCompare(b.display) : b.count - a.count);
-                        html += `
-                            <div style="margin-bottom: 20px; border-left: 4px solid #0f172a; padding-left: 15px; background: #f8fafc; padding-top: 10px; padding-bottom: 10px; border-radius: 0 8px 8px 0;">
-                                <h3 style="margin: 0 0 10px 0; color: #0f172a;">Classe: ${cl}</h3>
-                                <table>
-                                    <thead><tr><th>Nominativo Candidato</th><th>Voti Preferenza Ricevuti</th></tr></thead>
-                                    <tbody>
-                                        ${sCands.map(c => `<tr><td>${c.display}</td><td><strong>${c.count}</strong></td></tr>`).join('')}
-                                        ${sCands.length === 0 ? `<tr><td colspan="2" style="color: #94a3b8; font-style: italic;">Nessuna preferenza espressa in questa sezione.</td></tr>` : ''}
-                                    </tbody>
-                                </table>
-                            </div>
-                        `;
-                    });
-
-                    html += `<h2>2. Proclamazione Ufficiale degli Eletti</h2>
-                    <table>
-                        <thead><tr><th>Classe</th><th>Rappresentanti Proclamati Eletti (Preferenze)</th></tr></thead>
-                        <tbody>`;
-                    Object.keys(clObj).sort().forEach(cl => {
-                        let sCands = Object.values(clObj[cl]).sort((a,b) => b.count === a.count ? a.display.localeCompare(b.display) : b.count - a.count).slice(0, limitSeats);
-                        let displayStr = sCands.map(c => `<strong>${c.display}</strong> (${c.count} voti)`).join(', ');
-                        html += `<tr><td><strong>${cl}</strong></td><td>${displayStr || "Nessun rappresentante eletto"}</td></tr>`;
-                    });
-                    html += `</tbody></table>`;
-                    return html;
-                };
-
-                const buildTokenRegisterReportHtml = (tokensData) => {
-                    tokensData.sort((a,b) => {
-                        if(a.tipo === b.tipo) {
-                            if(a.classe === b.classe) {
-                                return (a.nome || "").localeCompare(b.nome || "");
-                            }
-                            return (a.classe || "").localeCompare(b.classe || "");
-                        }
-                        return (a.tipo || "").localeCompare(b.tipo || "");
-                    });
-
-                    let html = `
-                        <h2>Registro Completo delle Credenziali Rilasciate</h2>
-                        <p>Elenco generale dei Token registrati d'Istituto. In conformità con le linee di anonimato asincrono, è registrato lo stato logico di utilizzo e sblocco della cabina senza memorizzare i dettagli della preferenza espressa.</p>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>N°</th>
-                                    <th>Codice Token</th>
-                                    <th>Elettore Associato</th>
-                                    <th>Tipo Componente</th>
-                                    <th>Classe / Sezione</th>
-                                    <th>Indirizzo</th>
-                                    <th>Stato Esercizio Voto</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${tokensData.map((t, idx) => {
-                                    let statusText = t.hasVoted ? 'VOTO CONCLUSO' : 'NON UTILIZZATO / PARZIALE';
-                                    let badgeClass = t.hasVoted ? 'badge badge-green' : 'badge badge-red';
-                                    return `
-                                        <tr>
-                                            <td>${idx + 1}</td>
-                                            <td><strong style="font-family: monospace; font-size: 13px;">${t.id}</strong></td>
-                                            <td style="text-transform: uppercase;">${t.nome || "Elettore Anonimo"}</td>
-                                            <td><span class="badge badge-blue">${t.tipo}</span></td>
-                                            <td>${t.classe || "-"}</td>
-                                            <td>${t.indirizzo || "-"}</td>
-                                            <td><span class="${badgeClass}">${statusText}</span></td>
-                                        </tr>
-                                    `;
-                                }).join('')}
-                            </tbody>
-                        </table>
-                    `;
-                    return html;
-                };
-
-                // 1. Elezione d'Istituto
-                const detailedIstiHtml = buildListElectionsReportHtml("Rappresentanti d'Istituto (STUDENTI)", configElezioni.listeIstituto, votiIstituto, 4);
-                zip.file("dettaglio_elezione_istituto.html", getHtmlReportTemplate("Dettaglio Scrutinio - Rappresentanti d'Istituto", `Anno Scolastico ${configElezioni.annoScolastico}`, detailedIstiHtml));
-
-                // 2. Consulta Provinciale
-                const detailedConsulHtml = buildListElectionsReportHtml("Consulta Provinciale (STUDENTI)", configElezioni.listeConsulta, votiConsulta, 2);
-                zip.file("dettaglio_elezione_consulta.html", getHtmlReportTemplate("Dettaglio Scrutinio - Consulta Provinciale", `Anno Scolastico ${configElezioni.annoScolastico}`, detailedConsulHtml));
-
-                // 3. Consiglio d'Istituto - Genitori
-                const subGenLists = configElezioni.listeConsiglio["GENITORE"] || {};
-                const detailedConsiglioGenHtml = buildListElectionsReportHtml("Consiglio d'Istituto - Componente GENITORI", subGenLists, votiConsiglio, 4, true, 'GENITORE');
-                zip.file("dettaglio_elezione_consiglio_genitori.html", getHtmlReportTemplate("Dettaglio Scrutinio - Consiglio d'Istituto (Genitori)", `Anno Scolastico ${configElezioni.annoScolastico}`, detailedConsiglioGenHtml));
-
-                // 4. Consiglio d'Istituto - Docenti
-                const subDocLists = configElezioni.listeConsiglio["DOCENTE"] || {};
-                const detailedConsiglioDocHtml = buildListElectionsReportHtml("Consiglio d'Istituto - Componente DOCENTI", subDocLists, votiConsiglio, 8, true, 'DOCENTE');
-                zip.file("dettaglio_elezione_consiglio_docenti.html", getHtmlReportTemplate("Dettaglio Scrutinio - Consiglio d'Istituto (Docenti)", `Anno Scolastico ${configElezioni.annoScolastico}`, detailedConsiglioDocHtml));
-
-                // 5. Consiglio d'Istituto - ATA
-                const subAtaLists = configElezioni.listeConsiglio["ATA"] || {};
-                const detailedConsiglioAtaHtml = buildListElectionsReportHtml("Consiglio d'Istituto - Componente ATA", subAtaLists, votiConsiglio, 2, true, 'ATA');
-                zip.file("dettaglio_elezione_consiglio_ata.html", getHtmlReportTemplate("Dettaglio Scrutinio - Consiglio d'Istituto (ATA)", `Anno Scolastico ${configElezioni.annoScolastico}`, detailedConsiglioAtaHtml));
-
-                // 6. Classe Studenti
-                const detailedClasseStuHtml = buildClassElectionsReportHtml("Rappresentanti di Classe - STUDENTI", votiClasseStudenti, configElezioni.maxPrefClasseStudenti || 1, 2);
-                zip.file("dettaglio_elezione_classe_studenti.html", getHtmlReportTemplate("Dettaglio Scrutinio - Rappresentanti di Classe (Studenti)", `Anno Scolastico ${configElezioni.annoScolastico}`, detailedClasseStuHtml));
-
-                // 7. Classe Genitori
-                const detailedClasseGenHtml = buildClassElectionsReportHtml("Rappresentanti di Classe - GENITORI", votiClasseGenitori, configElezioni.maxPrefClasseGenitori || 1, 4);
-                zip.file("dettaglio_elezione_classe_genitori.html", getHtmlReportTemplate("Dettaglio Scrutinio - Rappresentanti di Classe (Genitori)", `Anno Scolastico ${configElezioni.annoScolastico}`, detailedClasseGenHtml));
-
-                // 8. Registro Completo Token
                 const detailedTokensHtml = buildTokenRegisterReportHtml(tokensData);
                 zip.file("registro_completo_token.html", getHtmlReportTemplate("Registro Generale Credenziali Token", `Anno Scolastico ${configElezioni.annoScolastico}`, detailedTokensHtml));
 
-                // File README per le istruzioni d'uso
+                // Registri dei Token suddivisi per ciascuna votazione/ruolo
+                ["STUDENTE", "GENITORE", "DOCENTE", "ATA"].forEach(comp => {
+                    let compTokens = tokensData.filter(t => t.tipo === comp);
+                    let compTokensHtml = buildTokenRegisterReportHtml(compTokens, comp);
+                    zip.file(`registro_token_${comp.toLowerCase()}.html`, getHtmlReportTemplate(`Registro Credenziali Token - ${comp}`, `Anno Scolastico ${configElezioni.annoScolastico}`, compTokensHtml));
+                });
+
+                // File README
                 const readmeContent = `ITSCG PRIMO LEVI DI SEREGNO - REGISTRO ELETTRONICO DIGITALE CERTIFICATO
 Anno Scolastico di Riferimento: A.S. ${configElezioni.annoScolastico}
 Data Esportazione Archivio: ${new Date().toLocaleString()}
 
 Questo archivio ZIP contiene la documentazione ufficiale in formato HTML autonomo per la conservazione a norma e per l'affissione dei risultati.
-I file sono pronti per essere stampati, aperti offline senza connessione ad Internet su qualsiasi computer e sono completi di tabelle per le firme olografe dei componenti della commissione elettorale d'Istituto.
-
-NUOVI REPORT DETTAGLIATI INCLUSI:
-- registro_completo_token.html                     (Registro generale e stato di utilizzo di tutti i Token della scuola)
-- dettaglio_elezione_istituto.html                 (Riepilogo e calcoli D'Hondt con seggi della componente studentesca)
-- dettaglio_elezione_consulta.html                 (Riepilogo e calcoli D'Hondt con seggi della Consulta di Monza e Brianza)
-- dettaglio_elezione_consiglio_genitori.html       (Voti e preferenze D'Hondt del Consiglio d'Istituto per i Genitori)
-- dettaglio_elezione_consiglio_docenti.html        (Voti e preferenze D'Hondt del Consiglio d'Istituto per i Docenti)
-- dettaglio_elezione_consiglio_ata.html            (Voti e preferenze D'Hondt del Consiglio d'Istituto per la componente ATA)
-- dettaglio_elezione_classe_studenti.html          (Graduatorie e proclamati delle classi per gli studenti)
-- dettaglio_elezione_classe_genitori.html          (Graduatorie e proclamati delle classi per i genitori)`;
+I file sono pronti per essere stampati, aperti offline senza connessione ad Internet su qualsiasi computer e sono completi di tabelle per le firme olografe dei componenti della commissione elettorale d'Istituto.`;
                 zip.file("LEGGIMI_Istruzioni_Conservazione.txt", readmeContent);
 
                 // Compressione e download del pacchetto ZIP
@@ -2718,7 +2474,7 @@ NUOVI REPORT DETTAGLIATI INCLUSI:
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(url);
 
-                showNotification("Successo", `Archivio storico scaricato correttamente per l'A.S. ${configElezioni.annoScolastico}. Tutti i documenti e registri token extra sono stati firmati e pronti per la conservazione scolastica.`, "success");
+                showNotification("Successo", `Archivio storico scaricato correttamente per l'A.S. ${configElezioni.annoScolastico}. Tutti i documenti sono firmati e pronti per la conservazione scolastica.`, "success");
             } catch (err) {
                 console.error(err);
                 showNotification("Errore Esportazione", "Impossibile scaricare l'archivio ZIP: " + err.message, "error");
@@ -2727,6 +2483,182 @@ NUOVI REPORT DETTAGLIATI INCLUSI:
                 btn.disabled = false;
                 lucide.createIcons();
             }
+        };
+
+        const buildTokenRegisterReportHtml = (tokensData, specificRoleFilter = "ALL") => {
+            tokensData.sort((a,b) => {
+                if(a.tipo === b.tipo) {
+                    if(a.classe === b.classe) {
+                        return (a.nome || "").localeCompare(b.nome || "");
+                    }
+                    return (a.classe || "").localeCompare(b.classe || "");
+                }
+                return (a.tipo || "").localeCompare(b.tipo || "");
+            });
+
+            // Rileva classi uniche per il selettore
+            const classesList = [...new Set(tokensData.map(t => t.classe).filter(Boolean))].sort();
+
+            let html = `
+                <h2>Filtro Intelligente & Ricerca Credenziali</h2>
+                <p class="text-xs text-slate-500 mb-4">Utilizza la barra e i selettori sottostanti per filtrare in tempo reale l'elenco dei token registrati.</p>
+                
+                <!-- Interfaccia di Filtraggio Dinamico -->
+                <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #cbd5e1; margin-bottom: 25px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
+                    <div>
+                        <label style="font-size: 11px; font-weight: bold; color: #1e3a8a; text-transform: uppercase; display: block; margin-bottom: 5px;">Ricerca Libera</label>
+                        <input type="text" id="smartSearch" placeholder="Nome, Classe o Token..." onkeyup="applySmartFilters()" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; box-sizing: border-box;">
+                    </div>
+                    ${specificRoleFilter === "ALL" ? `
+                    <div>
+                        <label style="font-size: 11px; font-weight: bold; color: #1e3a8a; text-transform: uppercase; display: block; margin-bottom: 5px;">Filtra per Componente</label>
+                        <select id="roleFilter" onchange="applySmartFilters()" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; background: white; box-sizing: border-box;">
+                            <option value="ALL">Tutte le componenti</option>
+                            <option value="STUDENTE">STUDENTE</option>
+                            <option value="GENITORE">GENITORE</option>
+                            <option value="DOCENTE">DOCENTE</option>
+                            <option value="ATA">ATA</option>
+                        </select>
+                    </div>` : `<input type="hidden" id="roleFilter" value="${specificRoleFilter}">`}
+                    <div>
+                        <label style="font-size: 11px; font-weight: bold; color: #1e3a8a; text-transform: uppercase; display: block; margin-bottom: 5px;">Filtra per Classe</label>
+                        <select id="classFilter" onchange="applySmartFilters()" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; background: white; box-sizing: border-box;">
+                            <option value="ALL">Tutte le classi</option>
+                            ${classesList.map(c => `<option value="${c}">${c}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; font-weight: bold; color: #1e3a8a; text-transform: uppercase; display: block; margin-bottom: 5px;">Stato del Voto</label>
+                        <select id="statusFilter" onchange="applySmartFilters()" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; background: white; box-sizing: border-box;">
+                            <option value="ALL">Tutti gli stati</option>
+                            <option value="VOTATO">Voto Concluso (Urna)</option>
+                            <option value="NON_VOTATO">Non Utilizzato / Parziale</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 11px; font-weight: bold; color: #1e3a8a; text-transform: uppercase; display: block; margin-bottom: 5px;">Votazione Specifica</label>
+                        <select id="ballotFilter" onchange="applySmartFilters()" style="width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; background: white; box-sizing: border-box;">
+                            <option value="ALL">Qualsiasi scrutinio</option>
+                            <option value="voted_consiglio">Consiglio d'Istituto espressa</option>
+                            <option value="voted_istituto">Rappresentanti d'Istituto espressa</option>
+                            <option value="voted_consulta">Consulta Provinciale espressa</option>
+                            <option value="voted_classe_studente">Classe Studenti espressa</option>
+                            <option value="voted_classe_genitore">Classe Genitori espressa</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Statistiche Dinamiche Filtrate -->
+                <div style="display: flex; gap: 15px; margin-bottom: 20px; font-size: 13px;">
+                    <div style="background: #e0f2fe; color: #0369a1; padding: 10px 15px; border-radius: 8px; font-weight: bold;">
+                        Elementi visualizzati: <span id="counterDisplayed">${tokensData.length}</span> su ${tokensData.length}
+                    </div>
+                </div>
+
+                <!-- Tabella interattiva dei Token -->
+                <table id="tokensReportTable">
+                    <thead>
+                        <tr>
+                            <th>Codice Token</th>
+                            <th>Elettore Associato</th>
+                            <th>Componente</th>
+                            <th>Classe / Sez.</th>
+                            <th>Indirizzo</th>
+                            <th style="text-align: center;">Voti Singoli Espressi</th>
+                            <th style="text-align: center;">Stato Globale</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${tokensData.map((t) => {
+                            let statusGlobalText = t.hasVoted ? 'VOTO CONCLUSO' : 'NON UTILIZZATO / PARZIALE';
+                            let globalBadgeClass = t.hasVoted ? 'badge badge-green' : 'badge badge-red';
+
+                            let singleBallotsInfo = [];
+                            if (t.voted_consiglio) singleBallotsInfo.push("Consiglio");
+                            if (t.voted_istituto) singleBallotsInfo.push("Istituto");
+                            if (t.voted_consulta) singleBallotsInfo.push("Consulta");
+                            if (t.voted_classe_studente) singleBallotsInfo.push("Classe Studente");
+                            if (t.voted_classe_genitore) singleBallotsInfo.push("Classe Genitore");
+                            let singleVotesStr = singleBallotsInfo.length > 0 ? singleBallotsInfo.join(', ') : "Nessuno";
+
+                            return `
+                                <tr class="token-row" 
+                                    data-id="${t.id}"
+                                    data-nome="${(t.nome || '').toLowerCase()}"
+                                    data-tipo="${t.tipo}"
+                                    data-classe="${(t.classe || '').toUpperCase()}"
+                                    data-hasvoted="${t.hasVoted ? 'true' : 'false'}"
+                                    data-voted-consiglio="${t.voted_consiglio ? 'true' : 'false'}"
+                                    data-voted-istituto="${t.voted_istituto ? 'true' : 'false'}"
+                                    data-voted-consulta="${t.voted_consulta ? 'true' : 'false'}"
+                                    data-voted-classe-studente="${t.voted_classe_studente ? 'true' : 'false'}"
+                                    data-voted-classe-genitore="${t.voted_classe_genitore ? 'true' : 'false'}">
+                                    <td><strong style="font-family: monospace; font-size: 13px;">${t.id}</strong></td>
+                                    <td style="text-transform: uppercase;">${t.nome || "Elettore Anonimo"}</td>
+                                    <td><span class="badge badge-blue">${t.tipo}</span></td>
+                                    <td>${t.classe || "-"}</td>
+                                    <td>${t.indirizzo || "-"}</td>
+                                    <td style="text-align: center; color: #1e3a8a; font-weight: 500; font-size: 11px;">${singleVotesStr}</td>
+                                    <td style="text-align: center;"><span class="${globalBadgeClass}">${statusGlobalText}</span></td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+
+                <!-- Script di Filtraggio Eseguito Localmente offline nel browser -->
+                <script>
+                    function applySmartFilters() {
+                        const searchVal = document.getElementById('smartSearch').value.toLowerCase().trim();
+                        const roleVal = document.getElementById('roleFilter').value;
+                        const classVal = document.getElementById('classFilter').value.toUpperCase();
+                        const statusVal = document.getElementById('statusFilter').value;
+                        const ballotVal = document.getElementById('ballotFilter').value;
+
+                        const rows = document.querySelectorAll('.token-row');
+                        let displayedCount = 0;
+
+                        rows.forEach(row => {
+                            const id = row.getAttribute('data-id').toLowerCase();
+                            const nome = row.getAttribute('data-nome');
+                            const tipo = row.getAttribute('data-tipo');
+                            const classe = row.getAttribute('data-classe');
+                            const hasVoted = row.getAttribute('data-hasvoted') === 'true';
+
+                            // 1. Ricerca Libera
+                            let matchesSearch = !searchVal || id.includes(searchVal) || nome.includes(searchVal) || classe.toLowerCase().includes(searchVal);
+
+                            // 2. Componente
+                            let matchesRole = (roleVal === 'ALL') || (tipo === roleVal);
+
+                            // 3. Classe
+                            let matchesClass = (classVal === 'ALL') || (classe === classVal);
+
+                            // 4. Stato Globale
+                            let matchesStatus = true;
+                            if (statusVal === 'VOTATO') matchesStatus = hasVoted;
+                            else if (statusVal === 'NON_VOTATO') matchesStatus = !hasVoted;
+
+                            // 5. Votazione specifica
+                            let matchesBallot = true;
+                            if (ballotVal !== 'ALL') {
+                                const attrName = 'data-' + ballotVal.replace(/_/g, '-');
+                                matchesBallot = row.getAttribute(attrName) === 'true';
+                            }
+
+                            if (matchesSearch && matchesRole && matchesClass && matchesStatus && matchesBallot) {
+                                row.style.display = '';
+                                displayedCount++;
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        });
+
+                        document.getElementById('counterDisplayed').textContent = displayedCount;
+                    }
+                <\/script>
+            `;
+            return html;
         };
 
         window.executeDatabaseWipe = async function() {
@@ -2745,8 +2677,8 @@ NUOVI REPORT DETTAGLIATI INCLUSI:
                         voted_consiglio: false,
                         voted_istituto: false,
                         voted_consulta: false,
-                        voted_classe_studenti: false,
-                        voted_classe_genitori: false,
+                        voted_classe_studente: false,
+                        voted_classe_genitore: false,
                         vote_id_consiglio: null,
                         vote_id_istituto: null,
                         vote_id_consulta: null,
@@ -2826,7 +2758,7 @@ NUOVI REPORT DETTAGLIATI INCLUSI:
                         <div class="bg-slate-50 rounded-2xl p-4 border border-slate-200 mb-4 font-semibold">
                             <h4 class="font-bold text-xs text-slate-800 uppercase mb-3 flex items-center justify-between border-b pb-1.5">
                                 <span>Componente: ${role}</span>
-                                <button onclick="addConsiglioList('${role}')" class="bg-blue-900 text-white font-extrabold py-1 px-3 rounded text-[10px] flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Nuova Lista</button>
+                                <button onclick="addConsiglioList('${role}')" class="bg-blue-950 text-white font-extrabold py-1 px-3 rounded text-[10px] flex items-center gap-1"><i data-lucide="plus" class="w-3 h-3"></i> Nuova Lista</button>
                             </h4>
                             <div class="space-y-2">
                                 ${listHTML}
@@ -2881,7 +2813,7 @@ NUOVI REPORT DETTAGLIATI INCLUSI:
                     <div class="border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
                         <div>
                             <h3 class="text-base font-extrabold text-slate-800">Candidati e Liste</h3>
-  <p class="text-xs text-slate-500 mt-1">Configurazione delle liste elettorali.</p>
+                            <p class="text-xs text-slate-500 mt-1">Configurazione delle liste elettorali.</p>
                         </div>
                         <button onclick="saveConfigToDB()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2 px-4 rounded-xl text-xs shadow flex items-center gap-1.5"><i data-lucide="save" class="w-4 h-4"></i> Salva Configurazione Cloud</button>
                     </div>
@@ -3086,7 +3018,7 @@ NUOVI REPORT DETTAGLIATI INCLUSI:
                         <div>
                             <div class="flex justify-between items-center mb-3">
                                 <h4 class="text-xs font-black text-slate-700 uppercase">Dettaglio e Sblocco Voti</h4>
-                                <input type="text" id="tokenSearchInput" oninput="filterRegisterTable()" placeholder="Cerca token o classe..." class="p-1.5 border rounded-lg text-[10px] w-48 outline-none">
+                                <input type="text" id="tokenSearchInput" oninput="window.filterRegisterTable()" placeholder="Cerca token o classe..." class="p-1.5 border rounded-lg text-[10px] w-48 outline-none">
                             </div>
                             <div class="max-h-[380px] overflow-y-auto border rounded-xl custom-scrollbar shadow-sm">
                                 <table class="w-full text-left border-collapse" id="registerTokensTable">
@@ -3158,7 +3090,7 @@ NUOVI REPORT DETTAGLIATI INCLUSI:
                                                     </td>
                                                     <td class="p-2.5 text-center flex items-center justify-center gap-2 mt-1.5">
                                                         <button onclick="window.resetEntireToken('${t.id}')" title="Ripristina Completo" class="text-indigo-650 hover:text-indigo-800"><i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i></button>
-                                                        <button onclick="deleteSingleToken('${t.id}')" title="Elimina" class="text-red-600 hover:text-red-850"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button>
+                                                        <button onclick="window.deleteSingleToken('${t.id}')" title="Elimina" class="text-red-600 hover:text-red-850"><i data-lucide="trash" class="w-3.5 h-3.5"></i></button>
                                                     </td>
                                                 </tr>
                                             `;
@@ -3238,8 +3170,8 @@ NUOVI REPORT DETTAGLIATI INCLUSI:
                         voted_consiglio: false,
                         voted_istituto: false,
                         voted_consulta: false,
-                        voted_classe_studenti: false,
-                        voted_classe_genitori: false
+                        voted_classe_studente: false,
+                        voted_classe_genitore: false
                     });
                     count++;
                     if (count >= 400) break; 
@@ -3482,8 +3414,8 @@ NUOVI REPORT DETTAGLIATI INCLUSI:
                         voted_consiglio: false,
                         voted_istituto: false,
                         voted_consulta: false,
-                        voted_classe_studenti: false,
-                        voted_classe_genitori: false,
+                        voted_classe_studente: false,
+                        voted_classe_genitore: false,
                         vote_id_consiglio: null,
                         vote_id_istituto: null,
                         vote_id_consulta: null,
@@ -3536,8 +3468,8 @@ NUOVI REPORT DETTAGLIATI INCLUSI:
                     voted_consiglio: false,
                     voted_istituto: false,
                     voted_consulta: false,
-                    voted_classe_studenti: false,
-                    voted_classe_genitori: false
+                    voted_classe_studente: false,
+                    voted_classe_genitore: false
                 });
             }
 
@@ -3625,7 +3557,6 @@ NUOVI REPORT DETTAGLIATI INCLUSI:
                 }
             });
 
-            // Ordinamento decrescente, con priorità di voto in caso di quoziente identico
             quotients.sort((a, b) => {
                 if (Math.abs(a.quotient - b.quotient) < 0.0001) {
                     if (a.votes === b.votes) {
@@ -3652,7 +3583,6 @@ NUOVI REPORT DETTAGLIATI INCLUSI:
             return { quotients, seatsAllocated };
         }
 
-        // Aggregazione asincrona e robusta del database dei voti
         async function fetchScrutinioData(colName) {
             const votiDb = await getVotiUrna(colName);
             
@@ -3712,7 +3642,6 @@ NUOVI REPORT DETTAGLIATI INCLUSI:
                     }
                 }
 
-                // Generazione del dettaglio asincrono per classe
                 let cl = v.classe || "SENZA CLASSE";
                 if (!officialVotiScrutinio.classDetail[colName][cl]) {
                     officialVotiScrutinio.classDetail[colName][cl] = {
@@ -3812,7 +3741,7 @@ NUOVI REPORT DETTAGLIATI INCLUSI:
             let subNavConsiglioHTML = '';
             if (currentScrutinioSection === 'consiglio') {
                 subNavConsiglioHTML = `
-                    <div class="flex gap-2 mb-4 bg-slate-50 p-2 rounded-xl border font-semibold">
+        <div class="flex gap-2 mb-4 bg-slate-50 p-2 rounded-xl border font-semibold">
                         <button onclick="window.switchScrutinioSubComponent('GENITORE')" class="py-1 px-3 text-[10px] font-black uppercase rounded ${currentScrutinioSubComponent === 'GENITORE' ? 'bg-blue-900 text-white' : 'text-slate-500 hover:text-slate-800'}">Genitori</button>
                         <button onclick="window.switchScrutinioSubComponent('DOCENTE')" class="py-1 px-3 text-[10px] font-black uppercase rounded ${currentScrutinioSubComponent === 'DOCENTE' ? 'bg-blue-900 text-white' : 'text-slate-500 hover:text-slate-800'}">Docenti</button>
                         <button onclick="window.switchScrutinioSubComponent('ATA')" class="py-1 px-3 text-[10px] font-black uppercase rounded ${currentScrutinioSubComponent === 'ATA' ? 'bg-blue-900 text-white' : 'text-slate-500 hover:text-slate-800'}">ATA</button>
